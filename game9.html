@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Nghe Truyện Tìm Từ - Bông Home's</title>
+<style>
+  :root{ --kem:#FFF7F0; --hong:#FFB7C5; --tim:#C9B6F5; --vang:#FFE0A3; --mint:#A8E6CF; --troi:#BFE3FF; --chu:#6B4E71; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body{
+    margin:0; min-height:100vh; padding:14px 12px 40px;
+    font-family:"Segoe UI","Nunito",Arial,sans-serif; color:var(--chu);
+    background:var(--kem);
+    background-image:radial-gradient(circle at 10% 6%,rgba(212,193,249,.4),transparent 30%),
+                     radial-gradient(circle at 90% 8%,rgba(255,183,197,.3),transparent 32%),
+                     linear-gradient(180deg,#F4F0FE 0%,var(--kem) 40%);
+    background-attachment:fixed; overflow-x:hidden; user-select:none;
+  }
+  .khung{ max-width:640px; margin:0 auto; }
+  .thanh-tren{ display:flex; align-items:center; gap:10px; }
+  .nut-ve{ display:inline-flex; gap:6px; padding:10px 16px; background:#fff; color:var(--chu); text-decoration:none;
+    font-size:16px; font-weight:800; border:3px solid var(--tim); border-radius:999px; box-shadow:0 4px 0 rgba(0,0,0,.06); }
+  .nut-ve:active{ transform:translateY(2px); box-shadow:none; }
+  h1{ flex:1; text-align:center; font-size:clamp(20px,4.8vw,32px); margin:0; color:#7A4E86; text-shadow:0 2px 0 #fff; }
+  .cham{ width:52px; }
+  @media (max-width:560px){ .cham{display:none;} h1{font-size:18px;} }
+
+  /* Thẻ nhiệm vụ: từ khoá cần bắt */
+  .the-nhiem-vu{
+    background:#fff; border:5px dashed var(--hong); border-radius:24px;
+    padding:14px; text-align:center; margin:12px 0 14px;
+  }
+  .the-nhiem-vu .nho{ font-size:16px; font-weight:700; color:#8D7595; }
+  .the-nhiem-vu .tu-khoa{
+    display:block; font-size:clamp(30px,8vw,44px); font-weight:900;
+    color:#E0729B; margin-top:4px; letter-spacing:1px;
+  }
+
+  .bang-so{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .o-so{ background:#fff; border:3px solid var(--mint); border-radius:18px; padding:7px 14px; min-width:94px; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.05); }
+  .o-so .nhan{ font-size:12px; font-weight:700; color:#8D7595; display:block; }
+  .o-so .gia-tri{ font-size:21px; font-weight:900; color:#4E9A78; }
+
+  /* Sân khấu chữ */
+  .san-khau{
+    background:#fff; border:5px solid var(--tim); border-radius:28px;
+    height:210px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 0 rgba(0,0,0,.06), 0 12px 24px rgba(150,120,170,.14);
+    margin-bottom:8px;
+    overflow:hidden; position:relative;
+  }
+  #chu{
+    font-size:clamp(38px,10vw,60px); font-weight:900; color:#6B4E71;
+    animation:hien-chu .28s ease;
+  }
+  #chu.la-tu-khoa{ color:#E0729B; }
+  @keyframes hien-chu{ from{ transform:scale(.6); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  .san-khau.bat-dung{ background:#EAFBF3; border-color:var(--mint); }
+  .san-khau.bat-nham{ background:#FFF0F0; border-color:#F5A9A9; }
+
+  /* Vạch tiến độ câu chuyện */
+  .thanh-tien{ height:14px; background:#EFE7F7; border-radius:999px; overflow:hidden; margin-bottom:18px; }
+  #vachTien{ height:100%; width:0; background:linear-gradient(90deg,var(--mint),var(--troi)); transition:width .3s ease; }
+
+  /* Nút bắt từ khoá thật to */
+  .nut-bat{
+    display:block; width:100%;
+    font-family:inherit; font-size:26px; font-weight:900;
+    padding:24px 12px;
+    background:var(--vang); color:#8A6522;
+    border:5px solid #E0A94F; border-radius:28px;
+    cursor:pointer;
+    box-shadow:0 8px 0 #D0973E;
+  }
+  .nut-bat:active{ transform:translateY(5px); box-shadow:0 3px 0 #D0973E; }
+  .nut-bat:disabled{ opacity:.45; cursor:default; }
+
+  .nhom-nut-duoi{ display:flex; justify-content:center; gap:10px; margin-top:16px; flex-wrap:wrap; }
+  .nhom-nut-duoi button{ font-family:inherit; font-size:16px; font-weight:800; padding:12px 22px; border:none; border-radius:999px; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.12); }
+  .nut-bat-dau{ background:var(--hong); color:#fff; }
+  .nut-loa{ background:var(--troi); color:#3E6E96; }
+  .nut-loa:disabled{ opacity:.55; cursor:not-allowed; }
+  .nhom-nut-duoi button:active{ transform:translateY(3px); box-shadow:none; }
+
+  #phaoGiay{ position:fixed; inset:0; pointer-events:none; z-index:60; display:none; }
+  .man-thang{ position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center; background:rgba(122,78,134,.35); padding:16px; }
+  .man-thang.hien{ display:flex; }
+  .hop-thang{ background:#fff; border:6px solid var(--vang); border-radius:34px; padding:26px 24px; text-align:center; max-width:400px; width:100%; box-shadow:0 20px 50px rgba(120,80,140,.35); animation:bat-len .5s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes bat-len{ from{transform:scale(.6);opacity:0;} to{transform:scale(1);opacity:1;} }
+  .hop-thang h2{ font-size:28px; margin:6px 0 4px; color:#E0729B; }
+  .hop-thang .loi{ font-size:17px; font-weight:700; color:#8D7595; margin:0 0 14px; }
+  .ket-qua{ display:flex; gap:8px; }
+  .ket-qua div{ flex:1; background:#FFF8E7; border:3px solid var(--vang); border-radius:16px; padding:10px 4px; }
+  .ket-qua .nhan{ font-size:11px; font-weight:700; color:#9A7B4F; display:block; }
+  .ket-qua .gia-tri{ font-size:22px; font-weight:900; color:#9A6410; }
+  .ky-luc-moi{ font-size:17px; font-weight:900; color:#4E9A78; background:#EAFBF3; border:3px dashed var(--mint); border-radius:14px; padding:8px; margin:12px 0 0; display:none; }
+  .ky-luc-moi.hien{ display:block; }
+  .nhom-nut{ display:flex; gap:10px; margin-top:16px; }
+  .nhom-nut button,.nhom-nut a{ flex:1; font-family:inherit; font-size:17px; font-weight:800; padding:14px 10px; border:none; border-radius:999px; cursor:pointer; text-decoration:none; box-shadow:0 5px 0 rgba(0,0,0,.12); }
+  .nut-choi-lai{ background:var(--hong); color:#fff; }
+  .nhom-nut a{ background:var(--troi); color:#3E6E96; display:flex; align-items:center; justify-content:center; }
+  .nhom-nut button:active,.nhom-nut a:active{ transform:translateY(3px); box-shadow:none; }
+  @media (prefers-reduced-motion:reduce){ *{ animation:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="khung">
+  <div class="thanh-tren">
+    <a class="nut-ve" href="index.html">🏠 Về nhà</a>
+    <h1>Nghe Truyện Tìm Từ</h1>
+    <div class="cham"></div>
+  </div>
+
+  <div class="the-nhiem-vu">
+    <span class="nho">Bé hãy bấm nút mỗi khi thấy từ</span>
+    <span class="tu-khoa" id="tuKhoa">…</span>
+  </div>
+
+  <div class="bang-so">
+    <div class="o-so"><span class="nhan">Bắt đúng</span><span class="gia-tri" id="soDung">0</span></div>
+    <div class="o-so"><span class="nhan">Bỏ lỡ</span><span class="gia-tri" id="soLo">0</span></div>
+    <div class="o-so"><span class="nhan">Bấm nhầm</span><span class="gia-tri" id="soNham">0</span></div>
+    <div class="o-so"><span class="nhan">Kỷ lục điểm</span><span class="gia-tri" id="kyLuc">--</span></div>
+  </div>
+
+  <div class="san-khau" id="sanKhau"><div id="chu">Sẵn sàng?</div></div>
+  <div class="thanh-tien"><div id="vachTien"></div></div>
+
+  <button class="nut-bat" id="nutBat" disabled>🖐️ Bắt được từ khoá!</button>
+
+  <div class="nhom-nut-duoi">
+    <button class="nut-bat-dau" id="nutBatDau">▶️ Bắt đầu kể chuyện</button>
+    <button class="nut-loa" id="nutLoa">🔊 Đọc to: Bật</button>
+  </div>
+</div>
+
+<canvas id="phaoGiay" aria-hidden="true"></canvas>
+
+<div class="man-thang" id="manThang">
+  <div class="hop-thang">
+    <div style="font-size:50px">📖👂</div>
+    <h2 id="tieuDeThang">Hết chuyện rồi!</h2>
+    <p class="loi" id="loiKhen">Bé lắng nghe rất chăm chú!</p>
+    <div class="ket-qua">
+      <div><span class="nhan">Bắt đúng</span><span class="gia-tri" id="dungCuoi">0</span></div>
+      <div><span class="nhan">Bỏ lỡ</span><span class="gia-tri" id="loCuoi">0</span></div>
+      <div><span class="nhan">Điểm</span><span class="gia-tri" id="diemCuoi">0</span></div>
+    </div>
+    <div class="ky-luc-moi" id="bangKyLuc">🏆 Kỷ lục điểm mới của bé!</div>
+    <div class="nhom-nut">
+      <button class="nut-choi-lai" id="nutChoiLai">Chuyện mới</button>
+      <a href="index.html">Về nhà</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== ÂM THANH TỰ SINH BẰNG WEB AUDIO API ===== */
+let boLoa=null;
+function batLoa(){ if(!boLoa){ const A=window.AudioContext||window.webkitAudioContext; if(A) boLoa=new A(); }
+  if(boLoa&&boLoa.state==="suspended") boLoa.resume(); return boLoa; }
+function keoChuong(f,d=.3,t=0,v=.16,dang="triangle"){
+  const c=batLoa(); if(!c) return;
+  const bd=c.currentTime+t,o=c.createOscillator(),g=c.createGain();
+  o.type=dang; o.frequency.setValueAtTime(f,bd);
+  g.gain.setValueAtTime(.0001,bd); g.gain.exponentialRampToValueAtTime(v,bd+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,bd+d);
+  o.connect(g).connect(c.destination); o.start(bd); o.stop(bd+d+.05);
+}
+const amChu   = () => keoChuong(420,.05,0,.05);                 /* tiếng lật trang rất nhẹ */
+const amDung  = () => { keoChuong(784,.14,0,.16); keoChuong(1046.5,.3,.09,.16); };
+const amNham  = () => keoChuong(196,.26,0,.11,"sine");
+const amBoLo  = () => keoChuong(260,.2,0,.08,"sine");
+const nhacThang=()=>[523.25,659.25,783.99,1046.5,783.99,1046.5,1318.51].forEach((n,i)=>keoChuong(n,.45,i*.16,.18));
+
+/* ===== 3 CÂU CHUYỆN NGẮN, mỗi chuyện có một từ khoá cần bắt ===== */
+const CAC_CHUYEN=[
+  { tuKhoa:"THỎ",
+    tu:["Sáng","nay","bạn","THỎ","dậy","thật","sớm","THỎ","rửa","mặt","rồi","ăn","cà","rốt",
+        "Bạn","gấu","rủ","THỎ","ra","vườn","hái","hoa","Trên","đường","đi","THỎ","gặp","bạn","sóc",
+        "Sóc","tặng","THỎ","một","hạt","dẻ","to","THỎ","nói","cảm","ơn","rất","lễ","phép",
+        "Cả","hai","cùng","cười","vui","vẻ"] },
+  { tuKhoa:"HOA",
+    tu:["Trong","vườn","có","rất","nhiều","HOA","đẹp","HOA","hồng","toả","hương","thơm","ngát",
+        "Bướm","bay","tới","đậu","lên","cánh","HOA","Ong","cũng","tìm","mật","trong","HOA",
+        "Bé","tưới","nước","cho","HOA","mỗi","sáng","Nhờ","vậy","HOA","nở","thật","tươi",
+        "Mẹ","khen","bé","chăm","chỉ","lắm"] },
+  { tuKhoa:"TRĂNG",
+    tu:["Buổi","tối","TRĂNG","lên","cao","TRĂNG","tròn","và","sáng","như","cái","đĩa",
+        "Bé","ngồi","sân","ngắm","TRĂNG","cùng","bà","Bà","kể","chuyện","chị","Hằng","trên","TRĂNG",
+        "Mây","trôi","che","mất","TRĂNG","một","lúc","Rồi","TRĂNG","lại","hiện","ra","tươi","cười",
+        "Bé","ngủ","ngon","dưới","ánh","TRĂNG"] }
+];
+
+const TOC_DO = 1150;   /* mỗi từ hiện ra trong 1,15 giây */
+
+/* ===== TRẠNG THÁI ===== */
+const oChu=document.getElementById("chu"), sanKhau=document.getElementById("sanKhau");
+const oTuKhoa=document.getElementById("tuKhoa"), vachTien=document.getElementById("vachTien");
+const oDung=document.getElementById("soDung"), oLo=document.getElementById("soLo"), oNham=document.getElementById("soNham");
+const oKyLuc=document.getElementById("kyLuc"), nutBat=document.getElementById("nutBat");
+const manThang=document.getElementById("manThang");
+
+let chuyen=null, i=0, hen=null, dangChay=false;
+let daBat=false;                 /* bé đã bấm cho từ đang hiện chưa */
+let dung=0, lo=0, nham=0;
+let batLoaDoc=true;              /* đọc to bằng giọng máy có sẵn của thiết bị */
+
+let kyLucTam=null;
+const docKyLuc=()=>{ try{ const v=localStorage.getItem("kyluc_game9"); return v?parseInt(v,10):null; }catch(e){ return kyLucTam; } };
+const ghiKyLuc=s=>{ try{ localStorage.setItem("kyluc_game9",s); }catch(e){ kyLucTam=s; } };
+
+/* ===== TÌM GIỌNG ĐỌC TIẾNG VIỆT CÓ THẬT TRÊN MÁY =====
+   Chỉ đọc to khi máy có sẵn giọng tiếng Việt. Nếu không, ta IM LẶNG
+   thay vì để giọng tiếng Anh đọc chữ Việt sai bét — bé vẫn đọc chữ
+   hiện trên màn hình bình thường. */
+let giongViet=null, coGiongViet=false;
+const nutLoa=document.getElementById("nutLoa");
+
+function timGiongViet(){
+  if(!("speechSynthesis" in window)) return;
+  const ds=speechSynthesis.getVoices();
+  /* Ưu tiên mã ngôn ngữ vi / vi-VN, sau đó tới tên có chữ "Vietnam" */
+  giongViet = ds.find(v => /^vi(\b|[-_])/i.test(v.lang))
+           || ds.find(v => /vi[eệ]t\s*nam|vietnamese/i.test(v.name))
+           || null;
+  coGiongViet = !!giongViet;
+  capNhatNutLoa();
+}
+
+/* Cập nhật nút loa theo tình trạng giọng đọc của thiết bị */
+function capNhatNutLoa(){
+  if(!("speechSynthesis" in window) || !coGiongViet){
+    nutLoa.textContent = "🔇 Máy chưa có giọng Việt";
+    nutLoa.disabled = true;
+    nutLoa.title = "Thiết bị chưa cài giọng đọc tiếng Việt nên game không đọc to (bé vẫn đọc chữ trên màn hình).";
+  }else{
+    nutLoa.disabled = false;
+    nutLoa.removeAttribute("title");
+    nutLoa.textContent = batLoaDoc ? "🔊 Đọc to: Bật" : "🔇 Đọc to: Tắt";
+  }
+}
+
+if("speechSynthesis" in window){
+  timGiongViet();
+  /* Danh sách giọng thường nạp bất đồng bộ → nghe sự kiện để dò lại */
+  speechSynthesis.addEventListener("voiceschanged", timGiongViet);
+}
+
+/* Đọc to một từ bằng chính giọng tiếng Việt của máy (không tải gì từ mạng) */
+function docTo(tu){
+  if(!batLoaDoc || !coGiongViet) return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(tu);
+    u.voice=giongViet;
+    u.lang=giongViet.lang || "vi-VN";
+    u.rate=.85; u.pitch=1.15;
+    speechSynthesis.speak(u);
+  }catch(e){ /* máy không đọc được thì bé vẫn đọc chữ trên màn hình */ }
+}
+
+/* ===== BẮT ĐẦU MỘT CÂU CHUYỆN ===== */
+function chuyenMoi(){
+  batLoa();
+  clearTimeout(hen);
+  chuyen=CAC_CHUYEN[Math.floor(Math.random()*CAC_CHUYEN.length)];
+  i=0; dung=0; lo=0; nham=0; daBat=false; dangChay=true;
+
+  oTuKhoa.textContent=chuyen.tuKhoa;
+  oDung.textContent="0"; oLo.textContent="0"; oNham.textContent="0";
+  const kl=docKyLuc(); oKyLuc.textContent = kl!==null ? kl : "--";
+  vachTien.style.width="0";
+  nutBat.disabled=false;
+  manThang.classList.remove("hien");
+  document.getElementById("bangKyLuc").classList.remove("hien");
+  dungPhaoGiay();
+
+  oChu.textContent="Chuẩn bị…";
+  oChu.classList.remove("la-tu-khoa");
+  hen=setTimeout(hienTu,900);
+}
+
+/* ===== HIỆN TỪNG TỪ ===== */
+function hienTu(){
+  if(i>=chuyen.tu.length){ ketThuc(); return; }
+
+  const tu=chuyen.tu[i];
+  const laKhoa = tu===chuyen.tuKhoa;
+  daBat=false;
+
+  oChu.textContent=tu;
+  oChu.classList.toggle("la-tu-khoa", laKhoa);
+  /* Ép chạy lại hoạt hình xuất hiện chữ */
+  oChu.style.animation="none"; void oChu.offsetWidth; oChu.style.animation="";
+
+  amChu();
+  docTo(tu);
+
+  vachTien.style.width = ((i+1)/chuyen.tu.length*100) + "%";
+
+  hen=setTimeout(()=>{
+    /* Hết thời gian của từ này: nếu là từ khoá mà bé không bấm → bỏ lỡ */
+    if(laKhoa && !daBat){
+      lo++; oLo.textContent=lo; amBoLo();
+    }
+    i++;
+    hienTu();
+  }, TOC_DO);
+}
+
+/* ===== BÉ BẤM NÚT BẮT TỪ KHOÁ ===== */
+function bam(){
+  batLoa();
+  if(!dangChay || i>=chuyen.tu.length) return;
+  if(daBat) return;                                   /* mỗi từ chỉ tính một lần */
+
+  const tu=chuyen.tu[i];
+  daBat=true;
+
+  if(tu===chuyen.tuKhoa){
+    dung++; oDung.textContent=dung;
+    amDung();
+    nhayNen("bat-dung");
+  }else{
+    nham++; oNham.textContent=nham;
+    amNham();
+    nhayNen("bat-nham");
+  }
+}
+function nhayNen(lop){
+  sanKhau.classList.add(lop);
+  setTimeout(()=>sanKhau.classList.remove(lop),260);
+}
+
+/* ===== KẾT THÚC CÂU CHUYỆN ===== */
+function ketThuc(){
+  dangChay=false;
+  nutBat.disabled=true;
+  clearTimeout(hen);
+  oChu.textContent="Hết chuyện!";
+  oChu.classList.remove("la-tu-khoa");
+
+  const tongKhoa = chuyen.tu.filter(t=>t===chuyen.tuKhoa).length;
+  const diem = Math.max(0, dung*10 - nham*3 - lo*2);
+
+  document.getElementById("dungCuoi").textContent = dung+"/"+tongKhoa;
+  document.getElementById("loCuoi").textContent   = lo;
+  document.getElementById("diemCuoi").textContent = diem;
+
+  if(dung===tongKhoa && nham===0){
+    document.getElementById("tieuDeThang").textContent="Tai bé thính quá!";
+    document.getElementById("loiKhen").textContent="Bé bắt trọn từ khoá, không sót từ nào!";
+  }else{
+    document.getElementById("tieuDeThang").textContent="Bé nghe giỏi lắm!";
+    document.getElementById("loiKhen").textContent="Lần sau bé thử bắt trọn cả "+tongKhoa+" từ nhé!";
+  }
+
+  const cu=docKyLuc();
+  if(cu===null || diem>cu){
+    ghiKyLuc(diem);
+    document.getElementById("bangKyLuc").classList.add("hien");
+  }
+  oKyLuc.textContent=docKyLuc();
+
+  nhacThang(); banPhaoGiay();
+  manThang.classList.add("hien");
+}
+
+/* ===== NÚT & PHÍM ===== */
+nutBat.addEventListener("click", bam);
+addEventListener("keydown", e=>{
+  if(e.code==="Space" || e.key===" "){ e.preventDefault(); if(dangChay) bam(); }
+});
+document.getElementById("nutBatDau").addEventListener("click", ()=>{ keoChuong(880,.14,0,.14); chuyenMoi(); });
+document.getElementById("nutChoiLai").addEventListener("click", ()=>{ keoChuong(880,.14,0,.14); chuyenMoi(); });
+nutLoa.addEventListener("click", ()=>{
+  if(!coGiongViet) return;                 /* không có giọng Việt thì nút đã bị khoá */
+  batLoaDoc=!batLoaDoc;
+  capNhatNutLoa();
+  if(!batLoaDoc && "speechSynthesis" in window) speechSynthesis.cancel();
+  keoChuong(660,.12,0,.12);
+});
+
+/* ===== PHÁO GIẤY ===== */
+const canvas=document.getElementById("phaoGiay"), ctx2d=canvas.getContext("2d");
+let hatGiay=[], vongLap=null;
+const MAU_GIAY=["#FFB7C5","#C9B6F5","#FFE0A3","#A8E6CF","#BFE3FF","#FFCBA4"];
+function banPhaoGiay(){
+  canvas.style.display="block"; canvas.width=innerWidth; canvas.height=innerHeight;
+  hatGiay=[];
+  for(let k=0;k<160;k++) hatGiay.push({ x:Math.random()*canvas.width, y:Math.random()*-canvas.height,
+    r:5+Math.random()*7, mau:MAU_GIAY[k%MAU_GIAY.length], rung:Math.random()*6.28, toc:1.6+Math.random()*2.6, xoay:(Math.random()-.5)*.2 });
+  cancelAnimationFrame(vongLap); veGiay();
+}
+function veGiay(){
+  ctx2d.clearRect(0,0,canvas.width,canvas.height);
+  hatGiay.forEach(h=>{
+    h.y+=h.toc; h.rung+=h.xoay; h.x+=Math.sin(h.rung)*1.4;
+    if(h.y>canvas.height+20){ h.y=-20; h.x=Math.random()*canvas.width; }
+    ctx2d.save(); ctx2d.translate(h.x,h.y); ctx2d.rotate(h.rung);
+    ctx2d.fillStyle=h.mau; ctx2d.fillRect(-h.r/2,-h.r/2,h.r,h.r*1.5); ctx2d.restore();
+  });
+  vongLap=requestAnimationFrame(veGiay);
+}
+function dungPhaoGiay(){ cancelAnimationFrame(vongLap); canvas.style.display="none"; ctx2d.clearRect(0,0,canvas.width,canvas.height); }
+
+addEventListener("resize",()=>{ if(canvas.style.display==="block"){ canvas.width=innerWidth; canvas.height=innerHeight; } });
+document.addEventListener("touchstart",batLoa,{once:true});
+
+/* Hiện sẵn từ khoá của một chuyện để bé xem trước khi bấm Bắt đầu */
+oTuKhoa.textContent = CAC_CHUYEN[0].tuKhoa;
+</script>
+</body>
+</html>

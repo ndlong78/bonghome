@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bông Home's</title>
+
+<!-- ===== KHAI BÁO ỨNG DỤNG CHẠY NGOẠI TUYẾN (PWA) ===== -->
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#FFB7C5">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<!-- Dành riêng cho iPad / iPhone: cho phép thêm vào Màn hình chính như một app -->
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bông Home's">
+
+<style>
+  /* ===== BẢNG MÀU PASTEL CHỦ ĐẠO ===== */
+  :root{
+    --kem:      #FFF7F0;  /* nền kem nhạt */
+    --hong:     #FFB7C5;  /* hồng phấn */
+    --tim:      #C9B6F5;  /* tím nhạt */
+    --vang:     #FFE0A3;  /* vàng mơ */
+    --mint:     #A8E6CF;  /* xanh mint */
+    --troi:     #BFE3FF;  /* xanh da trời */
+    --cam:      #FFCBA4;  /* cam đào */
+    --chu:      #6B4E71;  /* màu chữ tím than dịu */
+    --day:      #C9A27E;  /* màu dây treo bảng */
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:"Segoe UI", "Nunito", Arial, sans-serif;
+    color:var(--chu);
+    background: var(--kem);
+    /* Bầu trời chuyển sắc nhẹ nhàng phía trên, sân cỏ phía dưới */
+    background-image:
+      radial-gradient(circle at 15% 8%,  rgba(255,224,163,.55), transparent 28%),
+      radial-gradient(circle at 85% 12%, rgba(191,227,255,.55), transparent 32%),
+      linear-gradient(180deg, #E8F4FF 0%, var(--kem) 45%);
+    background-attachment: fixed;
+    overflow-x:hidden;
+  }
+
+  /* ===== MÂY BAY TRANG TRÍ ===== */
+  .may{ position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden; }
+  .may span{
+    position:absolute; display:block;
+    width:120px; height:44px;
+    background:#fff; border-radius:50px;
+    opacity:.75;
+    box-shadow: 34px -14px 0 6px #fff, -34px -8px 0 2px #fff;
+    /* Dùng transform (chạy trên GPU) thay cho 'left' để trình duyệt
+       không phải tính lại bố cục mỗi khung hình → mượt & đỡ hao pin */
+    will-change: transform;
+    left:0;
+    animation: troi-bay linear infinite;
+  }
+  .may span:nth-child(1){ top:8%;  --s:.9;  animation-duration:55s; }
+  .may span:nth-child(2){ top:20%; --s:.6;  animation-duration:80s; animation-delay:-20s; }
+  .may span:nth-child(3){ top:4%;  --s:1.2; animation-duration:70s; animation-delay:-45s; }
+  @keyframes troi-bay{
+    from{ transform: translateX(-40vw) scale(var(--s)); }
+    to  { transform: translateX(115vw) scale(var(--s)); }
+  }
+
+  /* ===== KHUNG CHÍNH ===== */
+  .khung{
+    position:relative; z-index:1;
+    max-width:1120px;
+    margin:0 auto;
+    padding: 20px 18px 60px;
+  }
+
+  /* ===== CỔNG TRƯỜNG (SVG NGÔI NHÀ KẸO + CẦU VỒNG) ===== */
+  header{ text-align:center; padding-top:8px; }
+  .cong{ width:min(340px, 82vw); height:auto; display:block; margin:0 auto -6px; }
+
+  h1{
+    font-size: clamp(30px, 7vw, 52px);
+    margin:6px 0 4px;
+    letter-spacing:.5px;
+    color:#7A4E86;
+    text-shadow: 0 3px 0 #fff, 0 6px 14px rgba(180,140,200,.25);
+  }
+  .phu-de{
+    font-size: clamp(15px, 3.4vw, 20px);
+    margin:0 auto 6px;
+    max-width:520px;
+    font-weight:600;
+    color:#8D7595;
+  }
+  .loi-nhac{
+    display:inline-block;
+    margin:10px 0 26px;
+    padding:10px 20px;
+    border-radius:999px;
+    background:#fff;
+    border:3px dashed var(--hong);
+    font-size: clamp(14px, 3.2vw, 17px);
+    font-weight:700;
+    color:#B4628A;
+  }
+
+  /* ===== LƯỚI 10 BẢNG HIỆU ===== */
+  .san-truong{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 34px 22px;
+  }
+  @media (max-width:520px){
+    .san-truong{ grid-template-columns: repeat(2, 1fr); gap:30px 14px; }
+  }
+
+  /* Mỗi bảng hiệu treo trên 2 sợi dây */
+  .bang-hieu{
+    position:relative;
+    display:block;
+    text-decoration:none;
+    color:inherit;
+    padding-top:24px;           /* chừa chỗ cho dây treo */
+    transform-origin: 50% 6px;  /* điểm xoay ở nút dây phía trên */
+    animation: dung-yen 0s;
+    transition: transform .25s ease;
+  }
+  .bang-hieu::before,
+  .bang-hieu::after{            /* hai sợi dây treo */
+    content:"";
+    position:absolute; top:4px;
+    width:4px; height:24px;
+    background:var(--day);
+    border-radius:3px;
+  }
+  .bang-hieu::before{ left:26%; transform:rotate(9deg); }
+  .bang-hieu::after { right:26%; transform:rotate(-9deg); }
+
+  .the{
+    background:#fff;
+    border:4px solid var(--vien, var(--hong));
+    border-radius:26px;
+    padding:16px 12px 14px;
+    text-align:center;
+    box-shadow: 0 8px 0 rgba(0,0,0,.06), 0 14px 26px rgba(150,120,170,.16);
+    transition: box-shadow .2s ease, background .2s ease;
+  }
+  .the .hinh{
+    width:96px; height:96px;
+    margin:0 auto 8px;
+    background: var(--nen, #FFF0F4);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .the .hinh svg{ width:66px; height:66px; display:block; }
+
+  .so{
+    position:absolute; top:16px; left:12px;
+    width:38px; height:38px;
+    background: var(--vien, var(--hong));
+    color:#fff;
+    border:3px solid #fff;
+    border-radius:50%;
+    font-size:18px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 8px rgba(0,0,0,.12);
+  }
+
+  .ten{
+    font-size:19px; font-weight:800;
+    line-height:1.25;
+    margin:2px 0 6px;
+    min-height:48px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .ky-nang{
+    display:inline-block;
+    font-size:13px; font-weight:700;
+    padding:5px 12px;
+    border-radius:999px;
+    background: var(--nen, #FFF0F4);
+    color:#7A6180;
+  }
+
+  /* Bảng hiệu đung đưa khi chạm/rê chuột vào */
+  @media (hover:hover){
+    .bang-hieu:hover{ animation: dung-dua .7s ease-in-out; }
+    .bang-hieu:hover .the{ box-shadow: 0 10px 0 rgba(0,0,0,.07), 0 20px 34px rgba(150,120,170,.28); }
+  }
+  .bang-hieu:focus-visible{
+    outline:5px solid #7A4E86;
+    outline-offset:6px;
+    border-radius:30px;
+  }
+  .bang-hieu:active{ transform: scale(.95); }
+
+  @keyframes dung-dua{
+    0%,100%{ transform: rotate(0deg); }
+    25%    { transform: rotate(3.5deg); }
+    75%    { transform: rotate(-3.5deg); }
+  }
+
+  /* ===== NGÔI SAO LUNG LINH KHI CHẠM VÀO BẢNG ===== */
+  .sao-bay{
+    position:fixed; z-index:99;
+    font-size:26px;
+    pointer-events:none;
+    animation: sao-len .9s ease-out forwards;
+  }
+  @keyframes sao-len{
+    0%  { transform: translate(-50%,-50%) scale(.4) rotate(0deg);   opacity:1; }
+    100%{ transform: translate(-50%,-160%) scale(1.3) rotate(220deg); opacity:0; }
+  }
+
+  footer{
+    text-align:center;
+    margin-top:44px;
+    font-size:15px; font-weight:700;
+    color:#A08FA8;
+  }
+
+  /* ===== HUY HIỆU BÁO TRẠNG THÁI CHƠI NGOẠI TUYẾN ===== */
+  .huy-hieu{
+    display:none;
+    margin:14px auto 0;
+    width:fit-content;
+    padding:8px 18px;
+    border-radius:999px;
+    background:#EAFBF3;
+    border:3px solid var(--mint);
+    color:#3F8A6C;
+    font-size:14px; font-weight:800;
+  }
+  .huy-hieu.hien{ display:block; }
+  .huy-hieu.dang-tai{ background:#FFF8E7; border-color:var(--vang); color:#9A7B4F; }
+
+  /* Tôn trọng thiết lập giảm chuyển động của thiết bị */
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Mây trắng bay ngang bầu trời -->
+<div class="may" aria-hidden="true"><span></span><span></span><span></span></div>
+
+<div class="khung">
+
+  <header>
+    <!-- CỔNG TRƯỜNG: cầu vồng + ngôi nhà kẹo ngọt + kỳ lân, vẽ hoàn toàn bằng SVG -->
+    <svg class="cong" viewBox="0 0 300 170" role="img" aria-label="Ngôi nhà kẹo ngọt dưới cầu vồng">
+      <!-- Cầu vồng -->
+      <g fill="none" stroke-linecap="round">
+        <path d="M40 140 A110 110 0 0 1 260 140" stroke="#FFB7C5" stroke-width="11"/>
+        <path d="M51 140 A99 99 0 0 1 249 140"  stroke="#FFCBA4" stroke-width="11"/>
+        <path d="M62 140 A88 88 0 0 1 238 140"  stroke="#FFE0A3" stroke-width="11"/>
+        <path d="M73 140 A77 77 0 0 1 227 140"  stroke="#A8E6CF" stroke-width="11"/>
+        <path d="M84 140 A66 66 0 0 1 216 140"  stroke="#BFE3FF" stroke-width="11"/>
+        <path d="M95 140 A55 55 0 0 1 205 140"  stroke="#C9B6F5" stroke-width="11"/>
+      </g>
+      <!-- Ngôi nhà kẹo ngọt -->
+      <rect x="112" y="100" width="76" height="45" rx="8" fill="#FFF3E0" stroke="#E0BFA0" stroke-width="3"/>
+      <path d="M104 102 L150 68 L196 102 Z" fill="#FFB7C5" stroke="#F090A8" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="150" cy="88" r="5" fill="#FFE0A3"/>
+      <rect x="138" y="118" width="24" height="27" rx="6" fill="#C9B6F5"/>
+      <circle cx="157" cy="132" r="2.4" fill="#fff"/>
+      <!-- Kẹo mút hai bên cửa -->
+      <line x1="122" y1="145" x2="122" y2="126" stroke="#D9C3A5" stroke-width="2.5"/>
+      <circle cx="122" cy="122" r="6" fill="#A8E6CF" stroke="#7FCFB0" stroke-width="2"/>
+      <line x1="178" y1="145" x2="178" y2="126" stroke="#D9C3A5" stroke-width="2.5"/>
+      <circle cx="178" cy="122" r="6" fill="#FFE0A3" stroke="#EDC46F" stroke-width="2"/>
+      <!-- Bãi cỏ -->
+      <path d="M20 145 Q150 133 280 145 L280 152 L20 152 Z" fill="#A8E6CF"/>
+    </svg>
+
+    <h1>Bông Home's</h1>
+    <p class="phu-de">10 lớp học vui nhộn giúp bé thông minh hơn mỗi ngày</p>
+    <div class="loi-nhac">Bé hãy chọn một bảng hiệu để vào lớp nhé!</div>
+  </header>
+
+  <!-- 10 BẢNG HIỆU DẪN VÀO 10 TRÒ CHƠI -->
+  <main class="san-truong" id="sanTruong"></main>
+
+  <footer>Chơi 15 phút mỗi ngày là bé giỏi lắm rồi!</footer>
+  <div class="huy-hieu" id="huyHieu"></div>
+</div>
+
+<script>
+/* =========================================================
+   DỮ LIỆU 10 LỚP HỌC
+   Mỗi lớp có: tên file, tên hiển thị, kỹ năng, màu viền, màu nền,
+   nốt nhạc riêng (tần số Hz) và hình vẽ SVG tự tạo.
+   ========================================================= */
+const DANH_SACH = [
+  { file:"game1.html",  ten:"Lật Hình Tìm Cặp",      kyNang:"Trí nhớ",        vien:"#FFB7C5", nen:"#FFF0F4", not:523.25 },
+  { file:"game2.html",  ten:"Tìm Điểm Khác Biệt",    kyNang:"Tinh mắt",       vien:"#C9B6F5", nen:"#F3EFFF", not:587.33 },
+  { file:"game3.html",  ten:"Tìm Bóng Cho Hình",     kyNang:"Hình khối",      vien:"#A8E6CF", nen:"#EAFBF3", not:659.25 },
+  { file:"game4.html",  ten:"Gom Đồ Theo Màu",       kyNang:"Phân loại",      vien:"#FFCBA4", nen:"#FFF2E6", not:698.46 },
+  { file:"game5.html",  ten:"Nối Điểm Theo Số",      kyNang:"Đếm số",         vien:"#BFE3FF", nen:"#EDF7FF", not:783.99 },
+  { file:"game6.html",  ten:"Tìm Cặp Sinh Đôi",      kyNang:"Chú ý",          vien:"#FFE0A3", nen:"#FFF8E7", not:880.00 },
+  { file:"game7.html",  ten:"Đoán Hình Tiếp Theo",   kyNang:"Quy luật",       vien:"#F5B6D2", nen:"#FFEFF6", not:987.77 },
+  { file:"game8.html",  ten:"Mê Cung Về Nhà",        kyNang:"Tìm đường",      vien:"#B6D7F5", nen:"#EDF5FF", not:1046.50 },
+  { file:"game9.html",  ten:"Nghe Truyện Tìm Từ",    kyNang:"Lắng nghe",      vien:"#D4C1F9", nen:"#F5F0FF", not:1174.66 },
+  { file:"game10.html", ten:"Gõ Phím Theo Nhịp",     kyNang:"Nhanh tay",      vien:"#A8E6CF", nen:"#EAFBF3", not:1318.51 }
+];
+
+/* =========================================================
+   HÌNH VẼ SVG CHO TỪNG LỚP (vẽ 100% bằng mã, không dùng ảnh)
+   ========================================================= */
+const HINH_VE = [
+  /* 1. Hai lá bài úp - Lật hình tìm cặp */
+  `<svg viewBox="0 0 64 64">
+     <rect x="6" y="12" width="24" height="34" rx="5" fill="#C9B6F5" stroke="#9B85D6" stroke-width="3" transform="rotate(-9 18 29)"/>
+     <rect x="34" y="14" width="24" height="34" rx="5" fill="#FFB7C5" stroke="#EE8FA8" stroke-width="3" transform="rotate(8 46 31)"/>
+     <path d="M46 26 l3 6 6 .8 -4.5 4.4 1.1 6.3 -5.6-3 -5.6 3 1.1-6.3 -4.5-4.4 6-.8z" fill="#fff"/>
+     <circle cx="18" cy="29" r="6" fill="#fff"/>
+   </svg>`,
+
+  /* 2. Kính lúp soi hai bức tranh - Tìm điểm khác biệt */
+  `<svg viewBox="0 0 64 64">
+     <rect x="5" y="12" width="24" height="30" rx="4" fill="#F3EFFF" stroke="#9B85D6" stroke-width="3"/>
+     <rect x="35" y="12" width="24" height="30" rx="4" fill="#F3EFFF" stroke="#9B85D6" stroke-width="3"/>
+     <circle cx="17" cy="24" r="5" fill="#FFE0A3"/>
+     <circle cx="47" cy="24" r="5" fill="#FFE0A3"/>
+     <path d="M10 38 l7-8 6 8z" fill="#A8E6CF"/>
+     <circle cx="42" cy="44" r="12" fill="none" stroke="#7A4E86" stroke-width="4"/>
+     <line x1="51" y1="53" x2="59" y2="60" stroke="#7A4E86" stroke-width="5" stroke-linecap="round"/>
+   </svg>`,
+
+  /* 3. Ngôi sao và cái bóng của nó - Tìm bóng cho hình */
+  `<svg viewBox="0 0 64 64">
+     <path d="M40 34 l5 11 12 1.6 -9 8.6 2.3 12.1 -10.3-5.8 -10.3 5.8 2.3-12.1 -9-8.6 12-1.6z" fill="#B6A3C9" opacity=".5" transform="translate(-8 -14)"/>
+     <path d="M24 6 l5.6 11.8 12.9 1.7 -9.5 9 2.4 12.9 -11.4-6.2 -11.4 6.2 2.4-12.9 -9.5-9 12.9-1.7z" fill="#FFE0A3" stroke="#EDC46F" stroke-width="2.5" stroke-linejoin="round"/>
+     <path d="M36 46 h20" stroke="#A8E6CF" stroke-width="4" stroke-linecap="round"/>
+   </svg>`,
+
+  /* 4. Cái giỏ đựng trái cây theo màu - Gom đồ theo màu */
+  `<svg viewBox="0 0 64 64">
+     <circle cx="20" cy="20" r="8" fill="#FFB7C5" stroke="#EE8FA8" stroke-width="2.5"/>
+     <circle cx="40" cy="14" r="7" fill="#A8E6CF" stroke="#7FCFB0" stroke-width="2.5"/>
+     <circle cx="52" cy="26" r="6" fill="#C9B6F5" stroke="#9B85D6" stroke-width="2.5"/>
+     <path d="M8 34 h48 l-6 22 a4 4 0 0 1 -4 3 h-28 a4 4 0 0 1 -4 -3z" fill="#FFE0A3" stroke="#D9A85A" stroke-width="3" stroke-linejoin="round"/>
+     <path d="M18 40 v14 M32 40 v16 M46 40 v14" stroke="#D9A85A" stroke-width="2.5" stroke-linecap="round"/>
+   </svg>`,
+
+  /* 5. Các chấm số nối thành đường - Nối điểm theo số */
+  `<svg viewBox="0 0 64 64">
+     <polyline points="12,48 22,18 42,12 54,40" fill="none" stroke="#BFE3FF" stroke-width="4" stroke-dasharray="5 5" stroke-linecap="round"/>
+     <circle cx="12" cy="48" r="7" fill="#fff" stroke="#7FB6E8" stroke-width="3"/>
+     <circle cx="22" cy="18" r="7" fill="#fff" stroke="#7FB6E8" stroke-width="3"/>
+     <circle cx="42" cy="12" r="7" fill="#fff" stroke="#7FB6E8" stroke-width="3"/>
+     <circle cx="54" cy="40" r="7" fill="#fff" stroke="#7FB6E8" stroke-width="3"/>
+     <text x="12" y="52" font-size="10" font-weight="800" fill="#4E7FA8" text-anchor="middle">1</text>
+     <text x="22" y="22" font-size="10" font-weight="800" fill="#4E7FA8" text-anchor="middle">2</text>
+     <text x="42" y="16" font-size="10" font-weight="800" fill="#4E7FA8" text-anchor="middle">3</text>
+     <text x="54" y="44" font-size="10" font-weight="800" fill="#4E7FA8" text-anchor="middle">4</text>
+   </svg>`,
+
+  /* 6. Lưới hình có hai trái tim giống nhau - Tìm cặp sinh đôi */
+  `<svg viewBox="0 0 64 64">
+     <rect x="6" y="6" width="52" height="52" rx="8" fill="#FFF8E7" stroke="#EDC46F" stroke-width="3"/>
+     <line x1="23" y1="6" x2="23" y2="58" stroke="#EDC46F" stroke-width="2"/>
+     <line x1="41" y1="6" x2="41" y2="58" stroke="#EDC46F" stroke-width="2"/>
+     <line x1="6" y1="23" x2="58" y2="23" stroke="#EDC46F" stroke-width="2"/>
+     <line x1="6" y1="41" x2="58" y2="41" stroke="#EDC46F" stroke-width="2"/>
+     <path d="M14 17c-4-3-1-8 2-5 3-3 6 2 2 5l-2 2z" fill="#FFB7C5"/>
+     <path d="M50 52c-4-3-1-8 2-5 3-3 6 2 2 5l-2 2z" fill="#FFB7C5"/>
+     <circle cx="32" cy="14" r="5" fill="#A8E6CF"/>
+     <rect x="27" y="45" width="10" height="10" rx="2" fill="#C9B6F5"/>
+   </svg>`,
+
+  /* 7. Chuỗi hình lặp lại và dấu hỏi - Quy luật chu kỳ */
+  `<svg viewBox="0 0 64 64">
+     <circle cx="11" cy="32" r="8" fill="#FFB7C5"/>
+     <rect x="21" y="24" width="16" height="16" rx="3" fill="#A8E6CF"/>
+     <circle cx="47" cy="32" r="8" fill="#FFB7C5"/>
+     <rect x="6" y="46" width="52" height="14" rx="6" fill="#FFF" stroke="#EE8FA8" stroke-width="3" stroke-dasharray="5 4"/>
+     <text x="32" y="58" font-size="13" font-weight="800" fill="#EE8FA8" text-anchor="middle">?</text>
+     <text x="58" y="37" font-size="16" font-weight="800" fill="#C9B6F5" text-anchor="middle">?</text>
+   </svg>`,
+
+  /* 8. Mê cung có ngôi nhà - Mê cung tìm đường */
+  `<svg viewBox="0 0 64 64">
+     <rect x="5" y="5" width="54" height="54" rx="7" fill="#EDF5FF" stroke="#7FB6E8" stroke-width="3"/>
+     <path d="M5 20 h30 M50 20 h9 M18 20 v18 M18 38 h22 M40 30 v22 M28 52 h-14 M40 38 h19" fill="none" stroke="#7FB6E8" stroke-width="3.5" stroke-linecap="round"/>
+     <path d="M44 10 l7 6 v8 h-14 v-8z" fill="#FFB7C5" stroke="#EE8FA8" stroke-width="2"/>
+     <circle cx="11" cy="50" r="4.5" fill="#C9B6F5"/>
+   </svg>`,
+
+  /* 9. Cuốn sách và nốt nhạc - Nghe truyện tìm từ */
+  `<svg viewBox="0 0 64 64">
+     <path d="M8 16 q12-5 24 0 v34 q-12-5-24 0z" fill="#F5F0FF" stroke="#9B85D6" stroke-width="3" stroke-linejoin="round"/>
+     <path d="M32 16 q12-5 24 0 v34 q-12-5-24 0z" fill="#FFF" stroke="#9B85D6" stroke-width="3" stroke-linejoin="round"/>
+     <path d="M14 26 h12 M14 34 h12 M38 26 h12" stroke="#C9B6F5" stroke-width="2.5" stroke-linecap="round"/>
+     <circle cx="41" cy="46" r="5" fill="#FFB7C5"/>
+     <path d="M46 46 v-13 l8-2.5 v13" fill="none" stroke="#EE8FA8" stroke-width="3" stroke-linecap="round"/>
+     <circle cx="54" cy="43.5" r="5" fill="#FFB7C5"/>
+   </svg>`,
+
+  /* 10. Nốt nhạc rơi xuống phím cách - Gõ theo nhịp */
+  `<svg viewBox="0 0 64 64">
+     <circle cx="20" cy="14" r="6" fill="#C9B6F5"/>
+     <path d="M25 14 v-9" stroke="#9B85D6" stroke-width="3" stroke-linecap="round"/>
+     <circle cx="42" cy="28" r="6" fill="#FFB7C5"/>
+     <path d="M47 28 v-9" stroke="#EE8FA8" stroke-width="3" stroke-linecap="round"/>
+     <path d="M32 38 v8 M26 42 l6 5 6-5" fill="none" stroke="#A8E6CF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+     <rect x="6" y="50" width="52" height="10" rx="5" fill="#FFE0A3" stroke="#D9A85A" stroke-width="3"/>
+   </svg>`
+];
+
+/* =========================================================
+   ÂM THANH TỰ SINH BẰNG WEB AUDIO API (không dùng file ngoài)
+   ========================================================= */
+let boAmThanh = null;
+function batLoa(){
+  if(!boAmThanh){
+    const A = window.AudioContext || window.webkitAudioContext;
+    if(A) boAmThanh = new A();
+  }
+  if(boAmThanh && boAmThanh.state === "suspended") boAmThanh.resume();
+  return boAmThanh;
+}
+
+/* Phát một nốt chuông trong trẻo */
+function keoChuong(tanSo, doDai = 0.35, treTho = 0, amLuong = 0.16){
+  const ctx = batLoa();
+  if(!ctx) return;
+  const bd  = ctx.currentTime + treTho;
+  const osc = ctx.createOscillator();
+  const gain= ctx.createGain();
+  osc.type = "triangle";           // âm mềm, tròn, dễ chịu với tai bé
+  osc.frequency.setValueAtTime(tanSo, bd);
+  gain.gain.setValueAtTime(0.0001, bd);
+  gain.gain.exponentialRampToValueAtTime(amLuong, bd + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, bd + doDai);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(bd);
+  osc.stop(bd + doDai + 0.05);
+}
+
+/* Chuỗi nhạc reo vui khi bé bước vào lớp học */
+function nhacVaoLop(notGoc){
+  keoChuong(notGoc,        0.18, 0);
+  keoChuong(notGoc * 1.26, 0.18, 0.09);   // quãng ba trưởng
+  keoChuong(notGoc * 1.5,  0.45, 0.18);   // quãng năm
+}
+
+/* =========================================================
+   DỰNG 10 BẢNG HIỆU LÊN SÂN TRƯỜNG
+   ========================================================= */
+const san = document.getElementById("sanTruong");
+
+DANH_SACH.forEach((lop, i) => {
+  const a = document.createElement("a");
+  a.className = "bang-hieu";
+  a.href = lop.file;
+  a.style.setProperty("--vien", lop.vien);
+  a.style.setProperty("--nen",  lop.nen);
+  a.setAttribute("aria-label", `Lớp ${i+1}: ${lop.ten}`);
+  a.innerHTML = `
+    <div class="so">${i + 1}</div>
+    <div class="the">
+      <div class="hinh">${HINH_VE[i]}</div>
+      <div class="ten">${lop.ten}</div>
+      <span class="ky-nang">${lop.kyNang}</span>
+    </div>`;
+
+  /* Rê chuột qua bảng: nghe nốt nhạc riêng của lớp đó
+     (10 bảng xếp thành một thang âm leo dần từ thấp lên cao) */
+  a.addEventListener("mouseenter", () => keoChuong(lop.not, 0.22, 0, 0.09));
+
+  /* Chạm hoặc bấm vào bảng: reo nhạc, bắn sao rồi mở lớp học */
+  a.addEventListener("click", (e) => {
+    e.preventDefault();
+    nhacVaoLop(lop.not);
+    const o = a.getBoundingClientRect();
+    banSao(o.left + o.width / 2, o.top + o.height / 2);
+    setTimeout(() => { window.location.href = lop.file; }, 430);
+  });
+
+  san.appendChild(a);
+});
+
+/* Bắn vài ngôi sao lung linh tại vị trí bé vừa chạm */
+function banSao(x, y){
+  const hinhSao = ["⭐", "✨", "🌟", "💖"];
+  for(let i = 0; i < 7; i++){
+    const s = document.createElement("div");
+    s.className = "sao-bay";
+    s.textContent = hinhSao[i % hinhSao.length];
+    s.style.left = (x + (Math.random() * 120 - 60)) + "px";
+    s.style.top  = (y + (Math.random() * 60  - 30)) + "px";
+    s.style.animationDelay = (Math.random() * 0.18) + "s";
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1200);
+  }
+}
+
+/* Chạm lần đầu vào màn hình để "mở loa" trên iPad/điện thoại */
+document.addEventListener("touchstart", batLoa, { once: true });
+document.addEventListener("click",      batLoa, { once: true });
+
+/* =========================================================
+   CHẠY NGOẠI TUYẾN: nhờ Service Worker tải sẵn cả 10 trò chơi vào máy.
+   Chỉ hoạt động khi mở qua https:// (ví dụ GitHub Pages).
+   Mở trực tiếp bằng file:// thì trình duyệt không cho, nhưng lúc đó
+   các file vốn đã nằm sẵn trong máy nên bé vẫn chơi offline bình thường.
+   ========================================================= */
+const huyHieu = document.getElementById("huyHieu");
+
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  huyHieu.textContent = "⏳ Đang tải các lớp học về máy…";
+  huyHieu.className = "huy-hieu hien dang-tai";
+
+  navigator.serviceWorker.register("./sw.js")
+    .then(dangKy => {
+      /* Đã có sẵn trong máy từ lần trước */
+      if(navigator.serviceWorker.controller){
+        huyHieu.textContent = "✅ Đã sẵn sàng — chơi được cả khi không có mạng";
+        huyHieu.className = "huy-hieu hien";
+        return;
+      }
+      /* Lần đầu: chờ tải xong toàn bộ */
+      dangKy.addEventListener("updatefound", () => {
+        const sw = dangKy.installing;
+        if(!sw) return;
+        sw.addEventListener("statechange", () => {
+          if(sw.state === "activated" || sw.state === "installed"){
+            huyHieu.textContent = "✅ Đã sẵn sàng — chơi được cả khi không có mạng";
+            huyHieu.className = "huy-hieu hien";
+          }
+        });
+      });
+    })
+    .catch(() => {
+      huyHieu.textContent = "ℹ️ Trang vẫn chơi được bình thường";
+      huyHieu.className = "huy-hieu hien dang-tai";
+    });
+}
+
+/* Báo cho bé biết khi máy vừa mất mạng: mọi thứ vẫn chạy ngon lành */
+addEventListener("offline", () => {
+  huyHieu.textContent = "📴 Không có mạng — bé vẫn chơi được nhé!";
+  huyHieu.className = "huy-hieu hien dang-tai";
+});
+addEventListener("online", () => {
+  huyHieu.textContent = "✅ Đã sẵn sàng — chơi được cả khi không có mạng";
+  huyHieu.className = "huy-hieu hien";
+});
+</script>
+</body>
+</html>

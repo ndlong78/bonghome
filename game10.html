@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Gõ Phím Theo Nhịp - Bông Home's</title>
+<style>
+  :root{ --kem:#FFF7F0; --hong:#FFB7C5; --tim:#C9B6F5; --vang:#FFE0A3; --mint:#A8E6CF; --troi:#BFE3FF; --chu:#6B4E71; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body{
+    margin:0; min-height:100vh; padding:14px 12px 34px;
+    font-family:"Segoe UI","Nunito",Arial,sans-serif; color:var(--chu);
+    background:var(--kem);
+    background-image:radial-gradient(circle at 10% 6%,rgba(168,230,207,.4),transparent 30%),
+                     radial-gradient(circle at 90% 8%,rgba(201,182,245,.35),transparent 32%),
+                     linear-gradient(180deg,#EDFBF4 0%,var(--kem) 40%);
+    background-attachment:fixed; overflow-x:hidden;
+    user-select:none; touch-action:manipulation;
+  }
+  .khung{ max-width:520px; margin:0 auto; }
+  .thanh-tren{ display:flex; align-items:center; gap:10px; }
+  .nut-ve{ display:inline-flex; gap:6px; padding:10px 16px; background:#fff; color:var(--chu); text-decoration:none;
+    font-size:16px; font-weight:800; border:3px solid var(--tim); border-radius:999px; box-shadow:0 4px 0 rgba(0,0,0,.06); }
+  .nut-ve:active{ transform:translateY(2px); box-shadow:none; }
+  h1{ flex:1; text-align:center; font-size:clamp(20px,4.8vw,32px); margin:0; color:#7A4E86; text-shadow:0 2px 0 #fff; }
+  .cham{ width:52px; }
+  @media (max-width:560px){ .cham{display:none;} h1{font-size:18px;} }
+  .huong-dan{ text-align:center; font-size:clamp(14px,3.2vw,18px); font-weight:700; color:#8D7595; margin:8px 0 12px; }
+
+  .bang-so{ display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+  .o-so{ background:#fff; border:3px solid var(--mint); border-radius:18px; padding:7px 14px; min-width:88px; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.05); }
+  .o-so .nhan{ font-size:12px; font-weight:700; color:#8D7595; display:block; }
+  .o-so .gia-tri{ font-size:21px; font-weight:900; color:#4E9A78; }
+
+  .bang-nhac{
+    background:#fff; border:5px solid var(--tim); border-radius:26px;
+    padding:8px; box-shadow:0 6px 0 rgba(0,0,0,.06), 0 12px 24px rgba(150,120,170,.14);
+    position:relative;
+  }
+  canvas#lan{ width:100%; height:auto; display:block; border-radius:18px; }
+
+  /* Chữ chấm điểm bay lên giữa làn */
+  .cham-diem{
+    position:absolute; left:50%; top:58%;
+    transform:translate(-50%,-50%);
+    font-size:30px; font-weight:900;
+    pointer-events:none; opacity:0;
+  }
+  .cham-diem.hien{ animation:bay-len .65s ease-out; }
+  @keyframes bay-len{
+    0%{ opacity:1; transform:translate(-50%,-50%) scale(.7); }
+    100%{ opacity:0; transform:translate(-50%,-150%) scale(1.2); }
+  }
+
+  /* Nút gõ nhịp thật to */
+  .nut-go{
+    display:block; width:100%; margin-top:16px;
+    font-family:inherit; font-size:24px; font-weight:900;
+    padding:28px 12px;
+    background:var(--hong); color:#fff;
+    border:5px solid #E9799C; border-radius:28px;
+    cursor:pointer;
+    box-shadow:0 8px 0 #D96486;
+  }
+  .nut-go:active{ transform:translateY(5px); box-shadow:0 3px 0 #D96486; }
+  .nut-go:disabled{ opacity:.45; cursor:default; }
+
+  .nhom-nut-duoi{ display:flex; justify-content:center; gap:10px; margin-top:14px; flex-wrap:wrap; }
+  .nhom-nut-duoi button{ font-family:inherit; font-size:16px; font-weight:800; padding:12px 24px; border:none; border-radius:999px; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.12); background:var(--troi); color:#3E6E96; }
+  .nhom-nut-duoi button:active{ transform:translateY(3px); box-shadow:none; }
+
+  #phaoGiay{ position:fixed; inset:0; pointer-events:none; z-index:60; display:none; }
+  .man-thang{ position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center; background:rgba(122,78,134,.35); padding:16px; }
+  .man-thang.hien{ display:flex; }
+  .hop-thang{ background:#fff; border:6px solid var(--vang); border-radius:34px; padding:26px 24px; text-align:center; max-width:400px; width:100%; box-shadow:0 20px 50px rgba(120,80,140,.35); animation:bat-len .5s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes bat-len{ from{transform:scale(.6);opacity:0;} to{transform:scale(1);opacity:1;} }
+  .hop-thang h2{ font-size:28px; margin:6px 0 4px; color:#E0729B; }
+  .hop-thang .loi{ font-size:17px; font-weight:700; color:#8D7595; margin:0 0 14px; }
+  .ket-qua{ display:flex; gap:8px; }
+  .ket-qua div{ flex:1; background:#FFF8E7; border:3px solid var(--vang); border-radius:16px; padding:10px 4px; }
+  .ket-qua .nhan{ font-size:11px; font-weight:700; color:#9A7B4F; display:block; }
+  .ket-qua .gia-tri{ font-size:22px; font-weight:900; color:#9A6410; }
+  .ky-luc-moi{ font-size:17px; font-weight:900; color:#4E9A78; background:#EAFBF3; border:3px dashed var(--mint); border-radius:14px; padding:8px; margin:12px 0 0; display:none; }
+  .ky-luc-moi.hien{ display:block; }
+  .nhom-nut{ display:flex; gap:10px; margin-top:16px; }
+  .nhom-nut button,.nhom-nut a{ flex:1; font-family:inherit; font-size:17px; font-weight:800; padding:14px 10px; border:none; border-radius:999px; cursor:pointer; text-decoration:none; box-shadow:0 5px 0 rgba(0,0,0,.12); }
+  .nut-choi-lai{ background:var(--hong); color:#fff; }
+  .nhom-nut a{ background:var(--troi); color:#3E6E96; display:flex; align-items:center; justify-content:center; }
+  .nhom-nut button:active,.nhom-nut a:active{ transform:translateY(3px); box-shadow:none; }
+  @media (prefers-reduced-motion:reduce){ .cham-diem.hien{ animation:none; opacity:1; } }
+</style>
+</head>
+<body>
+
+<div class="khung">
+  <div class="thanh-tren">
+    <a class="nut-ve" href="index.html">🏠 Về nhà</a>
+    <h1>Gõ Phím Theo Nhịp</h1>
+    <div class="cham"></div>
+  </div>
+
+  <p class="huong-dan">Ngôi sao rơi xuống vạch hồng thì bé bấm nút ngay!<br>Trên máy tính bé có thể gõ <b>phím cách</b>.</p>
+
+  <div class="bang-so">
+    <div class="o-so"><span class="nhan">Điểm</span><span class="gia-tri" id="diem">0</span></div>
+    <div class="o-so"><span class="nhan">Chuỗi đúng</span><span class="gia-tri" id="chuoi">0</span></div>
+    <div class="o-so"><span class="nhan">Còn lại</span><span class="gia-tri" id="conLai">24</span></div>
+    <div class="o-so"><span class="nhan">Kỷ lục</span><span class="gia-tri" id="kyLuc">--</span></div>
+  </div>
+
+  <div class="bang-nhac">
+    <canvas id="lan" width="440" height="520"></canvas>
+    <div class="cham-diem" id="chamDiem"></div>
+  </div>
+
+  <button class="nut-go" id="nutGo" disabled>🖐️ GÕ NHỊP!</button>
+
+  <div class="nhom-nut-duoi">
+    <button id="nutBatDau">▶️ Bắt đầu</button>
+  </div>
+</div>
+
+<canvas id="phaoGiay" aria-hidden="true"></canvas>
+
+<div class="man-thang" id="manThang">
+  <div class="hop-thang">
+    <div style="font-size:50px">🎵🎉</div>
+    <h2 id="tieuDeThang">Bé gõ hay quá!</h2>
+    <p class="loi" id="loiKhen">Bé bắt được nhịp rất tốt!</p>
+    <div class="ket-qua">
+      <div><span class="nhan">Điểm</span><span class="gia-tri" id="diemCuoi">0</span></div>
+      <div><span class="nhan">Trúng nhịp</span><span class="gia-tri" id="trungCuoi">0</span></div>
+      <div><span class="nhan">Chuỗi dài nhất</span><span class="gia-tri" id="chuoiCuoi">0</span></div>
+    </div>
+    <div class="ky-luc-moi" id="bangKyLuc">🏆 Kỷ lục điểm mới của bé!</div>
+    <div class="nhom-nut">
+      <button class="nut-choi-lai" id="nutChoiLai">Chơi lại</button>
+      <a href="index.html">Về nhà</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== ÂM THANH TỰ SINH BẰNG WEB AUDIO API ===== */
+let boLoa=null;
+function batLoa(){ if(!boLoa){ const A=window.AudioContext||window.webkitAudioContext; if(A) boLoa=new A(); }
+  if(boLoa&&boLoa.state==="suspended") boLoa.resume(); return boLoa; }
+function keoChuong(f,d=.3,t=0,v=.16,dang="triangle"){
+  const c=batLoa(); if(!c) return;
+  const bd=c.currentTime+t,o=c.createOscillator(),g=c.createGain();
+  o.type=dang; o.frequency.setValueAtTime(f,bd);
+  g.gain.setValueAtTime(.0001,bd); g.gain.exponentialRampToValueAtTime(v,bd+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,bd+d);
+  o.connect(g).connect(c.destination); o.start(bd); o.stop(bd+d+.05);
+}
+const amTrong  = () => keoChuong(140,.09,0,.10,"sine");     /* tiếng trống nền mỗi nhịp */
+const amTuyet  = () => { keoChuong(880,.12,0,.16); keoChuong(1318.5,.22,.06,.14); };
+const amTot    = () => keoChuong(784,.14,0,.14);
+const amDuoc   = () => keoChuong(587.3,.14,0,.12);
+const amTruot  = () => keoChuong(196,.22,0,.10,"sine");
+const nhacThang=()=>[523.25,659.25,783.99,1046.5,783.99,1046.5,1318.51].forEach((n,i)=>keoChuong(n,.45,i*.16,.18));
+
+/* ===== CÀI ĐẶT NHỊP ===== */
+const NHIP      = 800;    /* 800 ms một nhịp = 75 nhịp/phút, vừa sức bé 6 tuổi */
+const ROI       = 2000;   /* ngôi sao rơi từ đỉnh xuống vạch mất 2 giây */
+const TONG_SAO  = 24;     /* cả bài có 24 ngôi sao */
+const CHO_DOI   = 1500;   /* nghỉ 1,5 giây trước khi ngôi sao đầu tiên xuất hiện */
+
+/* Cửa sổ chấm điểm (mili giây) */
+const CUA_TUYET = 100, CUA_TOT = 190, CUA_DUOC = 300;
+
+/* ===== CANVAS ===== */
+const lan=document.getElementById("lan"), ctx=lan.getContext("2d");
+const W=lan.width, H=lan.height;
+const Y_VACH = H - 110;          /* vạch gõ nhịp */
+
+/* ===== TRẠNG THÁI ===== */
+const oDiem=document.getElementById("diem"), oChuoi=document.getElementById("chuoi");
+const oConLai=document.getElementById("conLai"), oKyLuc=document.getElementById("kyLuc");
+const nutGo=document.getElementById("nutGo"), chamDiem=document.getElementById("chamDiem");
+const manThang=document.getElementById("manThang");
+
+let dsSao=[], batDauLuc=0, dangChay=false, vongLap=null;
+let diem=0, chuoi=0, chuoiDaiNhat=0, trung=0, truot=0;
+let nhipCuoiKeu=-1, nhayVach=0;
+
+let kyLucTam=null;
+const docKyLuc=()=>{ try{ const v=localStorage.getItem("kyluc_game10"); return v?parseInt(v,10):null; }catch(e){ return kyLucTam; } };
+const ghiKyLuc=s=>{ try{ localStorage.setItem("kyluc_game10",s); }catch(e){ kyLucTam=s; } };
+
+/* ===== TẠO BÀI NHẠC: một chuỗi ngôi sao rơi đúng nhịp ===== */
+function taoBai(){
+  dsSao=[];
+  let nhip=0;
+  while(dsSao.length<TONG_SAO){
+    /* Nửa sau bài thỉnh thoảng bỏ trống một nhịp để bé phải kìm tay lại */
+    const boQua = dsSao.length>=10 && Math.random()<0.22;
+    if(!boQua){
+      dsSao.push({ luc: CHO_DOI + nhip*NHIP, xong:false, trung:false });
+    }
+    nhip++;
+  }
+}
+
+/* ===== BẮT ĐẦU ===== */
+function batDau(){
+  batLoa();
+  taoBai();
+  diem=0; chuoi=0; chuoiDaiNhat=0; trung=0; truot=0;
+  nhipCuoiKeu=-1; nhayVach=0;
+  oDiem.textContent="0"; oChuoi.textContent="0"; oConLai.textContent=TONG_SAO;
+  const kl=docKyLuc(); oKyLuc.textContent = kl!==null ? kl : "--";
+  manThang.classList.remove("hien");
+  document.getElementById("bangKyLuc").classList.remove("hien");
+  dungPhaoGiay();
+
+  nutGo.disabled=false;
+  dangChay=true;
+  batDauLuc=performance.now();
+  cancelAnimationFrame(vongLap);
+  chay();
+}
+
+/* ===== VÒNG LẶP VẼ ===== */
+function chay(){
+  const t = performance.now() - batDauLuc;
+
+  /* Tiếng trống nền giúp bé cảm được nhịp */
+  const nhipHienTai = Math.floor((t - CHO_DOI) / NHIP);
+  if(nhipHienTai >= 0 && nhipHienTai !== nhipCuoiKeu){
+    nhipCuoiKeu = nhipHienTai;
+    amTrong();
+  }
+
+  /* Ngôi sao nào đã rơi quá vạch mà bé chưa gõ → trượt */
+  dsSao.forEach(s=>{
+    if(!s.xong && t > s.luc + CUA_DUOC){
+      s.xong=true;
+      truot++;
+      chuoi=0;
+      oChuoi.textContent="0";
+      amTruot();
+      hienChamDiem("Trượt rồi!", "#C7A6D4");
+      capNhatConLai();
+    }
+  });
+
+  ve(t);
+
+  if(dsSao.every(s=>s.xong) && t > CHO_DOI + 500){
+    ketThuc();
+    return;
+  }
+  vongLap=requestAnimationFrame(chay);
+}
+
+/* ===== VẼ LÀN NHẠC ===== */
+function ve(t){
+  ctx.clearRect(0,0,W,H);
+
+  /* Nền làn */
+  ctx.fillStyle="#F7F3FF";
+  ctx.fillRect(0,0,W,H);
+  /* Hai mép làn */
+  ctx.fillStyle="#EDE4FB";
+  ctx.fillRect(0,0,44,H); ctx.fillRect(W-44,0,44,H);
+
+  /* Vạch gõ nhịp (sáng lên khi bé gõ trúng) */
+  const sang = Math.max(0, 1 - (performance.now()-nhayVach)/220);
+  ctx.strokeStyle = sang>0 ? "#FFD166" : "#FFB7C5";
+  ctx.lineWidth = 8 + sang*8;
+  ctx.beginPath();
+  ctx.moveTo(30, Y_VACH); ctx.lineTo(W-30, Y_VACH);
+  ctx.stroke();
+
+  /* Vòng tròn đích trên vạch */
+  ctx.beginPath();
+  ctx.arc(W/2, Y_VACH, 36 + sang*8, 0, Math.PI*2);
+  ctx.strokeStyle="#E9799C"; ctx.lineWidth=5; ctx.stroke();
+
+  /* Các ngôi sao đang rơi */
+  dsSao.forEach(s=>{
+    if(s.xong && !s.trung) return;                     /* sao trượt thì biến mất */
+    const conLai = s.luc - t;                          /* còn bao lâu nữa thì tới vạch */
+    if(conLai > ROI) return;                           /* chưa tới lượt xuất hiện */
+    if(s.trung) return;                                /* sao đã gõ trúng thì nổ mất */
+    const tienDo = 1 - conLai/ROI;                     /* 0 = đỉnh, 1 = tới vạch */
+    const y = tienDo * Y_VACH;
+    veNgoiSao(W/2, y, 30, tienDo);
+  });
+}
+
+function veNgoiSao(cx,cy,r,tienDo){
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(tienDo*1.4);
+  ctx.beginPath();
+  for(let i=0;i<10;i++){
+    const bk = i%2===0 ? r : r*0.45;
+    const goc = -Math.PI/2 + i*Math.PI/5;
+    const x=bk*Math.cos(goc), y=bk*Math.sin(goc);
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+  ctx.fillStyle="#FFE0A3"; ctx.fill();
+  ctx.lineWidth=4; ctx.strokeStyle="#E0A94F"; ctx.stroke();
+  ctx.restore();
+}
+
+/* ===== BÉ GÕ NHỊP ===== */
+function go(){
+  batLoa();
+  if(!dangChay) return;
+  const t = performance.now() - batDauLuc;
+  nhayVach = performance.now();
+
+  /* Tìm ngôi sao gần vạch nhất còn chưa xử lý */
+  let gan=null, lech=1e9;
+  dsSao.forEach(s=>{
+    if(s.xong) return;
+    const d=Math.abs(s.luc - t);
+    if(d<lech){ lech=d; gan=s; }
+  });
+
+  if(!gan || lech > CUA_DUOC){
+    /* Gõ khi chưa có sao nào tới: chỉ báo nhẹ, không trừ điểm */
+    amTruot();
+    hienChamDiem("Sớm quá!", "#C7A6D4");
+    return;
+  }
+
+  gan.xong=true; gan.trung=true;
+  trung++;
+  chuoi++;
+  chuoiDaiNhat=Math.max(chuoiDaiNhat, chuoi);
+  oChuoi.textContent=chuoi;
+
+  let them=0;
+  if(lech<=CUA_TUYET){ them=100; amTuyet(); hienChamDiem("Tuyệt vời!","#E0729B"); }
+  else if(lech<=CUA_TOT){ them=60; amTot(); hienChamDiem("Giỏi lắm!","#4E9A78"); }
+  else{ them=30; amDuoc(); hienChamDiem("Được rồi!","#3E6E96"); }
+
+  /* Thưởng thêm khi bé giữ được chuỗi liên tiếp */
+  diem += them + Math.min(chuoi, 10) * 2;
+  oDiem.textContent = diem;
+  capNhatConLai();
+}
+
+function capNhatConLai(){
+  oConLai.textContent = dsSao.filter(s=>!s.xong).length;
+}
+
+function hienChamDiem(chu,mau){
+  chamDiem.textContent=chu;
+  chamDiem.style.color=mau;
+  chamDiem.classList.remove("hien");
+  void chamDiem.offsetWidth;
+  chamDiem.classList.add("hien");
+}
+
+/* ===== KẾT THÚC ===== */
+function ketThuc(){
+  dangChay=false;
+  nutGo.disabled=true;
+  cancelAnimationFrame(vongLap);
+
+  document.getElementById("diemCuoi").textContent  = diem;
+  document.getElementById("trungCuoi").textContent = trung+"/"+TONG_SAO;
+  document.getElementById("chuoiCuoi").textContent = chuoiDaiNhat;
+
+  if(truot===0){
+    document.getElementById("tieuDeThang").textContent="Bé bắt trọn nhịp!";
+    document.getElementById("loiKhen").textContent="Không trượt ngôi sao nào cả!";
+  }else{
+    document.getElementById("tieuDeThang").textContent="Bé gõ hay quá!";
+    document.getElementById("loiKhen").textContent="Lần sau bé thử không trượt sao nào nhé!";
+  }
+
+  const cu=docKyLuc();
+  if(cu===null || diem>cu){
+    ghiKyLuc(diem);
+    document.getElementById("bangKyLuc").classList.add("hien");
+  }
+  oKyLuc.textContent=docKyLuc();
+
+  nhacThang(); banPhaoGiay();
+  manThang.classList.add("hien");
+}
+
+/* ===== NÚT & PHÍM ===== */
+nutGo.addEventListener("pointerdown", e=>{ e.preventDefault(); go(); });
+addEventListener("keydown", e=>{
+  if(e.code==="Space" || e.key===" "){ e.preventDefault(); if(dangChay) go(); }
+});
+document.getElementById("nutBatDau").addEventListener("click", ()=>{ keoChuong(880,.14,0,.14); batDau(); });
+document.getElementById("nutChoiLai").addEventListener("click", ()=>{ keoChuong(880,.14,0,.14); batDau(); });
+
+/* ===== PHÁO GIẤY ===== */
+const canvas=document.getElementById("phaoGiay"), ctx2d=canvas.getContext("2d");
+let hatGiay=[], vongPhao=null;
+const MAU_GIAY=["#FFB7C5","#C9B6F5","#FFE0A3","#A8E6CF","#BFE3FF","#FFCBA4"];
+function banPhaoGiay(){
+  canvas.style.display="block"; canvas.width=innerWidth; canvas.height=innerHeight;
+  hatGiay=[];
+  for(let i=0;i<160;i++) hatGiay.push({ x:Math.random()*canvas.width, y:Math.random()*-canvas.height,
+    r:5+Math.random()*7, mau:MAU_GIAY[i%MAU_GIAY.length], rung:Math.random()*6.28, toc:1.6+Math.random()*2.6, xoay:(Math.random()-.5)*.2 });
+  cancelAnimationFrame(vongPhao); veGiay();
+}
+function veGiay(){
+  ctx2d.clearRect(0,0,canvas.width,canvas.height);
+  hatGiay.forEach(h=>{
+    h.y+=h.toc; h.rung+=h.xoay; h.x+=Math.sin(h.rung)*1.4;
+    if(h.y>canvas.height+20){ h.y=-20; h.x=Math.random()*canvas.width; }
+    ctx2d.save(); ctx2d.translate(h.x,h.y); ctx2d.rotate(h.rung);
+    ctx2d.fillStyle=h.mau; ctx2d.fillRect(-h.r/2,-h.r/2,h.r,h.r*1.5); ctx2d.restore();
+  });
+  vongPhao=requestAnimationFrame(veGiay);
+}
+function dungPhaoGiay(){ cancelAnimationFrame(vongPhao); canvas.style.display="none"; ctx2d.clearRect(0,0,canvas.width,canvas.height); }
+
+addEventListener("resize",()=>{ if(canvas.style.display==="block"){ canvas.width=innerWidth; canvas.height=innerHeight; } });
+document.addEventListener("touchstart",batLoa,{once:true});
+
+/* Vẽ sẵn làn nhạc để bé thấy vạch đích trước khi bấm Bắt đầu */
+ve(0);
+</script>
+</body>
+</html>

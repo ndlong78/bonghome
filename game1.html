@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Lật Hình Tìm Cặp - Bông Home's</title>
+<style>
+  /* ===== BẢNG MÀU PASTEL CHUNG CỦA CẢ TRƯỜNG ===== */
+  :root{
+    --kem:  #FFF7F0;
+    --hong: #FFB7C5;
+    --tim:  #C9B6F5;
+    --vang: #FFE0A3;
+    --mint: #A8E6CF;
+    --troi: #BFE3FF;
+    --chu:  #6B4E71;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:"Segoe UI","Nunito",Arial,sans-serif;
+    color:var(--chu);
+    background:var(--kem);
+    background-image:
+      radial-gradient(circle at 12% 6%,  rgba(255,183,197,.35), transparent 30%),
+      radial-gradient(circle at 88% 10%, rgba(201,182,245,.35), transparent 32%),
+      linear-gradient(180deg,#FDF0F6 0%, var(--kem) 40%);
+    background-attachment:fixed;
+    padding:14px 12px 40px;
+    overflow-x:hidden;
+    user-select:none;
+  }
+
+  .khung{ max-width:760px; margin:0 auto; }
+
+  /* ===== THANH TRÊN: NÚT VỀ TRƯỜNG + TIÊU ĐỀ ===== */
+  .thanh-tren{ display:flex; align-items:center; gap:10px; }
+  .nut-ve{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:10px 16px;
+    background:#fff; color:var(--chu);
+    text-decoration:none;
+    font-size:16px; font-weight:800;
+    border:3px solid var(--tim);
+    border-radius:999px;
+    box-shadow:0 4px 0 rgba(0,0,0,.06);
+  }
+  .nut-ve:active{ transform:translateY(2px); box-shadow:none; }
+
+  h1{
+    flex:1;
+    text-align:center;
+    font-size:clamp(22px,5.2vw,34px);
+    margin:0;
+    color:#7A4E86;
+    text-shadow:0 2px 0 #fff;
+  }
+  .cham{ width:52px; } /* giữ tiêu đề luôn cân giữa */
+  @media (max-width:520px){ .cham{ display:none; } h1{ font-size:20px; } }
+
+  .huong-dan{
+    text-align:center;
+    font-size:clamp(15px,3.4vw,19px);
+    font-weight:700;
+    color:#8D7595;
+    margin:10px 0 12px;
+  }
+
+  /* ===== CHỌN ĐỘ KHÓ ===== */
+  .muc-do{ display:flex; justify-content:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .muc-do button{
+    font-family:inherit;
+    font-size:15px; font-weight:800;
+    padding:9px 18px;
+    border-radius:999px;
+    border:3px solid var(--vang);
+    background:#fff; color:#9A7B4F;
+    cursor:pointer;
+  }
+  .muc-do button.dang-chon{ background:var(--vang); color:#7A5A2A; }
+
+  /* ===== BẢNG THÀNH TÍCH NHỎ ===== */
+  .bang-so{
+    display:flex; justify-content:center; gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .o-so{
+    background:#fff;
+    border:3px solid var(--mint);
+    border-radius:18px;
+    padding:8px 16px;
+    min-width:96px;
+    text-align:center;
+    box-shadow:0 4px 0 rgba(0,0,0,.05);
+  }
+  .o-so .nhan{ font-size:12px; font-weight:700; color:#8D7595; display:block; }
+  .o-so .gia-tri{ font-size:22px; font-weight:900; color:#4E9A78; }
+
+  /* ===== LƯỚI LÁ BÀI ===== */
+  .san-bai{
+    display:grid;
+    gap:10px;
+    justify-content:center;
+    perspective:1000px;
+  }
+
+  .la-bai{
+    position:relative;
+    aspect-ratio:3/4;
+    cursor:pointer;
+    transform-style:preserve-3d;
+    transition:transform .45s cubic-bezier(.4,.2,.2,1);
+    border:none; padding:0; background:none;
+  }
+  .la-bai.lat{ transform:rotateY(180deg); }
+
+  .mat{
+    position:absolute; inset:0;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 5px 0 rgba(0,0,0,.07), 0 10px 20px rgba(150,120,170,.18);
+  }
+  /* Mặt úp: nền tím có ngôi sao */
+  .mat-sau{
+    background:var(--tim);
+    border:4px solid #A98FE0;
+    background-image:radial-gradient(circle at 30% 30%, rgba(255,255,255,.35) 2px, transparent 3px),
+                     radial-gradient(circle at 75% 70%, rgba(255,255,255,.3) 2px, transparent 3px);
+  }
+  .mat-sau svg{ width:52%; height:52%; }
+  /* Mặt ngửa: nền trắng, hiện hình vẽ */
+  .mat-truoc{
+    background:#fff;
+    border:4px solid var(--hong);
+    transform:rotateY(180deg);
+  }
+  .mat-truoc svg{ width:72%; height:72%; }
+
+  /* Cặp đúng: sáng lên rồi đứng yên */
+  .la-bai.dung .mat-truoc{
+    border-color:var(--mint);
+    background:#EAFBF3;
+    animation:reo-vui .55s ease;
+  }
+  .la-bai.dung{ cursor:default; }
+  @keyframes reo-vui{
+    0%,100%{ transform:rotateY(180deg) scale(1); }
+    45%    { transform:rotateY(180deg) scale(1.12); }
+  }
+  /* Cặp sai: lắc nhẹ */
+  .la-bai.sai .mat-truoc{ border-color:#F5A9A9; background:#FFF0F0; }
+  .la-bai.sai{ animation:lac-nhe .4s ease; }
+  @keyframes lac-nhe{
+    0%,100%{ transform:rotateY(180deg) translateX(0); }
+    25%    { transform:rotateY(180deg) translateX(-6px); }
+    75%    { transform:rotateY(180deg) translateX(6px); }
+  }
+
+  .la-bai:focus-visible{ outline:5px solid #7A4E86; outline-offset:4px; border-radius:20px; }
+
+  /* ===== MÀN THẮNG CUỘC ===== */
+  #phaoGiay{
+    position:fixed; inset:0;
+    pointer-events:none; z-index:60;
+    display:none;
+  }
+  .man-thang{
+    position:fixed; inset:0; z-index:70;
+    display:none;
+    align-items:center; justify-content:center;
+    background:rgba(122,78,134,.35);
+    padding:16px;
+  }
+  .man-thang.hien{ display:flex; }
+  .hop-thang{
+    background:#fff;
+    border:6px solid var(--vang);
+    border-radius:34px;
+    padding:26px 24px;
+    text-align:center;
+    max-width:400px; width:100%;
+    box-shadow:0 20px 50px rgba(120,80,140,.35);
+    animation:bat-len .5s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes bat-len{ from{ transform:scale(.6); opacity:0; } to{ transform:scale(1); opacity:1; } }
+
+  .hop-thang h2{ font-size:30px; margin:6px 0 4px; color:#E0729B; }
+  .hop-thang .loi{ font-size:17px; font-weight:700; color:#8D7595; margin:0 0 14px; }
+  .ket-qua{
+    display:flex; gap:10px; justify-content:center; margin-bottom:8px;
+  }
+  .ket-qua div{
+    flex:1;
+    background:#FFF8E7;
+    border:3px solid var(--vang);
+    border-radius:16px;
+    padding:10px 6px;
+  }
+  .ket-qua .nhan{ font-size:12px; font-weight:700; color:#9A7B4F; display:block; }
+  .ket-qua .gia-tri{ font-size:24px; font-weight:900; color:#9A6410; }
+  .ky-luc-moi{
+    font-size:17px; font-weight:900; color:#4E9A78;
+    background:#EAFBF3; border:3px dashed var(--mint);
+    border-radius:14px; padding:8px; margin:12px 0 4px;
+    display:none;
+  }
+  .ky-luc-moi.hien{ display:block; }
+
+  .nhom-nut{ display:flex; gap:10px; margin-top:16px; }
+  .nhom-nut button, .nhom-nut a{
+    flex:1;
+    font-family:inherit;
+    font-size:17px; font-weight:800;
+    padding:14px 10px;
+    border-radius:999px;
+    border:none;
+    cursor:pointer;
+    text-decoration:none;
+    box-shadow:0 5px 0 rgba(0,0,0,.12);
+  }
+  .nut-choi-lai{ background:var(--hong); color:#fff; }
+  .nhom-nut a{ background:var(--troi); color:#3E6E96; display:flex; align-items:center; justify-content:center; }
+  .nhom-nut button:active, .nhom-nut a:active{ transform:translateY(3px); box-shadow:none; }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="khung">
+
+  <div class="thanh-tren">
+    <a class="nut-ve" href="index.html">🏠 Về nhà</a>
+    <h1>Lật Hình Tìm Cặp</h1>
+    <div class="cham"></div>
+  </div>
+
+  <p class="huong-dan">Bé lật 2 lá bài để tìm hai hình giống hệt nhau nhé!</p>
+
+  <div class="muc-do" id="mucDo">
+    <button data-cap="3" class="dang-chon">Dễ · 6 lá</button>
+    <button data-cap="6">Vừa · 12 lá</button>
+    <button data-cap="8">Khó · 16 lá</button>
+  </div>
+
+  <div class="bang-so">
+    <div class="o-so"><span class="nhan">Cặp tìm được</span><span class="gia-tri" id="soCap">0/3</span></div>
+    <div class="o-so"><span class="nhan">Số lần lật</span><span class="gia-tri" id="soLuot">0</span></div>
+    <div class="o-so"><span class="nhan">Thời gian</span><span class="gia-tri" id="dongHo">0:00</span></div>
+    <div class="o-so"><span class="nhan">Kỷ lục</span><span class="gia-tri" id="kyLuc">--</span></div>
+  </div>
+
+  <div class="san-bai" id="sanBai"></div>
+</div>
+
+<!-- Pháo giấy phủ toàn màn hình khi bé thắng -->
+<canvas id="phaoGiay" aria-hidden="true"></canvas>
+
+<!-- Bảng thành tích khi hoàn thành -->
+<div class="man-thang" id="manThang">
+  <div class="hop-thang">
+    <div style="font-size:52px">🎉</div>
+    <h2>Bé giỏi quá!</h2>
+    <p class="loi" id="loiKhen">Bé đã tìm hết các cặp hình rồi!</p>
+    <div class="ket-qua">
+      <div><span class="nhan">Thời gian</span><span class="gia-tri" id="tgCuoi">0:00</span></div>
+      <div><span class="nhan">Số lần lật</span><span class="gia-tri" id="luotCuoi">0</span></div>
+    </div>
+    <div class="ky-luc-moi" id="bangKyLuc">🏆 Kỷ lục mới của bé!</div>
+    <div class="nhom-nut">
+      <button class="nut-choi-lai" id="nutChoiLai">Chơi lại</button>
+      <a href="index.html">Về nhà</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   1. KHO HÌNH VẼ - tất cả đều vẽ bằng SVG trong mã, không ảnh ngoài
+   ========================================================= */
+const KHO_HINH = [
+  /* Kỳ lân */
+  `<svg viewBox="0 0 64 64">
+     <path d="M14 44c0-12 8-20 20-20 10 0 16 6 16 14 0 8-6 14-16 14H20a6 6 0 0 1-6-6z" fill="#FFF" stroke="#E9A9C6" stroke-width="3"/>
+     <path d="M40 26 l3-14 6 12z" fill="#C9B6F5" stroke="#9B85D6" stroke-width="2.5" stroke-linejoin="round"/>
+     <path d="M44 14 l2-11 4 3z" fill="#FFE0A3" stroke="#EDC46F" stroke-width="2" stroke-linejoin="round"/>
+     <path d="M20 30 q-8 4-6 16 q6-4 10-8z" fill="#FFB7C5"/>
+     <circle cx="43" cy="34" r="2.6" fill="#6B4E71"/>
+     <path d="M50 40 q4 2 4 5" stroke="#E9A9C6" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+   </svg>`,
+  /* Cầu vồng */
+  `<svg viewBox="0 0 64 64">
+     <g fill="none" stroke-linecap="round">
+       <path d="M8 50 A24 24 0 0 1 56 50" stroke="#FFB7C5" stroke-width="6"/>
+       <path d="M14 50 A18 18 0 0 1 50 50" stroke="#FFE0A3" stroke-width="6"/>
+       <path d="M20 50 A12 12 0 0 1 44 50" stroke="#A8E6CF" stroke-width="6"/>
+       <path d="M26 50 A6 6 0 0 1 38 50" stroke="#C9B6F5" stroke-width="6"/>
+     </g>
+     <circle cx="10" cy="52" r="6" fill="#fff" stroke="#DCD3E8" stroke-width="2"/>
+     <circle cx="54" cy="52" r="6" fill="#fff" stroke="#DCD3E8" stroke-width="2"/>
+   </svg>`,
+  /* Ngôi sao lung linh */
+  `<svg viewBox="0 0 64 64">
+     <path d="M32 6 l7.4 15.6 17 2.2 -12.5 11.9 3.2 17 -15.1-8.2 -15.1 8.2 3.2-17 -12.5-11.9 17-2.2z"
+           fill="#FFE0A3" stroke="#EDC46F" stroke-width="3" stroke-linejoin="round"/>
+     <circle cx="26" cy="28" r="2.5" fill="#fff"/>
+     <path d="M54 12 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6-3.4 -3.4-1.6 3.4-1.6z" fill="#FFF2C9"/>
+   </svg>`,
+  /* Vương miện công chúa */
+  `<svg viewBox="0 0 64 64">
+     <path d="M8 44 L12 18 l12 12 8-16 8 16 12-12 4 26z"
+           fill="#FFE0A3" stroke="#E0A94F" stroke-width="3" stroke-linejoin="round"/>
+     <rect x="8" y="44" width="48" height="10" rx="4" fill="#F5CC7A" stroke="#E0A94F" stroke-width="3"/>
+     <circle cx="32" cy="34" r="3.5" fill="#FFB7C5"/>
+     <circle cx="18" cy="38" r="3" fill="#C9B6F5"/>
+     <circle cx="46" cy="38" r="3" fill="#A8E6CF"/>
+   </svg>`,
+  /* Mèo con */
+  `<svg viewBox="0 0 64 64">
+     <path d="M14 24 L12 8 l14 8z" fill="#FFCBA4" stroke="#D99A6C" stroke-width="2.5" stroke-linejoin="round"/>
+     <path d="M50 24 L52 8 l-14 8z" fill="#FFCBA4" stroke="#D99A6C" stroke-width="2.5" stroke-linejoin="round"/>
+     <circle cx="32" cy="36" r="20" fill="#FFE3CC" stroke="#D99A6C" stroke-width="3"/>
+     <circle cx="24" cy="33" r="3" fill="#6B4E71"/>
+     <circle cx="40" cy="33" r="3" fill="#6B4E71"/>
+     <path d="M32 40 l-3 3 3 2 3-2z" fill="#FFB7C5"/>
+     <path d="M10 34 h10 M10 40 h10 M44 34 h10 M44 40 h10" stroke="#D99A6C" stroke-width="2" stroke-linecap="round"/>
+   </svg>`,
+  /* Quả dâu tây */
+  `<svg viewBox="0 0 64 64">
+     <path d="M32 56c-12 0-20-9-20-20 0-8 9-14 20-14s20 6 20 14c0 11-8 20-20 20z"
+           fill="#FFB7C5" stroke="#E9799C" stroke-width="3"/>
+     <path d="M20 20 h24 l-6 6 h-12z" fill="#A8E6CF" stroke="#7FCFB0" stroke-width="2.5" stroke-linejoin="round"/>
+     <path d="M32 20 v-9" stroke="#7FCFB0" stroke-width="3" stroke-linecap="round"/>
+     <circle cx="25" cy="34" r="1.8" fill="#fff"/><circle cx="39" cy="34" r="1.8" fill="#fff"/>
+     <circle cx="32" cy="42" r="1.8" fill="#fff"/><circle cx="22" cy="45" r="1.8" fill="#fff"/>
+     <circle cx="42" cy="45" r="1.8" fill="#fff"/>
+   </svg>`,
+  /* Ngôi nhà kẹo ngọt */
+  `<svg viewBox="0 0 64 64">
+     <rect x="14" y="30" width="36" height="26" rx="5" fill="#FFF3E0" stroke="#DCB88F" stroke-width="3"/>
+     <path d="M8 32 L32 12 L56 32 Z" fill="#FFB7C5" stroke="#E9799C" stroke-width="3" stroke-linejoin="round"/>
+     <rect x="26" y="40" width="12" height="16" rx="4" fill="#C9B6F5"/>
+     <circle cx="32" cy="24" r="4" fill="#FFE0A3"/>
+     <circle cx="18" cy="46" r="3" fill="#A8E6CF"/>
+     <circle cx="47" cy="46" r="3" fill="#A8E6CF"/>
+   </svg>`,
+  /* Con bướm */
+  `<svg viewBox="0 0 64 64">
+     <path d="M31 32 C22 16 6 16 10 30 C4 40 20 50 31 34z" fill="#C9B6F5" stroke="#9B85D6" stroke-width="2.5"/>
+     <path d="M33 32 C42 16 58 16 54 30 C60 40 44 50 33 34z" fill="#FFB7C5" stroke="#E9799C" stroke-width="2.5"/>
+     <rect x="29.5" y="20" width="5" height="30" rx="2.5" fill="#FFE0A3" stroke="#E0A94F" stroke-width="2"/>
+     <path d="M31 20 l-6-8 M33 20 l6-8" stroke="#E0A94F" stroke-width="2.5" stroke-linecap="round"/>
+   </svg>`
+];
+
+/* Hình ngôi sao trên mặt úp của lá bài */
+const HINH_MAT_SAU = `<svg viewBox="0 0 64 64">
+  <path d="M32 8 l7 15 16 2 -12 11 3 16 -14-8 -14 8 3-16 -12-11 16-2z" fill="#FFF" opacity=".85"/>
+</svg>`;
+
+/* =========================================================
+   2. ÂM THANH TỰ SINH BẰNG WEB AUDIO API
+   ========================================================= */
+let boLoa = null;
+function batLoa(){
+  if(!boLoa){
+    const A = window.AudioContext || window.webkitAudioContext;
+    if(A) boLoa = new A();
+  }
+  if(boLoa && boLoa.state === "suspended") boLoa.resume();
+  return boLoa;
+}
+function keoChuong(tanSo, doDai = .3, treTho = 0, amLuong = .16, dang = "triangle"){
+  const ctx = batLoa(); if(!ctx) return;
+  const bd = ctx.currentTime + treTho;
+  const osc = ctx.createOscillator(), gain = ctx.createGain();
+  osc.type = dang;
+  osc.frequency.setValueAtTime(tanSo, bd);
+  gain.gain.setValueAtTime(.0001, bd);
+  gain.gain.exponentialRampToValueAtTime(amLuong, bd + .02);
+  gain.gain.exponentialRampToValueAtTime(.0001, bd + doDai);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(bd); osc.stop(bd + doDai + .05);
+}
+const amLatBai   = () => keoChuong(660, .12, 0, .10);                       // bíp nhẹ khi lật
+const amDung     = () => { keoChuong(784,.16,0,.16); keoChuong(988,.16,.09,.16); keoChuong(1175,.34,.18,.16); };
+const amSai      = () => keoChuong(196, .28, 0, .12, "sine");               // âm trầm dịu, không doạ bé
+function nhacThang(){                                                       // chuỗi chimes réo rắt khi thắng
+  const giaiDieu = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50, 1318.51];
+  giaiDieu.forEach((n, i) => keoChuong(n, .45, i * .16, .18));
+}
+
+/* =========================================================
+   3. TRẠNG THÁI TRÒ CHƠI
+   ========================================================= */
+const sanBai   = document.getElementById("sanBai");
+const oSoCap   = document.getElementById("soCap");
+const oSoLuot  = document.getElementById("soLuot");
+const oDongHo  = document.getElementById("dongHo");
+const oKyLuc   = document.getElementById("kyLuc");
+const manThang = document.getElementById("manThang");
+
+let soCapCanTim = 3;   // độ khó hiện tại (số cặp)
+let baiDangMo   = [];  // các lá đang lật ngửa chờ so
+let capDaTim    = 0;
+let soLuot      = 0;
+let giay        = 0;
+let dongHoChay  = null;
+let daBatDau    = false;
+let khoaBai     = false;
+
+/* Lưu kỷ lục vào máy (nếu trình duyệt cho phép), có bản dự phòng trong bộ nhớ tạm */
+const kyLucTam = {};
+function docKyLuc(cap){
+  try{ const v = localStorage.getItem("kyluc_game1_" + cap); return v ? parseInt(v,10) : null; }
+  catch(e){ return kyLucTam[cap] ?? null; }
+}
+function ghiKyLuc(cap, giay){
+  try{ localStorage.setItem("kyluc_game1_" + cap, giay); }
+  catch(e){ kyLucTam[cap] = giay; }
+}
+function dinhDangGio(s){
+  const p = Math.floor(s / 60), g = s % 60;
+  return p + ":" + String(g).padStart(2, "0");
+}
+
+/* =========================================================
+   4. DỰNG VÁN CHƠI MỚI
+   ========================================================= */
+function vanMoi(){
+  /* Xoá sạch ván cũ */
+  sanBai.innerHTML = "";
+  baiDangMo = []; capDaTim = 0; soLuot = 0; giay = 0;
+  daBatDau = false; khoaBai = false;
+  clearInterval(dongHoChay);
+
+  oSoCap.textContent  = "0/" + soCapCanTim;
+  oSoLuot.textContent = "0";
+  oDongHo.textContent = "0:00";
+  const kl = docKyLuc(soCapCanTim);
+  oKyLuc.textContent  = kl ? dinhDangGio(kl) : "--";
+
+  manThang.classList.remove("hien");
+  document.getElementById("bangKyLuc").classList.remove("hien");
+  dungPhaoGiay();
+
+  /* Chọn hình rồi nhân đôi thành các cặp */
+  const chon = KHO_HINH.slice(0, soCapCanTim);
+  let bo = [...chon, ...chon].map((hinh, i) => ({ hinh, ma: i % soCapCanTim }));
+
+  /* Xáo bài kiểu Fisher-Yates */
+  for(let i = bo.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [bo[i], bo[j]] = [bo[j], bo[i]];
+  }
+
+  /* Số cột hợp lý cho từng độ khó */
+  const soCot = soCapCanTim === 3 ? 3 : 4;
+  const rongMotLa = Math.min(140, Math.floor((Math.min(window.innerWidth - 40, 700)) / soCot) - 12);
+  sanBai.style.gridTemplateColumns = `repeat(${soCot}, ${rongMotLa}px)`;
+
+  bo.forEach((laBai) => {
+    const nut = document.createElement("button");
+    nut.className = "la-bai";
+    nut.dataset.ma = laBai.ma;
+    nut.setAttribute("aria-label", "Lá bài úp");
+    nut.innerHTML = `
+      <div class="mat mat-sau">${HINH_MAT_SAU}</div>
+      <div class="mat mat-truoc">${laBai.hinh}</div>`;
+    nut.addEventListener("click", () => chamVaoBai(nut));
+    sanBai.appendChild(nut);
+  });
+}
+
+/* =========================================================
+   5. XỬ LÝ KHI BÉ CHẠM VÀO MỘT LÁ BÀI
+   ========================================================= */
+function chamVaoBai(nut){
+  batLoa();
+  if(khoaBai) return;
+  if(nut.classList.contains("lat") || nut.classList.contains("dung")) return;
+
+  /* Đồng hồ chỉ chạy từ lá bài đầu tiên bé lật */
+  if(!daBatDau){
+    daBatDau = true;
+    dongHoChay = setInterval(() => {
+      giay++;
+      oDongHo.textContent = dinhDangGio(giay);
+    }, 1000);
+  }
+
+  nut.classList.add("lat");
+  amLatBai();
+  baiDangMo.push(nut);
+
+  if(baiDangMo.length < 2) return;
+
+  soLuot++;
+  oSoLuot.textContent = soLuot;
+
+  const [a, b] = baiDangMo;
+  if(a.dataset.ma === b.dataset.ma){
+    /* Tìm đúng một cặp */
+    a.classList.add("dung"); b.classList.add("dung");
+    baiDangMo = [];
+    capDaTim++;
+    oSoCap.textContent = capDaTim + "/" + soCapCanTim;
+    amDung();
+    if(capDaTim === soCapCanTim) setTimeout(thangCuoc, 700);
+  }else{
+    /* Hai lá khác nhau: úp lại sau một nhịp để bé kịp ghi nhớ */
+    khoaBai = true;
+    a.classList.add("sai"); b.classList.add("sai");
+    amSai();
+    setTimeout(() => {
+      a.classList.remove("lat","sai");
+      b.classList.remove("lat","sai");
+      baiDangMo = [];
+      khoaBai = false;
+    }, 1000);
+  }
+}
+
+/* =========================================================
+   6. THẮNG CUỘC: PHÁO GIẤY + BẢNG THÀNH TÍCH + KỶ LỤC
+   ========================================================= */
+function thangCuoc(){
+  clearInterval(dongHoChay);
+  nhacThang();
+  banPhaoGiay();
+
+  document.getElementById("tgCuoi").textContent   = dinhDangGio(giay);
+  document.getElementById("luotCuoi").textContent = soLuot;
+
+  const cu = docKyLuc(soCapCanTim);
+  if(cu === null || giay < cu){
+    ghiKyLuc(soCapCanTim, giay);
+    document.getElementById("bangKyLuc").classList.add("hien");
+    document.getElementById("loiKhen").textContent = "Bé nhớ giỏi hơn cả lần trước!";
+  }else{
+    document.getElementById("loiKhen").textContent = "Lần sau bé thử nhanh hơn kỷ lục nhé!";
+  }
+  oKyLuc.textContent = dinhDangGio(docKyLuc(soCapCanTim));
+
+  manThang.classList.add("hien");
+}
+
+/* =========================================================
+   7. HIỆU ỨNG PHÁO GIẤY PHỦ MÀN HÌNH (vẽ bằng Canvas)
+   ========================================================= */
+const canvas = document.getElementById("phaoGiay");
+const ctx2d  = canvas.getContext("2d");
+let hatGiay = [], vongLap = null;
+const MAU_GIAY = ["#FFB7C5","#C9B6F5","#FFE0A3","#A8E6CF","#BFE3FF","#FFCBA4"];
+
+function banPhaoGiay(){
+  canvas.style.display = "block";
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  hatGiay = [];
+  for(let i = 0; i < 160; i++){
+    hatGiay.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * -canvas.height,
+      r: 5 + Math.random() * 7,
+      mau: MAU_GIAY[Math.floor(Math.random() * MAU_GIAY.length)],
+      rung: Math.random() * Math.PI * 2,
+      toc: 1.6 + Math.random() * 2.6,
+      xoay: (Math.random() - .5) * .2
+    });
+  }
+  cancelAnimationFrame(vongLap);
+  veGiay();
+}
+function veGiay(){
+  ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+  hatGiay.forEach(h => {
+    h.y += h.toc;
+    h.rung += h.xoay;
+    h.x += Math.sin(h.rung) * 1.4;
+    if(h.y > canvas.height + 20){ h.y = -20; h.x = Math.random() * canvas.width; }
+    ctx2d.save();
+    ctx2d.translate(h.x, h.y);
+    ctx2d.rotate(h.rung);
+    ctx2d.fillStyle = h.mau;
+    ctx2d.fillRect(-h.r / 2, -h.r / 2, h.r, h.r * 1.5);
+    ctx2d.restore();
+  });
+  vongLap = requestAnimationFrame(veGiay);
+}
+function dungPhaoGiay(){
+  cancelAnimationFrame(vongLap);
+  canvas.style.display = "none";
+  ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* =========================================================
+   8. NÚT ĐIỀU KHIỂN
+   ========================================================= */
+document.getElementById("mucDo").addEventListener("click", (e) => {
+  const nut = e.target.closest("button");
+  if(!nut) return;
+  batLoa(); keoChuong(880, .12, 0, .12);
+  document.querySelectorAll("#mucDo button").forEach(b => b.classList.remove("dang-chon"));
+  nut.classList.add("dang-chon");
+  soCapCanTim = parseInt(nut.dataset.cap, 10);
+  vanMoi();
+});
+
+document.getElementById("nutChoiLai").addEventListener("click", () => {
+  keoChuong(880, .14, 0, .14);
+  vanMoi();
+});
+
+window.addEventListener("resize", () => {
+  const soCot = soCapCanTim === 3 ? 3 : 4;
+  const rong = Math.min(140, Math.floor((Math.min(window.innerWidth - 40, 700)) / soCot) - 12);
+  sanBai.style.gridTemplateColumns = `repeat(${soCot}, ${rong}px)`;
+  if(canvas.style.display === "block"){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+});
+
+/* Chạm lần đầu để mở loa trên iPad/điện thoại */
+document.addEventListener("touchstart", batLoa, { once:true });
+
+/* Bắt đầu ván đầu tiên */
+vanMoi();
+</script>
+</body>
+</html>

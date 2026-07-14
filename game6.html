@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Tìm Cặp Sinh Đôi - Bông Home's</title>
+<style>
+  :root{ --kem:#FFF7F0; --hong:#FFB7C5; --tim:#C9B6F5; --vang:#FFE0A3; --mint:#A8E6CF; --troi:#BFE3FF; --chu:#6B4E71; }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body{
+    margin:0; min-height:100vh; padding:14px 12px 40px;
+    font-family:"Segoe UI","Nunito",Arial,sans-serif; color:var(--chu);
+    background:var(--kem);
+    background-image:radial-gradient(circle at 10% 6%,rgba(255,224,163,.4),transparent 30%),
+                     radial-gradient(circle at 90% 8%,rgba(201,182,245,.35),transparent 32%),
+                     linear-gradient(180deg,#FFF6E4 0%,var(--kem) 40%);
+    background-attachment:fixed; overflow-x:hidden; user-select:none;
+  }
+  .khung{ max-width:760px; margin:0 auto; }
+  .thanh-tren{ display:flex; align-items:center; gap:10px; }
+  .nut-ve{ display:inline-flex; gap:6px; padding:10px 16px; background:#fff; color:var(--chu); text-decoration:none;
+    font-size:16px; font-weight:800; border:3px solid var(--tim); border-radius:999px; box-shadow:0 4px 0 rgba(0,0,0,.06); }
+  .nut-ve:active{ transform:translateY(2px); box-shadow:none; }
+  h1{ flex:1; text-align:center; font-size:clamp(21px,5vw,34px); margin:0; color:#7A4E86; text-shadow:0 2px 0 #fff; }
+  .cham{ width:52px; }
+  @media (max-width:560px){ .cham{display:none;} h1{font-size:19px;} }
+  .huong-dan{ text-align:center; font-size:clamp(15px,3.4vw,19px); font-weight:700; color:#8D7595; margin:10px 0 12px; }
+
+  .bang-so{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .o-so{ background:#fff; border:3px solid var(--mint); border-radius:18px; padding:8px 16px; min-width:104px; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.05); }
+  .o-so .nhan{ font-size:12px; font-weight:700; color:#8D7595; display:block; }
+  .o-so .gia-tri{ font-size:22px; font-weight:900; color:#4E9A78; }
+
+  .luoi{ display:grid; gap:9px; justify-content:center; }
+  .o-hinh{
+    background:#fff; border:4px solid #F0E6F5; border-radius:18px;
+    padding:6px; cursor:pointer;
+    box-shadow:0 4px 0 rgba(0,0,0,.05);
+    transition:transform .13s ease, border-color .13s ease, background .13s ease;
+  }
+  .o-hinh svg{ width:100%; height:100%; display:block; pointer-events:none; }
+  .o-hinh:active{ transform:scale(.94); }
+  .o-hinh:focus-visible{ outline:5px solid #7A4E86; outline-offset:4px; }
+  .o-hinh.chon{ border-color:var(--vang); background:#FFF8E7; transform:scale(1.07); }
+  .o-hinh.dung{ border-color:var(--mint); background:#EAFBF3; animation:reo-vui .5s ease; cursor:default; }
+  @keyframes reo-vui{ 0%,100%{transform:scale(1);} 45%{transform:scale(1.16);} }
+  .o-hinh.sai{ border-color:#F5A9A9; background:#FFF0F0; animation:lac-nhe .4s ease; }
+  @keyframes lac-nhe{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+  .thong-bao{
+    text-align:center; margin-top:16px;
+    font-size:19px; font-weight:900; color:#4E9A78;
+    min-height:26px;
+  }
+  .nhom-nut-duoi{ display:flex; justify-content:center; margin-top:14px; }
+  .nhom-nut-duoi button{ font-family:inherit; font-size:17px; font-weight:800; padding:13px 26px; border:none; border-radius:999px; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.12); background:var(--troi); color:#3E6E96; }
+  .nhom-nut-duoi button:active{ transform:translateY(3px); box-shadow:none; }
+
+  #phaoGiay{ position:fixed; inset:0; pointer-events:none; z-index:60; display:none; }
+  .man-thang{ position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center; background:rgba(122,78,134,.35); padding:16px; }
+  .man-thang.hien{ display:flex; }
+  .hop-thang{ background:#fff; border:6px solid var(--vang); border-radius:34px; padding:26px 24px; text-align:center; max-width:400px; width:100%; box-shadow:0 20px 50px rgba(120,80,140,.35); animation:bat-len .5s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes bat-len{ from{transform:scale(.6);opacity:0;} to{transform:scale(1);opacity:1;} }
+  .hop-thang h2{ font-size:30px; margin:6px 0 4px; color:#E0729B; }
+  .hop-thang .loi{ font-size:17px; font-weight:700; color:#8D7595; margin:0 0 14px; }
+  .ket-qua{ display:flex; gap:10px; }
+  .ket-qua div{ flex:1; background:#FFF8E7; border:3px solid var(--vang); border-radius:16px; padding:10px 6px; }
+  .ket-qua .nhan{ font-size:12px; font-weight:700; color:#9A7B4F; display:block; }
+  .ket-qua .gia-tri{ font-size:24px; font-weight:900; color:#9A6410; }
+  .ky-luc-moi{ font-size:17px; font-weight:900; color:#4E9A78; background:#EAFBF3; border:3px dashed var(--mint); border-radius:14px; padding:8px; margin:12px 0 0; display:none; }
+  .ky-luc-moi.hien{ display:block; }
+  .nhom-nut{ display:flex; gap:10px; margin-top:16px; }
+  .nhom-nut button,.nhom-nut a{ flex:1; font-family:inherit; font-size:17px; font-weight:800; padding:14px 10px; border:none; border-radius:999px; cursor:pointer; text-decoration:none; box-shadow:0 5px 0 rgba(0,0,0,.12); }
+  .nut-choi-lai{ background:var(--hong); color:#fff; }
+  .nhom-nut a{ background:var(--troi); color:#3E6E96; display:flex; align-items:center; justify-content:center; }
+  .nhom-nut button:active,.nhom-nut a:active{ transform:translateY(3px); box-shadow:none; }
+  @media (prefers-reduced-motion:reduce){ *{ animation:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="khung">
+  <div class="thanh-tren">
+    <a class="nut-ve" href="index.html">🏠 Về nhà</a>
+    <h1>Tìm Cặp Sinh Đôi</h1>
+    <div class="cham"></div>
+  </div>
+
+  <p class="huong-dan">Trong lưới này chỉ có <b>đúng 1 cặp giống hệt nhau</b>. Bé tìm ra 2 bạn sinh đôi nhé!</p>
+
+  <div class="bang-so">
+    <div class="o-so"><span class="nhan">Vòng</span><span class="gia-tri" id="soVong">1/5</span></div>
+    <div class="o-so"><span class="nhan">Thời gian</span><span class="gia-tri" id="dongHo">0:00</span></div>
+    <div class="o-so"><span class="nhan">Kỷ lục</span><span class="gia-tri" id="kyLuc">--</span></div>
+  </div>
+
+  <div class="luoi" id="luoi"></div>
+  <div class="thong-bao" id="thongBao" role="status" aria-live="polite"></div>
+
+  <div class="nhom-nut-duoi"><button id="nutVanMoi">🔄 Chơi lại từ đầu</button></div>
+</div>
+
+<canvas id="phaoGiay" aria-hidden="true"></canvas>
+
+<div class="man-thang" id="manThang">
+  <div class="hop-thang">
+    <div style="font-size:52px">👀🎉</div>
+    <h2>Bé tinh mắt quá!</h2>
+    <p class="loi" id="loiKhen">Bé đã vượt qua cả 5 vòng!</p>
+    <div class="ket-qua">
+      <div><span class="nhan">Thời gian</span><span class="gia-tri" id="tgCuoi">0:00</span></div>
+      <div><span class="nhan">Chọn nhầm</span><span class="gia-tri" id="saiCuoi">0</span></div>
+    </div>
+    <div class="ky-luc-moi" id="bangKyLuc">🏆 Kỷ lục mới của bé!</div>
+    <div class="nhom-nut">
+      <button class="nut-choi-lai" id="nutChoiLai">Chơi lại</button>
+      <a href="index.html">Về nhà</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== ÂM THANH WEB AUDIO API ===== */
+let boLoa=null;
+function batLoa(){ if(!boLoa){ const A=window.AudioContext||window.webkitAudioContext; if(A) boLoa=new A(); }
+  if(boLoa&&boLoa.state==="suspended") boLoa.resume(); return boLoa; }
+function keoChuong(f,d=.3,t=0,v=.16,dang="triangle"){
+  const c=batLoa(); if(!c) return;
+  const bd=c.currentTime+t,o=c.createOscillator(),g=c.createGain();
+  o.type=dang; o.frequency.setValueAtTime(f,bd);
+  g.gain.setValueAtTime(.0001,bd); g.gain.exponentialRampToValueAtTime(v,bd+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,bd+d);
+  o.connect(g).connect(c.destination); o.start(bd); o.stop(bd+d+.05);
+}
+const amChon=()=>keoChuong(660,.1,0,.1);
+const amDung=()=>{ keoChuong(784,.15,0,.16); keoChuong(1046.5,.32,.1,.16); };
+const amSai =()=>keoChuong(196,.26,0,.11,"sine");
+const amQuaVong=()=>[659.25,783.99,1046.5].forEach((n,i)=>keoChuong(n,.3,i*.12,.16));
+const nhacThang=()=>[523.25,659.25,783.99,1046.5,783.99,1046.5,1318.51].forEach((n,i)=>keoChuong(n,.45,i*.16,.18));
+
+/* ===== 8 KIỂU HÌNH × 6 MÀU = 48 tổ hợp khác nhau, vẽ bằng SVG ===== */
+const MAU=[
+  {c:"#FFB7C5",v:"#E9799C"}, {c:"#FFE0A3",v:"#E0A94F"}, {c:"#A8E6CF",v:"#7FCFB0"},
+  {c:"#C9B6F5",v:"#9B85D6"}, {c:"#BFE3FF",v:"#7FB6E8"}, {c:"#FFCBA4",v:"#D99A6C"}
+];
+const DUONG=[
+  `M50 8 L61 38 L93 41 L68 61 L76 93 L50 75 L24 93 L32 61 L7 41 L39 38 Z`,          /* ngôi sao */
+  `M50 90 C12 66 14 30 33 24 C43 21 50 30 50 38 C50 30 57 21 67 24 C86 30 88 66 50 90 Z`, /* trái tim */
+  `M10 78 L16 26 L34 46 L50 16 L66 46 L84 26 L90 78 Z`,                              /* vương miện */
+  `M50 6 C86 22 90 66 50 94 C10 66 14 22 50 6 Z`,                                    /* chiếc lá */
+  `M50 8 L94 46 L82 46 L82 92 L18 92 L18 46 L6 46 Z`,                                /* ngôi nhà */
+  `M20 80 L50 18 L80 80 Z`,                                                          /* tam giác */
+  `M8 50 A42 34 0 0 1 92 50 L64 50 L64 82 A8 8 0 0 1 36 82 L36 50 Z`,                /* cây nấm */
+  `M62 8 A44 44 0 1 0 62 92 A36 36 0 1 1 62 8 Z`                                     /* trăng lưỡi liềm */
+];
+const veHinh=(h,m)=>`<svg viewBox="0 0 100 100"><path d="${DUONG[h]}" fill="${MAU[m].c}" stroke="${MAU[m].v}" stroke-width="4" stroke-linejoin="round"/></svg>`;
+
+/* ===== 5 VÒNG, lưới to dần ===== */
+const CAC_VONG=[
+  { o:12, cot:4 },
+  { o:16, cot:4 },
+  { o:20, cot:5 },
+  { o:25, cot:5 },
+  { o:30, cot:6 }
+];
+
+const luoi=document.getElementById("luoi"), thongBao=document.getElementById("thongBao");
+const oVong=document.getElementById("soVong"), oDongHo=document.getElementById("dongHo"), oKyLuc=document.getElementById("kyLuc");
+const manThang=document.getElementById("manThang");
+
+let vong=0, daChon=null, khoa=false, soSai=0, giay=0, dongHoChay=null, daBatDau=false;
+
+let kyLucTam=null;
+const docKyLuc=()=>{ try{ const v=localStorage.getItem("kyluc_game6"); return v?parseInt(v,10):null; }catch(e){ return kyLucTam; } };
+const ghiKyLuc=s=>{ try{ localStorage.setItem("kyluc_game6",s); }catch(e){ kyLucTam=s; } };
+const dinhDangGio=s=>Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+
+/* ===== BẮT ĐẦU CẢ VÁN (5 vòng) ===== */
+function vanMoi(){
+  vong=0; soSai=0; giay=0; daBatDau=false;
+  clearInterval(dongHoChay);
+  oDongHo.textContent="0:00";
+  const kl=docKyLuc(); oKyLuc.textContent=kl?dinhDangGio(kl):"--";
+  manThang.classList.remove("hien");
+  document.getElementById("bangKyLuc").classList.remove("hien");
+  dungPhaoGiay();
+  dungVong();
+}
+
+/* ===== DỰNG LƯỚI CHO MỘT VÒNG ===== */
+function dungVong(){
+  const c=CAC_VONG[vong];
+  oVong.textContent=(vong+1)+"/5";
+  thongBao.textContent="";
+  daChon=null; khoa=false;
+  luoi.innerHTML="";
+
+  /* Tạo (số ô - 1) tổ hợp khác nhau, rồi nhân đôi 1 tổ hợp làm "cặp sinh đôi" */
+  const tatCa=[];
+  for(let h=0;h<DUONG.length;h++)
+    for(let m=0;m<MAU.length;m++) tatCa.push(h+"-"+m);
+  tatCa.sort(()=>Math.random()-.5);
+
+  const chon=tatCa.slice(0, c.o-1);
+  const capSinhDoi=chon[Math.floor(Math.random()*chon.length)];
+  const dsO=[...chon, capSinhDoi].sort(()=>Math.random()-.5);
+
+  /* Cỡ ô co giãn theo bề ngang màn hình */
+  const rong=Math.min(96, Math.floor(Math.min(innerWidth-40, 720)/c.cot)-10);
+  luoi.style.gridTemplateColumns=`repeat(${c.cot}, ${rong}px)`;
+
+  dsO.forEach(ma=>{
+    const [h,m]=ma.split("-").map(Number);
+    const o=document.createElement("div");
+    o.className="o-hinh";
+    o.dataset.ma=ma;
+    o.style.height=rong+"px";
+    o.setAttribute("role","button");
+    o.setAttribute("tabindex","0");
+    o.setAttribute("aria-label","Ô hình");
+    o.innerHTML=veHinh(h,m);
+    o.addEventListener("click",()=>chamVaoO(o));
+    /* Chọn ô bằng bàn phím: Enter hoặc phím cách */
+    o.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); chamVaoO(o); }
+    });
+    luoi.appendChild(o);
+  });
+}
+
+/* ===== BÉ CHẠM VÀO MỘT Ô ===== */
+function chamVaoO(o){
+  batLoa();
+  if(khoa || o.classList.contains("dung")) return;
+
+  if(!daBatDau){
+    daBatDau=true;
+    dongHoChay=setInterval(()=>{ giay++; oDongHo.textContent=dinhDangGio(giay); },1000);
+  }
+
+  /* Bấm lại chính ô đang chọn thì bỏ chọn */
+  if(daChon===o){ o.classList.remove("chon"); daChon=null; return; }
+
+  if(!daChon){
+    daChon=o;
+    o.classList.add("chon");
+    amChon();
+    return;
+  }
+
+  if(daChon.dataset.ma===o.dataset.ma){
+    /* Đúng là cặp sinh đôi! */
+    daChon.classList.remove("chon");
+    daChon.classList.add("dung");
+    o.classList.add("dung");
+    amDung();
+    khoa=true;
+    thongBao.textContent="Đúng rồi! Hai bạn sinh đôi đây!";
+    setTimeout(()=>{
+      vong++;
+      if(vong>=CAC_VONG.length){ thangCuoc(); }
+      else{ amQuaVong(); dungVong(); }
+    },1100);
+  }else{
+    /* Hai hình khác nhau */
+    soSai++;
+    amSai();
+    const cu=daChon;
+    cu.classList.remove("chon");
+    cu.classList.add("sai"); o.classList.add("sai");
+    daChon=null;
+    setTimeout(()=>{ cu.classList.remove("sai"); o.classList.remove("sai"); },420);
+  }
+}
+
+/* ===== THẮNG CUỘC ===== */
+function thangCuoc(){
+  clearInterval(dongHoChay);
+  nhacThang(); banPhaoGiay();
+  document.getElementById("tgCuoi").textContent=dinhDangGio(giay);
+  document.getElementById("saiCuoi").textContent=soSai;
+  const cu=docKyLuc();
+  if(cu===null||giay<cu){
+    ghiKyLuc(giay);
+    document.getElementById("bangKyLuc").classList.add("hien");
+    document.getElementById("loiKhen").textContent="Bé tìm nhanh hơn lần trước rồi!";
+  }else{
+    document.getElementById("loiKhen").textContent="Lần sau bé thử phá kỷ lục nhé!";
+  }
+  oKyLuc.textContent=dinhDangGio(docKyLuc());
+  manThang.classList.add("hien");
+}
+
+/* ===== PHÁO GIẤY ===== */
+const canvas=document.getElementById("phaoGiay"), ctx2d=canvas.getContext("2d");
+let hatGiay=[], vongLap=null;
+const MAU_GIAY=["#FFB7C5","#C9B6F5","#FFE0A3","#A8E6CF","#BFE3FF","#FFCBA4"];
+function banPhaoGiay(){
+  canvas.style.display="block"; canvas.width=innerWidth; canvas.height=innerHeight;
+  hatGiay=[];
+  for(let i=0;i<160;i++) hatGiay.push({ x:Math.random()*canvas.width, y:Math.random()*-canvas.height,
+    r:5+Math.random()*7, mau:MAU_GIAY[i%MAU_GIAY.length], rung:Math.random()*6.28, toc:1.6+Math.random()*2.6, xoay:(Math.random()-.5)*.2 });
+  cancelAnimationFrame(vongLap); veGiay();
+}
+function veGiay(){
+  ctx2d.clearRect(0,0,canvas.width,canvas.height);
+  hatGiay.forEach(h=>{
+    h.y+=h.toc; h.rung+=h.xoay; h.x+=Math.sin(h.rung)*1.4;
+    if(h.y>canvas.height+20){ h.y=-20; h.x=Math.random()*canvas.width; }
+    ctx2d.save(); ctx2d.translate(h.x,h.y); ctx2d.rotate(h.rung);
+    ctx2d.fillStyle=h.mau; ctx2d.fillRect(-h.r/2,-h.r/2,h.r,h.r*1.5); ctx2d.restore();
+  });
+  vongLap=requestAnimationFrame(veGiay);
+}
+function dungPhaoGiay(){ cancelAnimationFrame(vongLap); canvas.style.display="none"; ctx2d.clearRect(0,0,canvas.width,canvas.height); }
+
+document.getElementById("nutVanMoi").addEventListener("click",()=>{ keoChuong(880,.14,0,.14); vanMoi(); });
+document.getElementById("nutChoiLai").addEventListener("click",()=>{ keoChuong(880,.14,0,.14); vanMoi(); });
+addEventListener("resize",()=>{
+  if(!manThang.classList.contains("hien") && luoi.children.length){
+    const c=CAC_VONG[vong];
+    const rong=Math.min(96, Math.floor(Math.min(innerWidth-40,720)/c.cot)-10);
+    luoi.style.gridTemplateColumns=`repeat(${c.cot}, ${rong}px)`;
+    [...luoi.children].forEach(o=>o.style.height=rong+"px");
+  }
+  if(canvas.style.display==="block"){ canvas.width=innerWidth; canvas.height=innerHeight; }
+});
+document.addEventListener("touchstart",batLoa,{once:true});
+
+vanMoi();
+</script>
+</body>
+</html>

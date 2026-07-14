@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Tìm Điểm Khác Biệt - Bông Home's</title>
+<style>
+  /* ===== BẢNG MÀU PASTEL CHUNG CỦA CẢ TRƯỜNG ===== */
+  :root{
+    --kem:  #FFF7F0;
+    --hong: #FFB7C5;
+    --tim:  #C9B6F5;
+    --vang: #FFE0A3;
+    --mint: #A8E6CF;
+    --troi: #BFE3FF;
+    --chu:  #6B4E71;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:"Segoe UI","Nunito",Arial,sans-serif;
+    color:var(--chu);
+    background:var(--kem);
+    background-image:
+      radial-gradient(circle at 10% 6%,  rgba(201,182,245,.32), transparent 30%),
+      radial-gradient(circle at 90% 10%, rgba(168,230,207,.32), transparent 32%),
+      linear-gradient(180deg,#F1EEFB 0%, var(--kem) 40%);
+    background-attachment:fixed;
+    padding:14px 12px 40px;
+    overflow-x:hidden;
+    user-select:none;
+  }
+
+  .khung{ max-width:900px; margin:0 auto; }
+
+  /* ===== THANH TRÊN ===== */
+  .thanh-tren{ display:flex; align-items:center; gap:10px; }
+  .nut-ve{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:10px 16px;
+    background:#fff; color:var(--chu);
+    text-decoration:none;
+    font-size:16px; font-weight:800;
+    border:3px solid var(--tim);
+    border-radius:999px;
+    box-shadow:0 4px 0 rgba(0,0,0,.06);
+  }
+  .nut-ve:active{ transform:translateY(2px); box-shadow:none; }
+  h1{
+    flex:1; text-align:center;
+    font-size:clamp(21px,5vw,34px);
+    margin:0; color:#7A4E86;
+    text-shadow:0 2px 0 #fff;
+  }
+  .cham{ width:52px; }
+  @media (max-width:560px){ .cham{ display:none; } h1{ font-size:19px; } }
+
+  .huong-dan{
+    text-align:center;
+    font-size:clamp(15px,3.4vw,19px);
+    font-weight:700; color:#8D7595;
+    margin:10px 0 12px;
+  }
+
+  /* ===== BẢNG SỐ LIỆU ===== */
+  .bang-so{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+  .o-so{
+    background:#fff;
+    border:3px solid var(--mint);
+    border-radius:18px;
+    padding:8px 16px; min-width:104px; text-align:center;
+    box-shadow:0 4px 0 rgba(0,0,0,.05);
+  }
+  .o-so .nhan{ font-size:12px; font-weight:700; color:#8D7595; display:block; }
+  .o-so .gia-tri{ font-size:22px; font-weight:900; color:#4E9A78; }
+
+  /* ===== HAI BỨC TRANH ===== */
+  .hai-tranh{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  @media (max-width:640px){ .hai-tranh{ grid-template-columns:1fr; } }
+
+  .tranh{
+    background:#fff;
+    border:5px solid var(--hong);
+    border-radius:24px;
+    padding:8px;
+    box-shadow:0 6px 0 rgba(0,0,0,.06), 0 12px 24px rgba(150,120,170,.14);
+    position:relative;
+  }
+  .tranh:nth-child(2){ border-color:var(--tim); }
+  .nhan-tranh{
+    position:absolute; top:-14px; left:16px;
+    background:var(--hong); color:#fff;
+    font-size:14px; font-weight:800;
+    padding:4px 14px; border-radius:999px;
+    border:3px solid #fff;
+  }
+  .tranh:nth-child(2) .nhan-tranh{ background:var(--tim); }
+
+  .tranh svg{ width:100%; height:auto; display:block; border-radius:16px; cursor:pointer; }
+
+  /* Vòng tròn xanh đánh dấu chỗ bé tìm đúng */
+  .vong-dung{
+    fill:none; stroke:#3FBF8F; stroke-width:5;
+    animation:hien-vong .45s cubic-bezier(.2,1.5,.4,1);
+  }
+  @keyframes hien-vong{ from{ opacity:0; transform:scale(.3); transform-origin:center; } to{ opacity:1; } }
+
+  /* Dấu X đỏ nhạt khi bé chấm sai */
+  .dau-sai{
+    stroke:#F09B9B; stroke-width:5; stroke-linecap:round;
+    animation:tan-dan .7s ease forwards;
+  }
+  @keyframes tan-dan{ 0%{ opacity:1; } 100%{ opacity:0; } }
+
+  /* Nhấp nháy khi bé bấm gợi ý */
+  .goi-y{
+    fill:none; stroke:#FFD166; stroke-width:6;
+    animation:nhap-nhay 1.4s ease 2;
+  }
+  @keyframes nhap-nhay{ 0%,100%{ opacity:0; } 50%{ opacity:1; } }
+
+  /* ===== NÚT ĐIỀU KHIỂN ===== */
+  .nhom-nut-duoi{ display:flex; justify-content:center; gap:10px; margin-top:18px; flex-wrap:wrap; }
+  .nhom-nut-duoi button{
+    font-family:inherit;
+    font-size:17px; font-weight:800;
+    padding:13px 26px;
+    border:none; border-radius:999px;
+    cursor:pointer;
+    box-shadow:0 5px 0 rgba(0,0,0,.12);
+  }
+  .nut-goi-y{ background:var(--vang); color:#8A6522; }
+  .nut-van-moi{ background:var(--troi); color:#3E6E96; }
+  .nhom-nut-duoi button:active{ transform:translateY(3px); box-shadow:none; }
+
+  /* ===== MÀN THẮNG CUỘC ===== */
+  #phaoGiay{ position:fixed; inset:0; pointer-events:none; z-index:60; display:none; }
+  .man-thang{
+    position:fixed; inset:0; z-index:70;
+    display:none; align-items:center; justify-content:center;
+    background:rgba(122,78,134,.35); padding:16px;
+  }
+  .man-thang.hien{ display:flex; }
+  .hop-thang{
+    background:#fff;
+    border:6px solid var(--vang);
+    border-radius:34px;
+    padding:26px 24px; text-align:center;
+    max-width:400px; width:100%;
+    box-shadow:0 20px 50px rgba(120,80,140,.35);
+    animation:bat-len .5s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes bat-len{ from{ transform:scale(.6); opacity:0; } to{ transform:scale(1); opacity:1; } }
+  .hop-thang h2{ font-size:30px; margin:6px 0 4px; color:#E0729B; }
+  .hop-thang .loi{ font-size:17px; font-weight:700; color:#8D7595; margin:0 0 14px; }
+  .ket-qua{ display:flex; gap:10px; justify-content:center; }
+  .ket-qua div{
+    flex:1; background:#FFF8E7;
+    border:3px solid var(--vang);
+    border-radius:16px; padding:10px 6px;
+  }
+  .ket-qua .nhan{ font-size:12px; font-weight:700; color:#9A7B4F; display:block; }
+  .ket-qua .gia-tri{ font-size:24px; font-weight:900; color:#9A6410; }
+  .ky-luc-moi{
+    font-size:17px; font-weight:900; color:#4E9A78;
+    background:#EAFBF3; border:3px dashed var(--mint);
+    border-radius:14px; padding:8px; margin:12px 0 0;
+    display:none;
+  }
+  .ky-luc-moi.hien{ display:block; }
+  .nhom-nut{ display:flex; gap:10px; margin-top:16px; }
+  .nhom-nut button, .nhom-nut a{
+    flex:1; font-family:inherit;
+    font-size:17px; font-weight:800;
+    padding:14px 10px; border:none; border-radius:999px;
+    cursor:pointer; text-decoration:none;
+    box-shadow:0 5px 0 rgba(0,0,0,.12);
+  }
+  .nut-choi-lai{ background:var(--hong); color:#fff; }
+  .nhom-nut a{ background:var(--troi); color:#3E6E96; display:flex; align-items:center; justify-content:center; }
+  .nhom-nut button:active, .nhom-nut a:active{ transform:translateY(3px); box-shadow:none; }
+
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="khung">
+
+  <div class="thanh-tren">
+    <a class="nut-ve" href="index.html">🏠 Về nhà</a>
+    <h1>Tìm Điểm Khác Biệt</h1>
+    <div class="cham"></div>
+  </div>
+
+  <p class="huong-dan">Hai bức tranh có <b>5 chỗ khác nhau</b>. Bé chạm vào chỗ khác nhé!</p>
+
+  <div class="bang-so">
+    <div class="o-so"><span class="nhan">Đã tìm ra</span><span class="gia-tri" id="soTimDuoc">0/5</span></div>
+    <div class="o-so"><span class="nhan">Thời gian</span><span class="gia-tri" id="dongHo">0:00</span></div>
+    <div class="o-so"><span class="nhan">Kỷ lục</span><span class="gia-tri" id="kyLuc">--</span></div>
+  </div>
+
+  <div class="hai-tranh">
+    <div class="tranh">
+      <span class="nhan-tranh">Tranh 1</span>
+      <svg id="tranhA" viewBox="0 0 300 300" role="img" aria-label="Bức tranh thứ nhất"></svg>
+    </div>
+    <div class="tranh">
+      <span class="nhan-tranh">Tranh 2</span>
+      <svg id="tranhB" viewBox="0 0 300 300" role="img" aria-label="Bức tranh thứ hai"></svg>
+    </div>
+  </div>
+
+  <div class="nhom-nut-duoi">
+    <button class="nut-goi-y" id="nutGoiY">💡 Gợi ý (còn 2)</button>
+    <button class="nut-van-moi" id="nutVanMoi">🔄 Tranh mới</button>
+  </div>
+</div>
+
+<canvas id="phaoGiay" aria-hidden="true"></canvas>
+
+<div class="man-thang" id="manThang">
+  <div class="hop-thang">
+    <div style="font-size:52px">🔍🎉</div>
+    <h2>Mắt bé tinh quá!</h2>
+    <p class="loi" id="loiKhen">Bé đã tìm đủ 5 điểm khác biệt!</p>
+    <div class="ket-qua">
+      <div><span class="nhan">Thời gian</span><span class="gia-tri" id="tgCuoi">0:00</span></div>
+      <div><span class="nhan">Chấm sai</span><span class="gia-tri" id="saiCuoi">0</span></div>
+    </div>
+    <div class="ky-luc-moi" id="bangKyLuc">🏆 Kỷ lục mới của bé!</div>
+    <div class="nhom-nut">
+      <button class="nut-choi-lai" id="nutChoiLai">Tranh mới</button>
+      <a href="index.html">Về nhà</a>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   1. ÂM THANH TỰ SINH BẰNG WEB AUDIO API
+   ========================================================= */
+let boLoa = null;
+function batLoa(){
+  if(!boLoa){
+    const A = window.AudioContext || window.webkitAudioContext;
+    if(A) boLoa = new A();
+  }
+  if(boLoa && boLoa.state === "suspended") boLoa.resume();
+  return boLoa;
+}
+function keoChuong(tanSo, doDai = .3, treTho = 0, amLuong = .16, dang = "triangle"){
+  const ctx = batLoa(); if(!ctx) return;
+  const bd = ctx.currentTime + treTho;
+  const osc = ctx.createOscillator(), gain = ctx.createGain();
+  osc.type = dang;
+  osc.frequency.setValueAtTime(tanSo, bd);
+  gain.gain.setValueAtTime(.0001, bd);
+  gain.gain.exponentialRampToValueAtTime(amLuong, bd + .02);
+  gain.gain.exponentialRampToValueAtTime(.0001, bd + doDai);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(bd); osc.stop(bd + doDai + .05);
+}
+const amDung  = () => { keoChuong(784,.15,0,.16); keoChuong(1046.5,.32,.10,.16); };
+const amSai   = () => keoChuong(196,.26,0,.11,"sine");     // âm trầm dịu, không doạ bé
+const amGoiY  = () => { keoChuong(659,.12,0,.13); keoChuong(659,.12,.16,.13); };
+function nhacThang(){
+  [523.25,659.25,783.99,1046.5,783.99,1046.5,1318.51]
+    .forEach((n,i) => keoChuong(n,.45,i*.16,.18));
+}
+
+/* =========================================================
+   2. KHO VẬT THỂ TRONG TRANH
+   Mỗi vật có: toạ độ tâm, bán kính vùng chạm, và 2 phiên bản vẽ
+   (goc = tranh 1, khac = tranh 2 khi vật này được chọn làm điểm khác)
+   Tất cả đều vẽ bằng SVG trong mã, không dùng ảnh ngoài.
+   ========================================================= */
+const VAT_THE = [
+  { id:"matTroi", x:44, y:44, r:30,
+    ve:(k) => k
+      ? `<circle cx="44" cy="44" r="20" fill="#FFB7C5" stroke="#E9799C" stroke-width="3"/>`  /* mặt trời đổi sang màu hồng */
+      : `<circle cx="44" cy="44" r="20" fill="#FFE0A3" stroke="#E0A94F" stroke-width="3"/>
+         <g stroke="#E0A94F" stroke-width="3" stroke-linecap="round">
+           <line x1="44" y1="12" x2="44" y2="4"/><line x1="44" y1="84" x2="44" y2="76"/>
+           <line x1="12" y1="44" x2="4" y2="44"/><line x1="84" y1="44" x2="76" y2="44"/>
+         </g>` },
+
+  { id:"may", x:232, y:40, r:34,
+    ve:(k) => k
+      ? ``                                                                                    /* đám mây biến mất */
+      : `<g fill="#FFFFFF" stroke="#D9E6F2" stroke-width="3">
+           <circle cx="216" cy="44" r="15"/><circle cx="238" cy="36" r="19"/><circle cx="258" cy="46" r="13"/>
+         </g>` },
+
+  { id:"ngoiSao", x:132, y:36, r:22,
+    ve:(k) => k
+      ? ``                                                                                    /* ngôi sao biến mất */
+      : `<path d="M132 20 l4.5 9.4 10.3 1.3 -7.6 7.2 1.9 10.3 -9.1-5 -9.1 5 1.9-10.3 -7.6-7.2 10.3-1.3z"
+               fill="#FFF0B5" stroke="#EDC46F" stroke-width="2.5" stroke-linejoin="round"/>` },
+
+  { id:"nhaKeo", x:150, y:180, r:46,
+    ve:(k) => `
+      <rect x="120" y="170" width="60" height="46" rx="6" fill="#FFF3E0" stroke="#DCB88F" stroke-width="3"/>
+      <path d="M112 172 L150 142 L188 172 Z" fill="#FFB7C5" stroke="#E9799C" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="150" cy="160" r="5" fill="#FFE0A3"/>
+      <rect x="140" y="190" width="20" height="26" rx="5"
+            fill="${k ? "#A8E6CF" : "#C9B6F5"}" stroke="${k ? "#7FCFB0" : "#9B85D6"}" stroke-width="2"/>` },
+      /* cửa ra vào đổi từ tím sang xanh mint */
+
+  { id:"kyLan", x:56, y:196, r:36,
+    ve:(k) => `
+      <path d="M36 212c0-14 9-22 22-22 11 0 17 7 17 15 0 9-7 15-17 15H42a6 6 0 0 1-6-8z"
+            fill="#FFFFFF" stroke="#E9A9C6" stroke-width="3"/>
+      <path d="M66 192 l3-15 6 13z"
+            fill="${k ? "#FFE0A3" : "#C9B6F5"}" stroke="${k ? "#EDC46F" : "#9B85D6"}" stroke-width="2.5" stroke-linejoin="round"/>
+      <circle cx="68" cy="202" r="2.6" fill="#6B4E71"/>
+      <path d="M42 198 q-8 4-6 16 q6-4 10-8z" fill="#FFB7C5"/>` },
+      /* sừng kỳ lân đổi từ tím sang vàng */
+
+  { id:"buom", x:236, y:126, r:26,
+    ve:(k) => k
+      ? ``                                                                                    /* con bướm bay mất */
+      : `<path d="M235 126 C227 114 214 114 218 125 C213 133 226 141 235 128z" fill="#C9B6F5" stroke="#9B85D6" stroke-width="2"/>
+         <path d="M237 126 C245 114 258 114 254 125 C259 133 246 141 237 128z" fill="#FFB7C5" stroke="#E9799C" stroke-width="2"/>
+         <rect x="234.5" y="116" width="3" height="20" rx="1.5" fill="#FFE0A3" stroke="#E0A94F" stroke-width="1.5"/>` },
+
+  { id:"cay", x:256, y:210, r:36,
+    ve:(k) => `
+      <rect x="250" y="212" width="12" height="34" rx="4" fill="#D9A87E" stroke="#B8865C" stroke-width="2.5"/>
+      <circle cx="256" cy="200" r="28" fill="#A8E6CF" stroke="#7FCFB0" stroke-width="3"/>
+      <circle cx="245" cy="194" r="5" fill="${k ? "#FFE0A3" : "#FFB7C5"}"/>
+      <circle cx="266" cy="204" r="5" fill="${k ? "#FFE0A3" : "#FFB7C5"}"/>
+      <circle cx="258" cy="186" r="5" fill="${k ? "#FFE0A3" : "#FFB7C5"}"/>` },
+      /* trái trên cây đổi từ hồng sang vàng */
+
+  { id:"hoaTrai", x:26, y:268, r:24,
+    ve:(k) => `
+      <line x1="26" y1="286" x2="26" y2="266" stroke="#7FCFB0" stroke-width="3" stroke-linecap="round"/>
+      <g fill="${k ? "#C9B6F5" : "#FFB7C5"}" stroke="${k ? "#9B85D6" : "#E9799C"}" stroke-width="2">
+        <circle cx="26" cy="254" r="7"/><circle cx="16" cy="262" r="7"/>
+        <circle cx="36" cy="262" r="7"/><circle cx="26" cy="270" r="7"/>
+      </g>
+      <circle cx="26" cy="262" r="5" fill="#FFE0A3"/>` },
+      /* bông hoa đổi từ hồng sang tím */
+
+  { id:"meoCon", x:196, y:262, r:26,
+    ve:(k) => k
+      ? ``                                                                                    /* chú mèo trốn mất */
+      : `<path d="M186 250 L184 240 l9 5z" fill="#FFCBA4" stroke="#D99A6C" stroke-width="2" stroke-linejoin="round"/>
+         <path d="M206 250 L208 240 l-9 5z" fill="#FFCBA4" stroke="#D99A6C" stroke-width="2" stroke-linejoin="round"/>
+         <circle cx="196" cy="264" r="14" fill="#FFE3CC" stroke="#D99A6C" stroke-width="3"/>
+         <circle cx="191" cy="262" r="2.2" fill="#6B4E71"/>
+         <circle cx="201" cy="262" r="2.2" fill="#6B4E71"/>
+         <path d="M196 268 l-2.5 2.5 2.5 2 2.5-2z" fill="#FFB7C5"/>` },
+
+  { id:"nam", x:96, y:272, r:24,
+    ve:(k) => `
+      <rect x="90" y="266" width="12" height="16" rx="5" fill="#FFF3E0" stroke="#DCB88F" stroke-width="2"/>
+      <path d="M76 266 a20 14 0 0 1 40 0z"
+            fill="${k ? "#BFE3FF" : "#FF9FB3"}" stroke="${k ? "#7FB6E8" : "#E9799C"}" stroke-width="2.5"/>
+      <circle cx="88" cy="258" r="3" fill="#fff"/><circle cx="104" cy="261" r="2.5" fill="#fff"/>` }
+      /* cây nấm đổi mũ từ hồng sang xanh */
+];
+
+const SO_DIEM_KHAC = 5;   // mỗi ván có đúng 5 điểm khác biệt
+
+/* =========================================================
+   3. TRẠNG THÁI TRÒ CHƠI
+   ========================================================= */
+const tranhA   = document.getElementById("tranhA");
+const tranhB   = document.getElementById("tranhB");
+const oTim     = document.getElementById("soTimDuoc");
+const oDongHo  = document.getElementById("dongHo");
+const oKyLuc   = document.getElementById("kyLuc");
+const nutGoiY  = document.getElementById("nutGoiY");
+const manThang = document.getElementById("manThang");
+
+let dsKhacBiet = [];   // 5 vật thể được chọn làm điểm khác
+let daTimThay  = [];   // id các điểm bé đã tìm ra
+let soChamSai  = 0;
+let luotGoiY   = 2;
+let giay = 0, dongHoChay = null, daBatDau = false;
+
+/* Kỷ lục lưu vào máy, có bản dự phòng trong bộ nhớ tạm */
+let kyLucTam = null;
+function docKyLuc(){
+  try{ const v = localStorage.getItem("kyluc_game2"); return v ? parseInt(v,10) : null; }
+  catch(e){ return kyLucTam; }
+}
+function ghiKyLuc(s){
+  try{ localStorage.setItem("kyluc_game2", s); }
+  catch(e){ kyLucTam = s; }
+}
+function dinhDangGio(s){
+  const p = Math.floor(s/60), g = s%60;
+  return p + ":" + String(g).padStart(2,"0");
+}
+
+/* =========================================================
+   4. VẼ MỘT BỨC TRANH
+   khacBiet = danh sách id các vật cần vẽ ở phiên bản "khác"
+   ========================================================= */
+function veTranh(svg, dsKhac){
+  const nen = `
+    <rect x="0" y="0" width="300" height="300" fill="#EAF6FF"/>
+    <path d="M0 226 Q150 206 300 226 L300 300 L0 300 Z" fill="#C8EFD8"/>
+    <path d="M0 244 Q150 228 300 244" fill="none" stroke="#A8E6CF" stroke-width="4"/>`;
+  const vatVe = VAT_THE.map(v => v.ve(dsKhac.includes(v.id))).join("");
+  svg.innerHTML = nen + vatVe + `<g class="lop-danh-dau"></g>`;
+}
+
+/* =========================================================
+   5. VÁN CHƠI MỚI
+   ========================================================= */
+function vanMoi(){
+  /* Chọn ngẫu nhiên 5 vật thể làm điểm khác biệt */
+  const xao = [...VAT_THE];
+  for(let i = xao.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [xao[i], xao[j]] = [xao[j], xao[i]];
+  }
+  dsKhacBiet = xao.slice(0, SO_DIEM_KHAC);
+
+  daTimThay = []; soChamSai = 0; luotGoiY = 2;
+  giay = 0; daBatDau = false;
+  clearInterval(dongHoChay);
+
+  veTranh(tranhA, []);                                  /* tranh 1: bản gốc */
+  veTranh(tranhB, dsKhacBiet.map(v => v.id));           /* tranh 2: bản đã đổi 5 chỗ */
+
+  oTim.textContent    = "0/" + SO_DIEM_KHAC;
+  oDongHo.textContent = "0:00";
+  const kl = docKyLuc();
+  oKyLuc.textContent  = kl ? dinhDangGio(kl) : "--";
+  nutGoiY.textContent = "💡 Gợi ý (còn 2)";
+  nutGoiY.disabled = false;
+
+  manThang.classList.remove("hien");
+  document.getElementById("bangKyLuc").classList.remove("hien");
+  dungPhaoGiay();
+}
+
+/* =========================================================
+   6. XỬ LÝ KHI BÉ CHẠM VÀO TRANH
+   ========================================================= */
+function chamVaoTranh(e, svg){
+  batLoa();
+  if(manThang.classList.contains("hien")) return;
+
+  /* Bắt đầu bấm giờ từ lần chạm đầu tiên */
+  if(!daBatDau){
+    daBatDau = true;
+    dongHoChay = setInterval(() => {
+      giay++;
+      oDongHo.textContent = dinhDangGio(giay);
+    }, 1000);
+  }
+
+  /* Đổi toạ độ màn hình sang toạ độ trong tranh (viewBox 300x300) */
+  const o = svg.getBoundingClientRect();
+  const diem = e.touches ? e.touches[0] : e;
+  const x = (diem.clientX - o.left) / o.width  * 300;
+  const y = (diem.clientY - o.top)  / o.height * 300;
+
+  /* Kiểm tra bé có chạm trúng điểm khác biệt nào chưa tìm ra không */
+  const trung = dsKhacBiet.find(v =>
+    !daTimThay.includes(v.id) &&
+    Math.hypot(x - v.x, y - v.y) <= v.r
+  );
+
+  if(trung){
+    daTimThay.push(trung.id);
+    danhDauDung(trung);
+    amDung();
+    oTim.textContent = daTimThay.length + "/" + SO_DIEM_KHAC;
+    if(daTimThay.length === SO_DIEM_KHAC) setTimeout(thangCuoc, 600);
+  }else{
+    soChamSai++;
+    veDauSai(svg, x, y);
+    amSai();
+  }
+}
+
+/* Khoanh vòng xanh lên CẢ HAI tranh để bé thấy rõ */
+function danhDauDung(vat){
+  [tranhA, tranhB].forEach(svg => {
+    const lop = svg.querySelector(".lop-danh-dau");
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", vat.x);
+    c.setAttribute("cy", vat.y);
+    c.setAttribute("r",  vat.r);
+    c.setAttribute("class", "vong-dung");
+    lop.appendChild(c);
+  });
+}
+
+/* Dấu X đỏ nhạt hiện thoáng qua rồi tự tan */
+function veDauSai(svg, x, y){
+  const lop = svg.querySelector(".lop-danh-dau");
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  g.setAttribute("class", "dau-sai");
+  g.innerHTML = `<line x1="${x-9}" y1="${y-9}" x2="${x+9}" y2="${y+9}"/>
+                 <line x1="${x+9}" y1="${y-9}" x2="${x-9}" y2="${y+9}"/>`;
+  lop.appendChild(g);
+  setTimeout(() => g.remove(), 700);
+}
+
+/* =========================================================
+   7. GỢI Ý: nhấp nháy vòng vàng quanh 1 điểm chưa tìm ra
+   ========================================================= */
+nutGoiY.addEventListener("click", () => {
+  batLoa();
+  if(luotGoiY <= 0) return;
+  const conLai = dsKhacBiet.filter(v => !daTimThay.includes(v.id));
+  if(conLai.length === 0) return;
+
+  const vat = conLai[Math.floor(Math.random() * conLai.length)];
+  amGoiY();
+  [tranhA, tranhB].forEach(svg => {
+    const lop = svg.querySelector(".lop-danh-dau");
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", vat.x);
+    c.setAttribute("cy", vat.y);
+    c.setAttribute("r",  vat.r + 4);
+    c.setAttribute("class", "goi-y");
+    lop.appendChild(c);
+    setTimeout(() => c.remove(), 2900);
+  });
+
+  luotGoiY--;
+  nutGoiY.textContent = luotGoiY > 0 ? `💡 Gợi ý (còn ${luotGoiY})` : "💡 Hết gợi ý";
+  if(luotGoiY === 0) nutGoiY.disabled = true;
+});
+
+/* =========================================================
+   8. THẮNG CUỘC
+   ========================================================= */
+function thangCuoc(){
+  clearInterval(dongHoChay);
+  nhacThang();
+  banPhaoGiay();
+
+  document.getElementById("tgCuoi").textContent  = dinhDangGio(giay);
+  document.getElementById("saiCuoi").textContent = soChamSai;
+
+  const cu = docKyLuc();
+  if(cu === null || giay < cu){
+    ghiKyLuc(giay);
+    document.getElementById("bangKyLuc").classList.add("hien");
+    document.getElementById("loiKhen").textContent = "Bé nhìn nhanh hơn lần trước rồi!";
+  }else{
+    document.getElementById("loiKhen").textContent = "Lần sau bé thử phá kỷ lục nhé!";
+  }
+  oKyLuc.textContent = dinhDangGio(docKyLuc());
+  manThang.classList.add("hien");
+}
+
+/* =========================================================
+   9. PHÁO GIẤY PHỦ MÀN HÌNH (vẽ bằng Canvas)
+   ========================================================= */
+const canvas = document.getElementById("phaoGiay");
+const ctx2d  = canvas.getContext("2d");
+let hatGiay = [], vongLap = null;
+const MAU_GIAY = ["#FFB7C5","#C9B6F5","#FFE0A3","#A8E6CF","#BFE3FF","#FFCBA4"];
+
+function banPhaoGiay(){
+  canvas.style.display = "block";
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  hatGiay = [];
+  for(let i = 0; i < 160; i++){
+    hatGiay.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * -canvas.height,
+      r: 5 + Math.random() * 7,
+      mau: MAU_GIAY[Math.floor(Math.random() * MAU_GIAY.length)],
+      rung: Math.random() * Math.PI * 2,
+      toc: 1.6 + Math.random() * 2.6,
+      xoay: (Math.random() - .5) * .2
+    });
+  }
+  cancelAnimationFrame(vongLap);
+  veGiay();
+}
+function veGiay(){
+  ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+  hatGiay.forEach(h => {
+    h.y += h.toc;
+    h.rung += h.xoay;
+    h.x += Math.sin(h.rung) * 1.4;
+    if(h.y > canvas.height + 20){ h.y = -20; h.x = Math.random() * canvas.width; }
+    ctx2d.save();
+    ctx2d.translate(h.x, h.y);
+    ctx2d.rotate(h.rung);
+    ctx2d.fillStyle = h.mau;
+    ctx2d.fillRect(-h.r/2, -h.r/2, h.r, h.r * 1.5);
+    ctx2d.restore();
+  });
+  vongLap = requestAnimationFrame(veGiay);
+}
+function dungPhaoGiay(){
+  cancelAnimationFrame(vongLap);
+  canvas.style.display = "none";
+  ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+/* =========================================================
+   10. GẮN SỰ KIỆN
+   ========================================================= */
+tranhA.addEventListener("click", e => chamVaoTranh(e, tranhA));
+tranhB.addEventListener("click", e => chamVaoTranh(e, tranhB));
+document.getElementById("nutVanMoi").addEventListener("click", () => { keoChuong(880,.14,0,.14); vanMoi(); });
+document.getElementById("nutChoiLai").addEventListener("click", () => { keoChuong(880,.14,0,.14); vanMoi(); });
+
+window.addEventListener("resize", () => {
+  if(canvas.style.display === "block"){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+});
+document.addEventListener("touchstart", batLoa, { once:true });
+
+/* Bắt đầu ván đầu tiên */
+vanMoi();
+</script>
+</body>
+</html>
