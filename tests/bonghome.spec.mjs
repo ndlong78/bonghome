@@ -26,7 +26,8 @@ test('trang chủ tải đủ điều khiển chính', async ({ page }) => {
 
 test('hồ sơ Bông được tạo và lưu cục bộ', async ({ page }) => {
   await expect(page.getByRole('button', { name: /Bông/i })).toBeVisible();
-  const state = await page.evaluate(() => JSON.parse(localStorage.getItem('bonghome_state_v2')));
+  await page.waitForFunction(() => Boolean(window.BongStorage));
+  const state = await page.evaluate(() => window.BongStorage.getState());
   expect(state.profiles.some((profile) => profile.name === 'Bông')).toBeTruthy();
 });
 
