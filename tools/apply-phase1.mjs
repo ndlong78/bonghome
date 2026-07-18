@@ -7,11 +7,6 @@ const canonicalBase = 'https://bong.no.id.vn/';
 const description = 'Bông Home’s – 10 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy.';
 const ogImage = `${canonicalBase}icon-512.png`;
 
-function replaceOnce(text, from, to, label) {
-  if (!text.includes(from)) throw new Error(`Không tìm thấy mẫu ${label}`);
-  return text.replace(from, to);
-}
-
 for (const file of htmlFiles) {
   const filePath = path.join(root, file);
   let html = fs.readFileSync(filePath, 'utf8');
@@ -30,19 +25,16 @@ for (const file of htmlFiles) {
     html = html.replace('</head>', '<script src="./shared-ui.js" defer></script>\n</head>');
   }
 
-  // Existing sound generators call batLoa(); make all generated audio obey the shared setting.
   html = html.replace(
     /function batLoa\(\)\s*\{/g,
     'function batLoa(){\n  if(window.BongSound && !window.BongSound.isEnabled()) return null;'
   );
 
-  // Most sound helpers already guard a null context. Add the guard where the common pattern lacks it.
   html = html.replace(
     /const ctx = batLoa\(\);\s*\n\s*const bd/g,
     'const ctx = batLoa();\n  if(!ctx) return;\n  const bd'
   );
 
-  // Static ARIA improvements; shared-ui.js keeps pressed state synchronized after clicks.
   html = html.replace(/<div class="muc-do"([^>]*)>/g, '<div class="muc-do"$1 role="group" aria-label="Chọn mức độ">');
   html = html.replace(/<button([^>]*class="dang-chon"[^>]*)>/g, '<button$1 aria-pressed="true">');
   html = html.replace(/<button((?!aria-pressed)[^>]*data-cap[^>]*)>/g, '<button$1 aria-pressed="false">');
@@ -52,7 +44,6 @@ for (const file of htmlFiles) {
     '<div class="man-thang" id="manThang" role="dialog" aria-modal="true" aria-labelledby="tieuDeThang" aria-describedby="loiKhen">'
   );
   html = html.replace(/<h2>Bé giỏi quá!<\/h2>/g, '<h2 id="tieuDeThang">Bé giỏi quá!</h2>');
-  html = html.replace(/<p class="loi" id="loiKhen">/g, '<p class="loi" id="loiKhen">');
   html = html.replace(/<p class="loi">/g, '<p class="loi" id="loiKhen">');
 
   if (file === 'index.html') {
@@ -69,9 +60,11 @@ manifest.description = '10 trò chơi vui giúp bé luyện trí nhớ, quan sá
 fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
 
 const readmePath = path.join(root, 'README.md');
-let readme = fs.readFileSync(readmePath, 'utf8');
-readme = readme.replace(/10 trò chơi rèn trí não/g, '10 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy');
-fs.writeFileSync(readmePath, readme);
+if (fs.existsSync(readmePath)) {
+  let readme = fs.readFileSync(readmePath, 'utf8');
+  readme = readme.replace(/10 trò chơi rèn trí não/g, '10 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy');
+  fs.writeFileSync(readmePath, readme);
+}
 
 const sw = `/* BÔNG HOME'S - Service Worker */
 const PHIEN_BAN = "bonghome-v6";
@@ -93,7 +86,7 @@ self.addEventListener("install", (event) => {
     const results = await Promise.allSettled(
       DANH_SACH_LUU.map(async (url) => {
         const response = await fetch(new Request(url, { cache: "reload" }));
-        if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+        if (!response.ok) throw new Error(\`\${url}: HTTP \${response.status}\`);
         await cache.put(url, response);
         return url;
       })
@@ -104,7 +97,7 @@ self.addEventListener("install", (event) => {
     if (failed.length) {
       await caches.delete(PHIEN_BAN);
       await baoChoTatCa({ type: "CACHE_FAILED", failed });
-      throw new Error(`Không tải đủ tệp offline: ${failed.join(', ')}`);
+      throw new Error(\`Không tải đủ tệp offline: \${failed.join(', ')}\`);
     }
     await baoChoTatCa({ type: "CACHE_READY" });
     await self.skipWaiting();
