@@ -22,8 +22,8 @@ export default defineConfig({
   projects: [
     { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'desktop-firefox', use: { ...devices['Desktop Firefox'] } },
-    { name: 'iphone', use: { ...devices['iPhone 13'] } },
-    { name: 'ipad', use: { ...devices['iPad Pro 11'] } },
-    { name: 'android', use: { ...devices['Pixel 7'] } }
+    { name: 'iphone-webkit', use: { ...devices['iPhone 13'], browserName: 'webkit' } },
+    { name: 'ipad-webkit', use: { ...devices['iPad Pro 11'], browserName: 'webkit' } },
+    { name: 'android-chromium', use: { ...devices['Pixel 7'], browserName: 'chromium' } }
   ]
 });
