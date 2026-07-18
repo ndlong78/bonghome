@@ -1,0 +1,25 @@
+name: Phase 2 checks
+on:
+  pull_request:
+    branches: [agent/phase1-improvements, main]
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: node --check shared-ui.js && node --check audio.js && node --check storage.js && node --check celebration.js && node --check phase2-app.js && node --check sw.js
+      - name: Check required product assets
+        run: |
+          test -f common.css
+          test -f parent.html
+          grep -q "15" phase2-app.js
+          grep -q "20" phase2-app.js
+          grep -q "Bông" storage.js
+          grep -q "Bản đồ 10 lớp" parent.html
+          grep -q "không cần chạy theo tốc độ" celebration.js
