@@ -1,9 +1,19 @@
 import { test, expect } from '@playwright/test';
 
+const runtimeErrors = new WeakMap();
+
 test.beforeEach(async ({ page }) => {
+  const errors = [];
+  runtimeErrors.set(page, errors);
+  page.on('pageerror', (error) => errors.push(error.message));
+
   await page.goto('/index.html');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
+});
+
+test.afterEach(async ({ page }) => {
+  expect(runtimeErrors.get(page) || []).toEqual([]);
 });
 
 test('trang chủ tải đủ điều khiển chính', async ({ page }) => {
@@ -43,4 +53,18 @@ test('trang phụ huynh hiển thị tiến độ và lịch sử', async ({ pag
 test('không có cuộn ngang ở viewport hiện tại', async ({ page }) => {
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
   expect(overflow).toBeFalsy();
+});
+
+test('cả 10 game đều mở được mà không phát sinh lỗi JavaScript', async ({ page }) => {
+  for (let game = 1; game <= 10; game += 1) {
+    await page.goto(`/game${game}.html`);
+    await expect(page.locator('body')).toBeVisible();
+    await expect(page.locator('main, .khung, .tro-choi, body').first()).toBeVisible();
+  }
+});
+
+test('game 1 hiển thị đúng sáu lá ở mức dễ', async ({ page }) => {
+  await page.goto('/game1.html');
+  await expect(page.locator('#sanBai')).toBeVisible();
+  await expect(page.locator('#sanBai').locator('button, .la-bai')).toHaveCount(6);
 });
