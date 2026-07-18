@@ -1,6 +1,6 @@
 # 🌈 Bông Home's
 
-Nền tảng web giáo dục gồm **10 trò chơi rèn trí não** cho bé gái 6 tuổi.
+Nền tảng web giáo dục gồm **10 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy** cho bé gái 6 tuổi.
 Toàn bộ chạy **offline 100%**, không cần mạng, không tải thư viện hay hình ảnh từ bên ngoài.
 
 ---
