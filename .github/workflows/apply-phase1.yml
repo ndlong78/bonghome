@@ -1,20 +1,21 @@
 name: Apply phase 1 improvements
 
 on:
-  push:
-    branches: [agent/phase1-improvements]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
 
 jobs:
   apply:
-    if: ${{ !contains(github.event.head_commit.message, '[phase1-applied]') }}
+    if: ${{ !contains(github.event.pull_request.head.sha, '[phase1-applied]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: agent/phase1-improvements
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
