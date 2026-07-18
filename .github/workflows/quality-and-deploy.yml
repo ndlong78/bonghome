@@ -26,7 +26,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
         run: npm install
@@ -38,7 +37,7 @@ jobs:
 
       - name: Validate JavaScript syntax
         run: |
-          find . -maxdepth 2 -name '*.js' -o -name '*.mjs' | while read file; do
+          find . -maxdepth 2 \( -name '*.js' -o -name '*.mjs' \) -print | while read file; do
             case "$file" in
               ./node_modules/*|./dist/*) continue ;;
             esac
@@ -46,7 +45,7 @@ jobs:
           done
 
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium firefox
+        run: npx playwright install --with-deps chromium firefox webkit
 
       - name: Run Playwright tests
         run: npm run test:e2e
