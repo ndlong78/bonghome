@@ -1,86 +1,65 @@
-/* =========================================================
-   BÔNG HOME'S - Service Worker
-   Nhiệm vụ: tải sẵn toàn bộ 10 trò chơi vào máy ngay lần mở đầu tiên,
-   để những lần sau bé vẫn chơi được bình thường khi KHÔNG CÓ MẠNG.
-
-   Lưu ý cho người lớn: mỗi khi sửa nội dung game, hãy đổi số PHIEN_BAN
-   bên dưới (v1 → v2 → v3...) để máy tải lại bản mới.
-   ========================================================= */
-
-const PHIEN_BAN = "ngoi-truong-nho-v5";
-
-/* Danh sách mọi thứ cần lưu vào máy */
+/* BÔNG HOME'S - Service Worker */
+const PHIEN_BAN = "bonghome-v6";
 const DANH_SACH_LUU = [
-  "./",
-  "./index.html",
-  "./game1.html",
-  "./game2.html",
-  "./game3.html",
-  "./game4.html",
-  "./game5.html",
-  "./game6.html",
-  "./game7.html",
-  "./game8.html",
-  "./game9.html",
-  "./game10.html",
-  "./manifest.json",
-  "./icon-192.png",
-  "./icon-512.png",
-  "./icon-maskable-512.png",
-  "./apple-touch-icon.png"
+  "./", "./index.html",
+  "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
+  "./shared-ui.js", "./manifest.json", "./icon-192.png", "./icon-512.png",
+  "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
 
-/* 1. CÀI ĐẶT: tải hết mọi file về kho lưu trữ của máy */
-self.addEventListener("install", (sk) => {
-  sk.waitUntil(
-    caches.open(PHIEN_BAN).then((kho) =>
-      /* Dùng addAll từng file để một file lỗi không làm hỏng cả bộ */
-      Promise.all(
-        DANH_SACH_LUU.map((duongDan) =>
-          kho.add(new Request(duongDan, { cache: "reload" })).catch(() => null)
-        )
-      )
-    ).then(() => self.skipWaiting())
-  );
+async function baoChoTatCa(message) {
+  const clients = await self.clients.matchAll({ includeUncontrolled: true, type: "window" });
+  clients.forEach((client) => client.postMessage(message));
+}
+
+self.addEventListener("install", (event) => {
+  event.waitUntil((async () => {
+    const cache = await caches.open(PHIEN_BAN);
+    const results = await Promise.allSettled(
+      DANH_SACH_LUU.map(async (url) => {
+        const response = await fetch(new Request(url, { cache: "reload" }));
+        if (!response.ok) throw new Error(`${url}: HTTP ${response.status}`);
+        await cache.put(url, response);
+        return url;
+      })
+    );
+    const failed = results
+      .map((result, index) => result.status === "rejected" ? DANH_SACH_LUU[index] : null)
+      .filter(Boolean);
+    if (failed.length) {
+      await caches.delete(PHIEN_BAN);
+      await baoChoTatCa({ type: "CACHE_FAILED", failed });
+      throw new Error(`Không tải đủ tệp offline: ${failed.join(', ')}`);
+    }
+    await baoChoTatCa({ type: "CACHE_READY" });
+    await self.skipWaiting();
+  })());
 });
 
-/* 2. KÍCH HOẠT: dọn sạch các phiên bản cũ để khỏi tốn bộ nhớ */
-self.addEventListener("activate", (sk) => {
-  sk.waitUntil(
-    caches.keys().then((ten) =>
-      Promise.all(
-        ten.filter((t) => t !== PHIEN_BAN).map((t) => caches.delete(t))
-      )
-    ).then(() => self.clients.claim())
-  );
+self.addEventListener("activate", (event) => {
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    await Promise.all(names.filter((name) => name !== PHIEN_BAN).map((name) => caches.delete(name)));
+    await self.clients.claim();
+    await baoChoTatCa({ type: "CACHE_READY" });
+  })());
 });
 
-/* 3. LẤY FILE: ưu tiên kho trong máy trước (chạy tức thì, không cần mạng),
-      nếu chưa có thì mới ra mạng tải rồi lưu lại cho lần sau */
-self.addEventListener("fetch", (sk) => {
-  const yeuCau = sk.request;
-
-  /* Chỉ xử lý các yêu cầu tải trang/tệp thông thường */
-  if (yeuCau.method !== "GET") return;
-
-  sk.respondWith(
-    caches.match(yeuCau).then((daCo) => {
-      if (daCo) return daCo;
-
-      return fetch(yeuCau)
-        .then((phanHoi) => {
-          /* Lưu lại bản sao nếu tải thành công */
-          if (phanHoi && phanHoi.status === 200 && phanHoi.type === "basic") {
-            const banSao = phanHoi.clone();
-            caches.open(PHIEN_BAN).then((kho) => kho.put(yeuCau, banSao));
-          }
-          return phanHoi;
-        })
-        .catch(() => {
-          /* Mất mạng mà file chưa được lưu: đưa bé về trang chủ */
-          if (yeuCau.mode === "navigate") return caches.match("./index.html");
-          return new Response("", { status: 503, statusText: "Không có mạng" });
-        });
-    })
-  );
+self.addEventListener("fetch", (event) => {
+  if (event.request.method !== "GET") return;
+  event.respondWith((async () => {
+    const cached = await caches.match(event.request);
+    if (cached) return cached;
+    try {
+      const response = await fetch(event.request);
+      if (response?.ok && response.type === "basic") {
+        const cache = await caches.open(PHIEN_BAN);
+        await cache.put(event.request, response.clone());
+      }
+      return response;
+    } catch {
+      if (event.request.mode === "navigate") return caches.match("./index.html");
+      return new Response("", { status: 503, statusText: "Không có mạng" });
+    }
+  })());
 });

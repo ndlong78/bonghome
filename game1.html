@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Lật Hình Tìm Cặp - Bông Home's</title>
+<meta name="description" content="Bông Home’s – 10 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy.">
+<link rel="canonical" href="https://bong.no.id.vn/game1.html">
+<meta property="og:locale" content="vi_VN">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bông Home's">
+<meta property="og:title" content="Lật Hình Tìm Cặp - Bông Home's">
+<meta property="og:description" content="Bông Home’s – 10 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy.">
+<meta property="og:url" content="https://bong.no.id.vn/game1.html">
+<meta property="og:image" content="https://bong.no.id.vn/icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta name="twitter:card" content="summary_large_image">
 <style>
   /* ===== BẢNG MÀU PASTEL CHUNG CỦA CẢ TRƯỜNG ===== */
   :root{
@@ -232,6 +244,7 @@
     *{ animation:none !important; }
   }
 </style>
+<script src="./shared-ui.js" defer></script>
 </head>
 <body>
 
@@ -245,10 +258,10 @@
 
   <p class="huong-dan">Bé lật 2 lá bài để tìm hai hình giống hệt nhau nhé!</p>
 
-  <div class="muc-do" id="mucDo">
-    <button data-cap="3" class="dang-chon">Dễ · 6 lá</button>
-    <button data-cap="6">Vừa · 12 lá</button>
-    <button data-cap="8">Khó · 16 lá</button>
+  <div class="muc-do" id="mucDo" role="group" aria-label="Chọn mức độ">
+    <button data-cap="3" class="dang-chon" aria-pressed="true" aria-pressed="false">Dễ · 6 lá</button>
+    <button data-cap="6" aria-pressed="false">Vừa · 12 lá</button>
+    <button data-cap="8" aria-pressed="false">Khó · 16 lá</button>
   </div>
 
   <div class="bang-so">
@@ -265,10 +278,10 @@
 <canvas id="phaoGiay" aria-hidden="true"></canvas>
 
 <!-- Bảng thành tích khi hoàn thành -->
-<div class="man-thang" id="manThang">
+<div class="man-thang" id="manThang" role="dialog" aria-modal="true" aria-labelledby="tieuDeThang" aria-describedby="loiKhen">
   <div class="hop-thang">
     <div style="font-size:52px">🎉</div>
-    <h2>Bé giỏi quá!</h2>
+    <h2 id="tieuDeThang">Bé giỏi quá!</h2>
     <p class="loi" id="loiKhen">Bé đã tìm hết các cặp hình rồi!</p>
     <div class="ket-qua">
       <div><span class="nhan">Thời gian</span><span class="gia-tri" id="tgCuoi">0:00</span></div>
@@ -371,6 +384,7 @@ const HINH_MAT_SAU = `<svg viewBox="0 0 64 64">
    ========================================================= */
 let boLoa = null;
 function batLoa(){
+  if(window.BongSound && !window.BongSound.isEnabled()) return null;
   if(!boLoa){
     const A = window.AudioContext || window.webkitAudioContext;
     if(A) boLoa = new A();

@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Bông Home's</title>
+<meta name="description" content="Bông Home’s – 10 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy.">
+<link rel="canonical" href="https://bong.no.id.vn/">
+<meta property="og:locale" content="vi_VN">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Bông Home's">
+<meta property="og:title" content="Bông Home's">
+<meta property="og:description" content="Bông Home’s – 10 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy.">
+<meta property="og:url" content="https://bong.no.id.vn/">
+<meta property="og:image" content="https://bong.no.id.vn/icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta name="twitter:card" content="summary_large_image">
 
 <!-- ===== KHAI BÁO ỨNG DỤNG CHẠY NGOẠI TUYẾN (PWA) ===== -->
 <link rel="manifest" href="./manifest.json">
@@ -242,6 +254,7 @@
     *{ animation:none !important; transition:none !important; }
   }
 </style>
+<script src="./shared-ui.js" defer></script>
 </head>
 <body>
 
@@ -417,6 +430,7 @@ const HINH_VE = [
    ========================================================= */
 let boAmThanh = null;
 function batLoa(){
+  if(window.BongSound && !window.BongSound.isEnabled()) return null;
   if(!boAmThanh){
     const A = window.AudioContext || window.webkitAudioContext;
     if(A) boAmThanh = new A();
@@ -479,7 +493,7 @@ DANH_SACH.forEach((lop, i) => {
     nhacVaoLop(lop.not);
     const o = a.getBoundingClientRect();
     banSao(o.left + o.width / 2, o.top + o.height / 2);
-    setTimeout(() => { window.location.href = lop.file; }, 430);
+    setTimeout(() => { window.location.href = lop.file; }, 220);
   });
 
   san.appendChild(a);
