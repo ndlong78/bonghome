@@ -1,9 +1,9 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v6";
+const PHIEN_BAN = "bonghome-v7";
 const DANH_SACH_LUU = [
   "./", "./index.html",
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
-  "./shared-ui.js", "./manifest.json", "./icon-192.png", "./icon-512.png",
+  "./shared-ui.js", "./game1-difficulty.js", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
 
