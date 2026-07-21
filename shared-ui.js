@@ -1,6 +1,17 @@
 (() => {
   'use strict';
 
+  function loadSharedScript(src, marker) {
+    if (document.querySelector(`script[${marker}]`)) return;
+    const script = document.createElement('script');
+    script.src = src;
+    script.defer = true;
+    script.setAttribute(marker, 'true');
+    document.head.appendChild(script);
+  }
+
+  loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios');
+
   const STORAGE_KEY = 'bonghome_sound_enabled';
   const getEnabled = () => localStorage.getItem(STORAGE_KEY) !== 'false';
   const setEnabled = (enabled) => {
