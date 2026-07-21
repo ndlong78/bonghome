@@ -1,14 +1,18 @@
 {
+  "id": "./",
   "name": "Bông Home's",
-  "short_name": "Bông Home's",
+  "short_name": "Bông Home",
   "description": "10 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy",
   "lang": "vi",
-  "start_url": "./index.html",
+  "dir": "ltr",
+  "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "orientation": "any",
   "background_color": "#FFF7F0",
   "theme_color": "#FFB7C5",
+  "categories": ["education", "games", "kids"],
   "icons": [
     {
       "src": "./icon-192.png",
@@ -27,6 +31,20 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Lật hình tìm cặp",
+      "short_name": "Lật hình",
+      "url": "./game1.html",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Nghe truyện tìm từ",
+      "short_name": "Nghe truyện",
+      "url": "./game9.html",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     }
   ]
 }
