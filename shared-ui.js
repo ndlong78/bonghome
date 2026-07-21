@@ -16,7 +16,6 @@
     toggle: () => setEnabled(!getEnabled())
   };
 
-  // Prevent speech output when sound is disabled (used by the listening game).
   if ('speechSynthesis' in window && typeof window.speechSynthesis.speak === 'function') {
     const originalSpeak = window.speechSynthesis.speak.bind(window.speechSynthesis);
     window.speechSynthesis.speak = (utterance) => {
@@ -32,6 +31,16 @@
         button.setAttribute('aria-pressed', button.classList.contains('dang-chon') ? 'true' : 'false');
       });
     });
+  }
+
+  function loadGame1Difficulty() {
+    if (!/\/game1\.html$/.test(window.location.pathname)) return;
+    if (document.querySelector('script[data-game1-difficulty]')) return;
+    const script = document.createElement('script');
+    script.src = './game1-difficulty.js';
+    script.dataset.game1Difficulty = 'true';
+    script.onload = () => updateDifficultyAria(document.getElementById('mucDo')?.parentElement || document);
+    document.body.appendChild(script);
   }
 
   function addSoundButton() {
@@ -111,6 +120,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     setEnabled(getEnabled());
+    loadGame1Difficulty();
     addSoundButton();
     updateDifficultyAria();
     improveDialogs();
