@@ -3,7 +3,7 @@ const PHIEN_BAN = "__CACHE_VERSION__";
 const DANH_SACH_LUU = [
   "./", "./index.html", "./parent.html",
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
-  "./shared-ui.js", "./common.css", "./design-system.css", "./components.js", "./audio.js", "./storage.js", "./celebration.js", "./phase2-app.js",
+  "./shared-ui.js", "./game1-difficulty.js", "./common.css", "./design-system.css", "./components.js", "./audio.js", "./storage.js", "./celebration.js", "./phase2-app.js",
   "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png", "./version.json"
 ];
 
