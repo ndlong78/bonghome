@@ -64,11 +64,14 @@ test('cả 10 game đều mở được mà không phát sinh lỗi JavaScript',
   }
 });
 
-test('game 1 bắt đầu với tám lá và giữ đủ ba mức khó', async ({ page }) => {
+test('game 1 có mức khó 12 cặp mà giữ nguyên ba mức chơi', async ({ page }) => {
   await page.goto('/game1.html');
   await expect(page.locator('#sanBai')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Dễ · 8 lá' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Vừa · 12 lá' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Khó · 16 lá' })).toBeVisible();
-  await expect(page.locator('#sanBai').locator('.la-bai')).toHaveCount(8);
+  const hardButton = page.getByRole('button', { name: 'Khó · 24 lá' });
+  await expect(hardButton).toBeVisible();
+  await hardButton.click();
+  await expect(page.locator('#sanBai').locator('.la-bai')).toHaveCount(24);
+  await expect(page.locator('#soCap')).toHaveText('0/12');
 });
