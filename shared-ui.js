@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   const assets = ['components.js','storage.js','audio.js','celebration.js','phase2-app.js'];
+  if (/\/game1\.html$/.test(window.location.pathname)) assets.push('game1-difficulty.js');
   ['design-system.css','common.css'].forEach((href) => {
     const css = document.createElement('link');
     css.rel = 'stylesheet';
