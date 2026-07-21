@@ -64,8 +64,11 @@ test('cả 10 game đều mở được mà không phát sinh lỗi JavaScript',
   }
 });
 
-test('game 1 hiển thị đúng sáu lá ở mức dễ', async ({ page }) => {
+test('game 1 bắt đầu với tám lá và giữ đủ ba mức khó', async ({ page }) => {
   await page.goto('/game1.html');
   await expect(page.locator('#sanBai')).toBeVisible();
-  await expect(page.locator('#sanBai').locator('button, .la-bai')).toHaveCount(6);
+  await expect(page.getByRole('button', { name: 'Dễ · 8 lá' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Vừa · 12 lá' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Khó · 16 lá' })).toBeVisible();
+  await expect(page.locator('#sanBai').locator('.la-bai')).toHaveCount(8);
 });
