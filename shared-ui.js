@@ -46,13 +46,20 @@
       return null;
     })
     .then(() => loadSharedScript('./js/progress.js', 'data-bh-progress'))
+    .then(() => loadSharedScript('./js/rewards.js', 'data-bh-rewards'))
     .then(() => {
+      window.BongRewards?.migrate();
       window.dispatchEvent(new CustomEvent('bonghome:modulesready'));
-      return { storage: window.BongStorage, themes: window.BongThemes, progress: window.BongProgress };
+      return {
+        storage: window.BongStorage,
+        themes: window.BongThemes,
+        progress: window.BongProgress,
+        rewards: window.BongRewards
+      };
     })
     .catch((error) => {
       console.error('[Bông Home] Shared modules failed to load', error);
-      return { storage: null, themes: null, progress: null, error };
+      return { storage: null, themes: null, progress: null, rewards: null, error };
     });
 
   const STORAGE_KEY = 'bonghome_sound_enabled';
@@ -129,15 +136,16 @@
     if (!isGame1) return;
     window.BongModulesReady
       .then((modules) => {
-        if (!modules.progress || !modules.themes) return null;
+        if (!modules.progress || !modules.themes || !modules.rewards) return null;
         const themeId = modules.themes.getActiveTheme()?.id || 'bong-home';
         return loadGame1Content(themeId)
           .then(() => loadGame1Difficulty())
           .then(() => loadSharedScript('./js/game1-theme-progress.js', 'data-bh-game1-theme-progress'))
           .then(() => {
             if (window.BongGame1Progress) window.BongProgress = window.BongGame1Progress;
-            return loadSharedScript('./game1-autosave.js', 'data-bh-game1-autosave');
-          });
+            return loadSharedScript('./js/game1-rewards.js', 'data-bh-game1-rewards');
+          })
+          .then(() => loadSharedScript('./game1-autosave.js', 'data-bh-game1-autosave'));
       })
       .catch((error) => console.error('[Bông Home] Game 1 autosave failed to load', error));
   }
