@@ -56,6 +56,8 @@
   }
 
   if (typeof module === 'object' && module.exports) module.exports = { isSupportedPage };
-  if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', start, { once: true });
-  else start();
+  if (root.document) {
+    if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+  }
 })(typeof window !== 'undefined' ? window : globalThis);
