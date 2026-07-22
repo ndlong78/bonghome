@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v16-theme-picker-path";
+const PHIEN_BAN = "bonghome-v17-themes-strict-fix";
 const DANH_SACH_LUU = [
   "./", "./index.html",
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
