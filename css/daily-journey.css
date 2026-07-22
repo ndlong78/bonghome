@@ -1,0 +1,99 @@
+.bh-daily {
+  margin: 0 auto 34px;
+  padding: 20px;
+  max-width: 900px;
+  background: var(--bh-theme-surface, #fff);
+  color: var(--bh-theme-text, #6b4e71);
+  border: 4px solid var(--bh-theme-primary, #c9b6f5);
+  border-radius: 28px;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, .05), 0 16px 30px rgba(120, 100, 150, .14);
+}
+
+.bh-daily h2 {
+  margin: 0 0 6px;
+  text-align: center;
+  font-size: clamp(24px, 5vw, 34px);
+}
+
+.bh-daily > p {
+  margin: 0 auto 16px;
+  max-width: 650px;
+  text-align: center;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.bh-daily-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.bh-daily-activity {
+  min-height: 92px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 34px 42px 1fr;
+  align-items: center;
+  gap: 8px;
+  border: 3px solid var(--bh-theme-secondary, #ffb7c5);
+  border-radius: 20px;
+  background: var(--bh-theme-background, #fff7f0);
+  color: inherit;
+  text-decoration: none;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.bh-daily-activity:focus-visible {
+  outline: 4px solid var(--bh-theme-primary-strong, #9b85d6);
+  outline-offset: 3px;
+}
+
+.bh-daily-activity:active { transform: scale(.97); }
+
+@media (hover: hover) {
+  .bh-daily-activity:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(80, 70, 110, .14);
+  }
+}
+
+.bh-daily-number {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--bh-theme-primary, #c9b6f5);
+  color: #fff;
+  font-weight: 900;
+}
+
+.bh-daily-icon {
+  font-size: 32px;
+  line-height: 1;
+  text-align: center;
+}
+
+.bh-daily-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.bh-daily-text strong { font-size: 15px; line-height: 1.25; }
+.bh-daily-text small { font-size: 13px; font-weight: 700; opacity: .82; }
+.bh-daily .bh-daily-note { margin: 14px 0 0; font-size: 14px; font-weight: 600; }
+
+@media (max-width: 720px) {
+  .bh-daily { padding: 16px 12px; }
+  .bh-daily-list { grid-template-columns: 1fr; }
+  .bh-daily-activity { min-height: 72px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bh-daily-activity { transition: none; }
+  .bh-daily-activity:hover,
+  .bh-daily-activity:active { transform: none; }
+}

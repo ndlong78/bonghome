@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "title": "Hôm nay của Bông",
+  "description": "Ba gợi ý nhẹ nhàng để Bông chọn chơi theo nhịp của mình.",
+  "plans": [
+    {
+      "id": "memory-observation",
+      "activities": [
+        { "gameId": "game1", "title": "Khởi động trí nhớ", "skill": "Trí nhớ", "icon": "🧠", "href": "./game1.html" },
+        { "gameId": "game2", "title": "Quan sát thật tinh", "skill": "Tinh mắt", "icon": "🔎", "href": "./game2.html" },
+        { "gameId": "game5", "title": "Nối số vui vẻ", "skill": "Đếm số", "icon": "🔢", "href": "./game5.html" }
+      ]
+    },
+    {
+      "id": "shapes-colors",
+      "activities": [
+        { "gameId": "game3", "title": "Tìm đúng chiếc bóng", "skill": "Hình khối", "icon": "⭐", "href": "./game3.html" },
+        { "gameId": "game4", "title": "Gom màu thật khéo", "skill": "Phân loại", "icon": "🎨", "href": "./game4.html" },
+        { "gameId": "game6", "title": "Tìm đôi giống nhau", "skill": "Chú ý", "icon": "👯", "href": "./game6.html" }
+      ]
+    },
+    {
+      "id": "logic-listening",
+      "activities": [
+        { "gameId": "game7", "title": "Đoán hình tiếp theo", "skill": "Quy luật", "icon": "🧩", "href": "./game7.html" },
+        { "gameId": "game8", "title": "Tìm đường về nhà", "skill": "Tìm đường", "icon": "🏡", "href": "./game8.html" },
+        { "gameId": "game9", "title": "Nghe truyện tìm từ", "skill": "Lắng nghe", "icon": "📖", "href": "./game9.html" }
+      ]
+    },
+    {
+      "id": "gentle-mix",
+      "activities": [
+        { "gameId": "game1", "title": "Lật hình tìm cặp", "skill": "Trí nhớ", "icon": "🃏", "href": "./game1.html" },
+        { "gameId": "game8", "title": "Đi qua mê cung", "skill": "Tìm đường", "icon": "🗺️", "href": "./game8.html" },
+        { "gameId": "game10", "title": "Gõ phím theo nhịp", "skill": "Nhanh tay", "icon": "⌨️", "href": "./game10.html" }
+      ]
+    }
+  ]
+}

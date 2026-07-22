@@ -1,12 +1,12 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v20-school-theme";
+const PHIEN_BAN = "bonghome-v21-daily-journey";
 const DANH_SACH_LUU = [
   "./", "./index.html",
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
   "./shared-ui.js", "./pwa-ios.js", "./pwa-quality.js", "./game1-difficulty.js", "./game1-autosave.js",
-  "./js/storage.js", "./js/themes.js", "./js/theme-picker.js", "./js/progress.js", "./js/game1-theme-progress.js", "./js/game1-content.js",
-  "./content/games/game1.json", "./content/themes/animals/game1.json", "./content/themes/fruits/game1.json", "./content/themes/school/game1.json", "./content/themes/index.json",
-  "./css/design-tokens.css", "./css/themes.css", "./css/theme-picker.css", "./css/common.css", "./css/components.css", "./css/game1-autosave.css",
+  "./js/storage.js", "./js/themes.js", "./js/theme-picker.js", "./js/progress.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/daily-journey.js",
+  "./content/games/game1.json", "./content/themes/animals/game1.json", "./content/themes/fruits/game1.json", "./content/themes/school/game1.json", "./content/themes/index.json", "./content/daily/index.json",
+  "./css/design-tokens.css", "./css/themes.css", "./css/theme-picker.css", "./css/common.css", "./css/components.css", "./css/game1-autosave.css", "./css/daily-journey.css",
   "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
 
