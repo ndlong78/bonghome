@@ -1,0 +1,86 @@
+name: Verification
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verification-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  automated-checks:
+    name: Automated checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate JSON files
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            node -e "JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'))" "$file"
+            echo "✓ $file"
+          done < <(find . -type f -name '*.json' -not -path './.git/*' -print0)
+
+      - name: Check JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r -d '' file; do
+            node --check "$file"
+            echo "✓ $file"
+          done < <(find . -type f -name '*.js' -not -path './.git/*' -print0)
+
+      - name: Run repository tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' tests < <(find tests -maxdepth 1 -type f -name '*.test.js' -print0 | sort -z)
+          if [ "${#tests[@]}" -eq 0 ]; then
+            echo 'Không tìm thấy test.'
+            exit 1
+          fi
+          for test_file in "${tests[@]}"; do
+            echo "Running $test_file"
+            node "$test_file"
+          done
+
+      - name: Verify PWA files and offline cache paths
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+
+          for (const required of ['index.html', 'manifest.json', 'sw.js']) {
+            if (!fs.existsSync(required)) throw new Error(`Thiếu tệp PWA bắt buộc: ${required}`);
+          }
+
+          const manifest = JSON.parse(fs.readFileSync('manifest.json', 'utf8'));
+          if (!manifest.name || !manifest.start_url || !Array.isArray(manifest.icons) || !manifest.icons.length) {
+            throw new Error('manifest.json thiếu name, start_url hoặc icons');
+          }
+
+          const sw = fs.readFileSync('sw.js', 'utf8');
+          const paths = [...sw.matchAll(/"(\.\/[^"\n]+)"/g)].map((match) => match[1]);
+          const missing = paths
+            .map((item) => item === './' ? 'index.html' : item.replace(/^\.\//, ''))
+            .filter((item) => !fs.existsSync(path.normalize(item)));
+
+          if (missing.length) throw new Error(`Service Worker tham chiếu tệp không tồn tại: ${missing.join(', ')}`);
+          console.log(`✓ Đã kiểm tra ${paths.length} đường dẫn offline`);
+          NODE
