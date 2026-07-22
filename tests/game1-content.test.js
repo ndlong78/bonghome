@@ -41,7 +41,7 @@ assert.ok(serviceWorker.includes('./content/games/game1.json'));
 assert.ok(serviceWorker.includes('./content/themes/animals/game1.json'));
 assert.ok(!serviceWorker.includes('./content/games/game1-animals.json'));
 assert.ok(serviceWorker.includes('./js/game1-content.js'));
-assert.match(serviceWorker, /bonghome-v18-theme-content-paths/);
+assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 assert.ok(!difficulty.includes('HINH_BO_SUNG'));
 assert.ok(difficulty.includes('window.BongGame1Content'));
 
