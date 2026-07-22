@@ -11,24 +11,47 @@
   }
 
   function loadSharedScript(src, marker) {
-    if (document.querySelector(`script[${marker}]`)) return;
-    const script = document.createElement('script');
-    script.src = src;
-    script.defer = true;
-    script.setAttribute(marker, 'true');
-    document.head.appendChild(script);
+    const existing = document.querySelector(`script[${marker}]`);
+    if (existing) return Promise.resolve(existing);
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = false;
+      script.setAttribute(marker, 'true');
+      script.addEventListener('load', () => resolve(script), { once: true });
+      script.addEventListener('error', () => reject(new Error(`Không tải được ${src}`)), { once: true });
+      document.head.appendChild(script);
+    });
   }
 
   loadSharedStyle('./css/components.css', 'data-bh-components');
   loadSharedStyle('./css/common.css', 'data-bh-common');
   loadSharedStyle('./css/design-tokens.css', 'data-bh-design-tokens');
-  loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios');
-  loadSharedScript('./pwa-quality.js', 'data-bh-pwa-quality');
+  loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios').catch(() => {});
+  loadSharedScript('./pwa-quality.js', 'data-bh-pwa-quality').catch(() => {});
+
+  window.BongModulesReady = loadSharedScript('./js/storage.js', 'data-bh-storage')
+    .then(() => {
+      window.BongStorage?.migrate();
+      return loadSharedScript('./js/progress.js', 'data-bh-progress');
+    })
+    .then(() => {
+      window.dispatchEvent(new CustomEvent('bonghome:modulesready'));
+      return { storage: window.BongStorage, progress: window.BongProgress };
+    })
+    .catch((error) => {
+      console.error('[Bông Home] Shared modules failed to load', error);
+      return { storage: null, progress: null, error };
+    });
 
   const STORAGE_KEY = 'bonghome_sound_enabled';
-  const getEnabled = () => localStorage.getItem(STORAGE_KEY) !== 'false';
+  const getEnabled = () => {
+    try { return localStorage.getItem(STORAGE_KEY) !== 'false'; }
+    catch (error) { return true; }
+  };
   const setEnabled = (enabled) => {
-    localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false');
+    try { localStorage.setItem(STORAGE_KEY, enabled ? 'true' : 'false'); }
+    catch (error) { /* Giữ thiết lập trong phiên hiện tại nếu storage bị chặn. */ }
     document.documentElement.dataset.sound = enabled ? 'on' : 'off';
     window.dispatchEvent(new CustomEvent('bonghome:soundchange', { detail: { enabled } }));
     if (!enabled && 'speechSynthesis' in window) window.speechSynthesis.cancel();
@@ -69,19 +92,16 @@
 
   function addSoundButton() {
     if (document.getElementById('nutAmThanh')) return;
-
     const button = document.createElement('button');
     button.id = 'nutAmThanh';
     button.className = 'nut-am-thanh';
     button.type = 'button';
-
     const render = () => {
       const enabled = getEnabled();
       button.textContent = enabled ? '🔊 Âm thanh' : '🔇 Im lặng';
       button.setAttribute('aria-pressed', enabled ? 'true' : 'false');
       button.setAttribute('aria-label', enabled ? 'Tắt âm thanh' : 'Bật âm thanh');
     };
-
     button.addEventListener('click', () => {
       window.BongSound.toggle();
       render();
@@ -122,7 +142,6 @@
   }
 
   navigator.serviceWorker?.addEventListener('message', (event) => updateOfflineBadge(event.data || {}));
-
   document.addEventListener('click', (event) => {
     const button = event.target.closest('.muc-do button');
     if (!button) return;
