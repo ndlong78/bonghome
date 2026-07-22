@@ -4,9 +4,10 @@
   if (root?.BongProgress && root?.BongRewards) {
     root.BongProgress = factory(root.BongProgress, root.BongRewards, root);
   }
-})(typeof window !== 'undefined' ? window : globalThis, function createGame1Rewards(progress, rewards, root = null) {
+})(typeof window !== 'undefined' ? window : globalThis, function createGame1Rewards(progress, rewards, root) {
   'use strict';
 
+  root = root || null;
   if (!progress || !rewards) throw new Error('Game 1 rewards require progress and rewards modules');
 
   function hashText(value) {
