@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "defaultAvatarId": "flower",
+  "avatars": [
+    { "id": "flower", "name": "Bông hoa", "icon": "🌸" },
+    { "id": "bunny", "name": "Thỏ nhỏ", "icon": "🐰" },
+    { "id": "cat", "name": "Mèo con", "icon": "🐱" },
+    { "id": "bear", "name": "Gấu nhỏ", "icon": "🐻" },
+    { "id": "rainbow", "name": "Cầu vồng", "icon": "🌈" },
+    { "id": "star", "name": "Ngôi sao", "icon": "⭐" }
+  ]
+}
