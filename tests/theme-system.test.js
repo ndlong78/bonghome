@@ -36,15 +36,20 @@ assert.deepEqual(themes.migratePreferences({ schemaVersion: 99 }), { schemaVersi
 (async () => {
   await themes.init(async () => ({ ok: true, json: async () => registry }));
   assert.equal(themes.getActiveTheme().id, 'bong-home');
+  assert.equal(themes.listThemes().length, 2);
+  assert.ok(themes.listThemes().some((theme) => theme.id === 'animals'));
   assert.equal(fakeRoot.document.documentElement.dataset.theme, 'bong-home');
   assert.equal(applied.get('--bh-theme-primary'), '#C9B6F5');
+  themes.setActiveTheme('animals');
+  assert.equal(themes.getActiveTheme().id, 'animals');
+  assert.equal(applied.get('--bh-theme-primary'), '#B9D89C');
   assert.throws(() => themes.setActiveTheme('missing'), RangeError);
   assert.equal(memory.get('themes').schemaVersion, 1);
 
   assert.match(sharedUi, /\.\/js\/themes\.js/);
   assert.match(sharedUi, /BongThemes\.init\(\)/);
   assert.match(sharedUi, /themes: window\.BongThemes/);
-  assert.match(serviceWorker, /bonghome-v14-theme-foundation/);
+  assert.match(serviceWorker, /bonghome-v15-animal-theme/);
   assert.ok(serviceWorker.includes('./content/themes/index.json'));
   assert.ok(serviceWorker.includes('./css/themes.css'));
   assert.match(css, /--bh-theme-primary/);
