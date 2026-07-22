@@ -55,6 +55,24 @@
         "success": "#A8D5B5",
         "info": "#B9D8EE"
       }
+    },
+    {
+      "id": "school",
+      "name": "Ngôi trường của Bông",
+      "description": "Cùng Bông làm quen với đồ dùng và những điều thân thuộc ở trường học.",
+      "icon": "🎒",
+      "available": true,
+      "tokens": {
+        "background": "#F3F7FC",
+        "surface": "#FFFFFF",
+        "text": "#40516A",
+        "primary": "#AFC8E8",
+        "primaryStrong": "#668CBF",
+        "secondary": "#F2B7A4",
+        "accent": "#F2D27D",
+        "success": "#A8D7C5",
+        "info": "#BFD7F0"
+      }
     }
   ]
 }
