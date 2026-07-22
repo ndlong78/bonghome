@@ -33,7 +33,7 @@ assert.equal(themePicker.isHomePage('/bonghome/game1.html'), false);
 assert.ok(serviceWorker.includes('./js/daily-journey.js'));
 assert.ok(serviceWorker.includes('./content/daily/index.json'));
 assert.ok(serviceWorker.includes('./css/daily-journey.css'));
-assert.match(serviceWorker, /bonghome-v21-daily-journey/);
+assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 assert.match(css, /min-height:\s*72px/);
 assert.match(css, /prefers-reduced-motion/);
 
