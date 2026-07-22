@@ -25,6 +25,7 @@
   }
 
   const isGame1 = /\/game1\.html$/.test(window.location.pathname);
+  const isHome = /(?:^|\/)index\.html$/.test(window.location.pathname) || /\/$/.test(window.location.pathname);
 
   loadSharedStyle('./css/components.css', 'data-bh-components');
   loadSharedStyle('./css/common.css', 'data-bh-common');
@@ -32,6 +33,7 @@
   loadSharedStyle('./css/theme-picker.css', 'data-bh-theme-picker');
   loadSharedStyle('./css/design-tokens.css', 'data-bh-design-tokens');
   if (isGame1) loadSharedStyle('./css/game1-autosave.css', 'data-bh-game1-autosave-style');
+  if (isHome) loadSharedStyle('./css/profile.css', 'data-bh-profile-style');
   loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios').catch(() => {});
   loadSharedScript('./pwa-quality.js', 'data-bh-pwa-quality').catch(() => {});
 
@@ -47,19 +49,22 @@
     })
     .then(() => loadSharedScript('./js/progress.js', 'data-bh-progress'))
     .then(() => loadSharedScript('./js/rewards.js', 'data-bh-rewards'))
+    .then(() => loadSharedScript('./js/profile.js', 'data-bh-profile'))
     .then(() => {
       window.BongRewards?.migrate();
+      window.BongProfile?.migrate();
       window.dispatchEvent(new CustomEvent('bonghome:modulesready'));
       return {
         storage: window.BongStorage,
         themes: window.BongThemes,
         progress: window.BongProgress,
-        rewards: window.BongRewards
+        rewards: window.BongRewards,
+        profile: window.BongProfile
       };
     })
     .catch((error) => {
       console.error('[Bông Home] Shared modules failed to load', error);
-      return { storage: null, themes: null, progress: null, rewards: null, error };
+      return { storage: null, themes: null, progress: null, rewards: null, profile: null, error };
     });
 
   const STORAGE_KEY = 'bonghome_sound_enabled';
@@ -159,6 +164,17 @@
       .catch((error) => console.warn('[Bông Home] Không tải được bộ chọn chủ đề', error));
   }
 
+  function loadProfileUI() {
+    if (!isHome) return;
+    window.BongModulesReady
+      .then((modules) => {
+        if (!modules.profile) return null;
+        return loadSharedScript('./js/profile-ui.js', 'data-bh-profile-ui');
+      })
+      .then(() => window.BongProfileUI?.init())
+      .catch((error) => console.warn('[Bông Home] Không tải được giao diện hồ sơ', error));
+  }
+
   function addSoundButton() {
     if (document.getElementById('nutAmThanh')) return;
     const button = document.createElement('button');
@@ -221,6 +237,7 @@
     setEnabled(getEnabled());
     loadGame1Autosave();
     loadThemePicker();
+    loadProfileUI();
     addSoundButton();
     updateDifficultyAria();
     improveDialogs();
