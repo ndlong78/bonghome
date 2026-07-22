@@ -1,0 +1,54 @@
+.bh-theme-picker {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:10px auto 16px;
+  padding:10px 12px;
+  max-width:720px;
+  color:var(--bh-theme-text, #6B4E71);
+}
+
+.bh-theme-picker-label {
+  font-size:14px;
+  font-weight:800;
+}
+
+.bh-theme-picker-options {
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.bh-theme-picker button {
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:9px 14px;
+  border:3px solid var(--bh-theme-primary, #C9B6F5);
+  border-radius:999px;
+  background:var(--bh-theme-surface, #FFFFFF);
+  color:var(--bh-theme-text, #6B4E71);
+  font:inherit;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.bh-theme-picker button.dang-chon {
+  background:var(--bh-theme-primary, #C9B6F5);
+  border-color:var(--bh-theme-primary-strong, #9B85D6);
+}
+
+.bh-theme-picker button:focus-visible {
+  outline:4px solid var(--bh-theme-info, #BFE3FF);
+  outline-offset:3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bh-theme-picker button { transition:none !important; }
+}
