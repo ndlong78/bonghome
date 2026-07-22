@@ -1,9 +1,14 @@
 (function (root) {
   'use strict';
 
+  function isSupportedPage(pathname) {
+    const path = typeof pathname === 'string' ? pathname : '';
+    return path.endsWith('/') || /\/index\.html$/.test(path) || /\/game1\.html$/.test(path);
+  }
+
   function start() {
     if (root.__bongThemePickerStarted || !root.BongThemes) return;
-    if (!/(?:\/|\/index\.html|\/game1\.html)$/.test(root.location.pathname)) return;
+    if (!isSupportedPage(root.location.pathname)) return;
     root.__bongThemePickerStarted = true;
 
     const themes = root.BongThemes.listThemes();
@@ -50,6 +55,9 @@
     renderActive();
   }
 
-  if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', start, { once: true });
-  else start();
+  if (typeof module === 'object' && module.exports) module.exports = { isSupportedPage };
+  if (root.document) {
+    if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+  }
 })(typeof window !== 'undefined' ? window : globalThis);

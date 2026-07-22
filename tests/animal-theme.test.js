@@ -7,6 +7,7 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const registry = JSON.parse(read('content/themes/index.json'));
 const animals = JSON.parse(read('content/games/game1-animals.json'));
 const createAdapter = require('../js/game1-theme-progress.js');
+const themePicker = require('../js/theme-picker.js');
 const sharedUi = read('shared-ui.js');
 const pickerSource = read('js/theme-picker.js');
 const pickerCss = read('css/theme-picker.css');
@@ -17,6 +18,13 @@ assert.equal(animals.themeId, 'animals');
 assert.equal(animals.cards.length, 12);
 assert.equal(new Set(animals.cards.map((card) => card.id)).size, 12);
 assert.ok(animals.cards.every((card) => card.svg.startsWith('<svg')));
+
+assert.equal(themePicker.isSupportedPage('/'), true);
+assert.equal(themePicker.isSupportedPage('/index.html'), true);
+assert.equal(themePicker.isSupportedPage('/bonghome/'), true, 'GitHub Pages project root phải hiển thị theme picker');
+assert.equal(themePicker.isSupportedPage('/bonghome/index.html'), true, 'GitHub Pages index phải hiển thị theme picker');
+assert.equal(themePicker.isSupportedPage('/bonghome/game1.html'), true);
+assert.equal(themePicker.isSupportedPage('/bonghome/game2.html'), false);
 
 let currentTheme = 'bong-home';
 let saved = null;
@@ -70,6 +78,6 @@ assert.ok(serviceWorker.includes('./content/games/game1-animals.json'));
 assert.ok(serviceWorker.includes('./js/game1-theme-progress.js'));
 assert.ok(serviceWorker.includes('./js/theme-picker.js'));
 assert.ok(serviceWorker.includes('./css/theme-picker.css'));
-assert.match(serviceWorker, /bonghome-v15-animal-theme/);
+assert.match(serviceWorker, /bonghome-v16-theme-picker-path/);
 
 console.log('Animal theme checks passed.');
