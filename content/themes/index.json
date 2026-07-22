@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "defaultThemeId": "bong-home",
+  "themes": [
+    {
+      "id": "bong-home",
+      "name": "Ngôi nhà của Bông",
+      "description": "Chủ đề pastel quen thuộc của Bông Home.",
+      "icon": "🏡",
+      "available": true,
+      "tokens": {
+        "background": "#FFF7F0",
+        "surface": "#FFFFFF",
+        "text": "#6B4E71",
+        "primary": "#C9B6F5",
+        "primaryStrong": "#9B85D6",
+        "secondary": "#FFB7C5",
+        "accent": "#FFE0A3",
+        "success": "#A8E6CF",
+        "info": "#BFE3FF"
+      }
+    }
+  ]
+}

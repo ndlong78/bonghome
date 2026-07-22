@@ -28,6 +28,7 @@
 
   loadSharedStyle('./css/components.css', 'data-bh-components');
   loadSharedStyle('./css/common.css', 'data-bh-common');
+  loadSharedStyle('./css/themes.css', 'data-bh-themes');
   loadSharedStyle('./css/design-tokens.css', 'data-bh-design-tokens');
   if (isGame1) loadSharedStyle('./css/game1-autosave.css', 'data-bh-game1-autosave-style');
   loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios').catch(() => {});
@@ -36,15 +37,21 @@
   window.BongModulesReady = loadSharedScript('./js/storage.js', 'data-bh-storage')
     .then(() => {
       window.BongStorage?.migrate();
-      return loadSharedScript('./js/progress.js', 'data-bh-progress');
+      return loadSharedScript('./js/themes.js', 'data-bh-themes-script');
     })
+    .then(() => window.BongThemes.init())
+    .catch((error) => {
+      console.warn('[Bông Home] Dùng chủ đề mặc định dự phòng', error);
+      return null;
+    })
+    .then(() => loadSharedScript('./js/progress.js', 'data-bh-progress'))
     .then(() => {
       window.dispatchEvent(new CustomEvent('bonghome:modulesready'));
-      return { storage: window.BongStorage, progress: window.BongProgress };
+      return { storage: window.BongStorage, themes: window.BongThemes, progress: window.BongProgress };
     })
     .catch((error) => {
       console.error('[Bông Home] Shared modules failed to load', error);
-      return { storage: null, progress: null, error };
+      return { storage: null, themes: null, progress: null, error };
     });
 
   const STORAGE_KEY = 'bonghome_sound_enabled';
