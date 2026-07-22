@@ -44,6 +44,6 @@ assert.throws(() => rewards.awardStars('../bad', 1), /kebab-case/);
 assert.throws(() => rewards.awardStars('valid-id', 11), /1 to 10/);
 assert.ok(serviceWorker.includes('./js/rewards.js'));
 assert.ok(serviceWorker.includes('./content/rewards/catalog.json'));
-assert.match(serviceWorker, /bonghome-v22-rewards-foundation/);
+assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 
 console.log('Rewards foundation checks passed.');
