@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "gameId": "game1",
+  "themeId": "school",
+  "title": "Lật Hình Trường Học",
+  "instruction": "Bé lật 2 lá bài để tìm hai đồ dùng trường học giống hệt nhau nhé!",
+  "difficultyAriaLabel": "Chọn mức độ trò chơi trường học",
+  "difficulties": [
+    { "pairs": 3, "label": "Dễ · 6 lá", "ariaLabel": "Dễ · 6 lá · 3 cặp đồ dùng trường học" },
+    { "pairs": 6, "label": "Vừa · 12 lá", "ariaLabel": "Vừa · 12 lá · 6 cặp đồ dùng trường học" },
+    { "pairs": 12, "label": "Khó · 24 lá", "ariaLabel": "Khó · 24 lá · 12 cặp đồ dùng trường học" }
+  ],
+  "cards": [
+    { "id": "backpack", "name": "Ba lô", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#E8EEF8\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🎒</text></svg>" },
+    { "id": "book", "name": "Sách", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FCE8E6\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">📘</text></svg>" },
+    { "id": "pencil", "name": "Bút chì", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FFF2C9\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">✏️</text></svg>" },
+    { "id": "ruler", "name": "Thước kẻ", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#E5F3EC\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">📏</text></svg>" },
+    { "id": "scissors", "name": "Kéo", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#F6EAF7\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">✂️</text></svg>" },
+    { "id": "crayon", "name": "Bút màu", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FFE7D5\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🖍️</text></svg>" },
+    { "id": "notebook", "name": "Vở", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#E8F1FA\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">📓</text></svg>" },
+    { "id": "globe", "name": "Quả địa cầu", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#E0F2EF\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🌍</text></svg>" },
+    { "id": "abacus", "name": "Bàn tính", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FCE9D9\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🧮</text></svg>" },
+    { "id": "paint", "name": "Bảng màu", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#F7EAF0\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🎨</text></svg>" },
+    { "id": "bell", "name": "Chuông trường", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FFF1BF\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🔔</text></svg>" },
+    { "id": "school", "name": "Trường học", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#E7EEF8\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🏫</text></svg>" }
+  ]
+}
