@@ -1,9 +1,9 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v8-ios";
+const PHIEN_BAN = "bonghome-v9-quality";
 const DANH_SACH_LUU = [
   "./", "./index.html",
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
-  "./shared-ui.js", "./pwa-ios.js", "./game1-difficulty.js", "./manifest.json", "./icon-192.png", "./icon-512.png",
+  "./shared-ui.js", "./pwa-ios.js", "./pwa-quality.js", "./game1-difficulty.js", "./manifest.json", "./icon-192.png", "./icon-512.png",
   "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
 
@@ -31,9 +31,12 @@ self.addEventListener("install", (event) => {
       await baoChoTatCa({ type: "CACHE_FAILED", failed, version: PHIEN_BAN });
       throw new Error(`Không tải đủ tệp offline: ${failed.join(', ')}`);
     }
-    await baoChoTatCa({ type: "CACHE_READY", version: PHIEN_BAN });
-    await self.skipWaiting();
+    await baoChoTatCa({ type: "UPDATE_READY", version: PHIEN_BAN });
   })());
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -58,19 +61,14 @@ async function networkFirstNavigation(request) {
   }
 }
 
-async function cacheFirstAsset(request) {
-  const cached = await caches.match(request);
-  if (cached) return cached;
-  try {
-    const response = await fetch(request);
-    if (response?.ok && response.type === "basic") {
-      const cache = await caches.open(PHIEN_BAN);
-      await cache.put(request, response.clone());
-    }
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(PHIEN_BAN);
+  const cached = await cache.match(request);
+  const network = fetch(request).then((response) => {
+    if (response?.ok && response.type === "basic") cache.put(request, response.clone());
     return response;
-  } catch {
-    return new Response("", { status: 503, statusText: "Không có mạng" });
-  }
+  }).catch(() => null);
+  return cached || (await network) || new Response("", { status: 503, statusText: "Không có mạng" });
 }
 
 self.addEventListener("fetch", (event) => {
@@ -79,5 +77,5 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(networkFirstNavigation(event.request));
     return;
   }
-  event.respondWith(cacheFirstAsset(event.request));
+  event.respondWith(staleWhileRevalidate(event.request));
 });
