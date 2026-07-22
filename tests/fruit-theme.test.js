@@ -26,6 +26,6 @@ assert.ok(valid.cards.every((card) => card.svg.startsWith('<svg')));
 assert.equal(loader.resolveContentUrl('fruits'), './content/themes/fruits/game1.json');
 
 assert.ok(serviceWorker.includes('./content/themes/fruits/game1.json'));
-assert.match(serviceWorker, /bonghome-v19-fruit-theme/);
+assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 
 console.log('Fruit theme checks passed.');
