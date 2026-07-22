@@ -6,12 +6,20 @@
 })(typeof window !== 'undefined' ? window : globalThis, function createGame1ContentLoader() {
   'use strict';
 
-  const CONTENT_URL = './content/games/game1.json';
+  const CONTENT_URLS = Object.freeze({
+    'bong-home': './content/games/game1.json',
+    animals: './content/games/game1-animals.json'
+  });
   const SCHEMA_VERSION = 1;
+
+  function resolveContentUrl(themeId) {
+    return CONTENT_URLS[themeId] || CONTENT_URLS['bong-home'];
+  }
 
   function validateContent(value) {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
     if (value.schemaVersion !== SCHEMA_VERSION || value.gameId !== 'game1') return null;
+    if (value.themeId != null && (typeof value.themeId !== 'string' || !value.themeId.trim())) return null;
     if (typeof value.title !== 'string' || !value.title.trim()) return null;
     if (typeof value.instruction !== 'string' || !value.instruction.trim()) return null;
     if (!Array.isArray(value.difficulties) || value.difficulties.length !== 3) return null;
@@ -36,9 +44,10 @@
     return JSON.parse(JSON.stringify(value));
   }
 
-  function applyContent(root, content) {
+  function applyContent(root, content, requestedThemeId = 'bong-home') {
     const valid = validateContent(content);
     if (!valid) throw new TypeError('Nội dung Game 1 không hợp lệ');
+    valid.themeId = valid.themeId || requestedThemeId || 'bong-home';
 
     root.BongGame1Content = valid;
     if (typeof KHO_HINH !== 'undefined' && Array.isArray(KHO_HINH)) {
@@ -63,16 +72,28 @@
       });
     }
 
-    root.dispatchEvent(new CustomEvent('bonghome:game1contentready', { detail: { content: valid } }));
+    if (root.CustomEvent) {
+      root.dispatchEvent(new root.CustomEvent('bonghome:game1contentready', {
+        detail: { content: valid, themeId: valid.themeId }
+      }));
+    }
     return valid;
   }
 
-  async function load(root, fetchImpl = root.fetch?.bind(root)) {
+  async function load(root, fetchImpl = root.fetch?.bind(root), themeId = root.BongThemes?.getActiveTheme()?.id || 'bong-home') {
     if (!fetchImpl) throw new Error('Fetch không khả dụng');
-    const response = await fetchImpl(CONTENT_URL, { cache: 'no-cache' });
+    const contentUrl = resolveContentUrl(themeId);
+    const response = await fetchImpl(contentUrl, { cache: 'no-cache' });
     if (!response?.ok) throw new Error(`Không tải được nội dung Game 1: HTTP ${response?.status || 0}`);
-    return applyContent(root, await response.json());
+    return applyContent(root, await response.json(), themeId);
   }
 
-  return Object.freeze({ schemaVersion: SCHEMA_VERSION, contentUrl: CONTENT_URL, validateContent, applyContent, load });
+  return Object.freeze({
+    schemaVersion: SCHEMA_VERSION,
+    contentUrls: CONTENT_URLS,
+    resolveContentUrl,
+    validateContent,
+    applyContent,
+    load
+  });
 });
