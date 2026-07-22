@@ -35,5 +35,5 @@ assert.match(components, /min-height:\s*var\(--bh-touch-target\)/);
   assert.ok(serviceWorker.includes(file), `${file} must be cached by sw.js`);
 });
 
-assert.match(serviceWorker, /bonghome-v10-design-system/);
+assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 console.log('Design system smoke checks passed.');
