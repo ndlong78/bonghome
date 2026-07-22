@@ -28,10 +28,19 @@
       const header = root.document.querySelector('.khung > header') || root.document.querySelector('header');
       if (!header) return null;
 
+      const actions = root.document.createElement('div');
+      actions.className = 'bh-profile-home-actions';
+
       const button = root.document.createElement('button');
       button.id = 'bhProfileButton';
       button.type = 'button';
       button.className = 'bh-profile-button';
+
+      const parentLink = root.document.createElement('a');
+      parentLink.className = 'bh-parent-link';
+      parentLink.href = './parents.html';
+      parentLink.textContent = '👨‍👩‍👧 Dành cho phụ huynh';
+      parentLink.setAttribute('aria-label', 'Mở Góc phụ huynh');
 
       const dialog = root.document.createElement('div');
       dialog.className = 'bh-profile-dialog';
@@ -56,7 +65,8 @@
           </div>
         </form>`;
       root.document.body.appendChild(dialog);
-      header.appendChild(button);
+      actions.append(button, parentLink);
+      header.appendChild(actions);
 
       const form = dialog.querySelector('form');
       const input = form.elements.displayName;
@@ -106,7 +116,7 @@
       });
 
       render();
-      return { button, dialog };
+      return { button, parentLink, dialog };
     }).catch((error) => {
       console.warn('[Bông Home] Không tải được hồ sơ cục bộ', error);
       return null;
