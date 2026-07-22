@@ -24,9 +24,12 @@
     });
   }
 
+  const isGame1 = /\/game1\.html$/.test(window.location.pathname);
+
   loadSharedStyle('./css/components.css', 'data-bh-components');
   loadSharedStyle('./css/common.css', 'data-bh-common');
   loadSharedStyle('./css/design-tokens.css', 'data-bh-design-tokens');
+  if (isGame1) loadSharedStyle('./css/game1-autosave.css', 'data-bh-game1-autosave-style');
   loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios').catch(() => {});
   loadSharedScript('./pwa-quality.js', 'data-bh-pwa-quality').catch(() => {});
 
@@ -81,13 +84,37 @@
   }
 
   function loadGame1Difficulty() {
-    if (!/\/game1\.html$/.test(window.location.pathname)) return;
-    if (document.querySelector('script[data-game1-difficulty]')) return;
-    const script = document.createElement('script');
-    script.src = './game1-difficulty.js';
-    script.dataset.game1Difficulty = 'true';
-    script.onload = () => updateDifficultyAria(document.getElementById('mucDo')?.parentElement || document);
-    document.body.appendChild(script);
+    if (!isGame1) return Promise.resolve(null);
+    const existing = document.querySelector('script[data-game1-difficulty]');
+    if (existing?.dataset.loaded === 'true') return Promise.resolve(existing);
+    if (existing) {
+      return new Promise((resolve, reject) => {
+        existing.addEventListener('load', () => resolve(existing), { once: true });
+        existing.addEventListener('error', reject, { once: true });
+      });
+    }
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = './game1-difficulty.js';
+      script.dataset.game1Difficulty = 'true';
+      script.addEventListener('load', () => {
+        script.dataset.loaded = 'true';
+        updateDifficultyAria(document.getElementById('mucDo')?.parentElement || document);
+        resolve(script);
+      }, { once: true });
+      script.addEventListener('error', reject, { once: true });
+      document.body.appendChild(script);
+    });
+  }
+
+  function loadGame1Autosave() {
+    if (!isGame1) return;
+    Promise.all([window.BongModulesReady, loadGame1Difficulty()])
+      .then(([modules]) => {
+        if (!modules.progress) return null;
+        return loadSharedScript('./game1-autosave.js', 'data-bh-game1-autosave');
+      })
+      .catch((error) => console.error('[Bông Home] Game 1 autosave failed to load', error));
   }
 
   function addSoundButton() {
@@ -150,7 +177,7 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     setEnabled(getEnabled());
-    loadGame1Difficulty();
+    loadGame1Autosave();
     addSoundButton();
     updateDifficultyAria();
     improveDialogs();
