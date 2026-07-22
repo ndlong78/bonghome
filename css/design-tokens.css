@@ -1,0 +1,50 @@
+:root {
+  --bh-color-cream: #fff7f0;
+  --bh-color-pink: #ffb7c5;
+  --bh-color-purple: #c9b6f5;
+  --bh-color-yellow: #ffe0a3;
+  --bh-color-mint: #a8e6cf;
+  --bh-color-sky: #bfe3ff;
+  --bh-color-peach: #ffcba4;
+  --bh-color-text: #6b4e71;
+  --bh-color-heading: #7a4e86;
+  --bh-color-muted: #8d7595;
+  --bh-color-surface: #ffffff;
+  --bh-color-success-bg: #eafbf3;
+  --bh-color-warning-bg: #fff8e7;
+
+  --bh-font-family: "Segoe UI", "Nunito", Arial, sans-serif;
+  --bh-font-weight-semibold: 700;
+  --bh-font-weight-bold: 800;
+  --bh-font-weight-heavy: 900;
+
+  --bh-space-1: 4px;
+  --bh-space-2: 8px;
+  --bh-space-3: 12px;
+  --bh-space-4: 16px;
+  --bh-space-5: 20px;
+  --bh-space-6: 24px;
+  --bh-space-8: 32px;
+
+  --bh-radius-sm: 12px;
+  --bh-radius-md: 18px;
+  --bh-radius-lg: 26px;
+  --bh-radius-xl: 34px;
+  --bh-radius-pill: 999px;
+
+  --bh-shadow-button: 0 5px 0 rgba(0, 0, 0, 0.12);
+  --bh-shadow-card: 0 6px 0 rgba(0, 0, 0, 0.06), 0 12px 24px rgba(150, 120, 170, 0.14);
+  --bh-shadow-dialog: 0 20px 50px rgba(120, 80, 140, 0.35);
+  --bh-focus-ring: 5px solid var(--bh-color-heading);
+  --bh-touch-target: 44px;
+
+  /* Tương thích với các biến cũ trong 10 game. */
+  --kem: var(--bh-color-cream);
+  --hong: var(--bh-color-pink);
+  --tim: var(--bh-color-purple);
+  --vang: var(--bh-color-yellow);
+  --mint: var(--bh-color-mint);
+  --troi: var(--bh-color-sky);
+  --cam: var(--bh-color-peach);
+  --chu: var(--bh-color-text);
+}
