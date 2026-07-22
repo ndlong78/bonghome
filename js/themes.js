@@ -2,9 +2,10 @@
   'use strict';
   if (typeof module === 'object' && module.exports) module.exports = factory;
   if (root?.BongStorage) root.BongThemes = factory(root.BongStorage, root);
-})(typeof window !== 'undefined' ? window : globalThis, function createBongThemes(storage, root = globalThis) {
+})(typeof window !== 'undefined' ? window : globalThis, function createBongThemes(storage, root) {
   'use strict';
 
+  root = root || globalThis;
   if (!storage) throw new Error('BongThemes requires BongStorage');
 
   const REGISTRY_URL = './content/themes/index.json';
