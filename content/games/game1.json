@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "gameId": "game1",
+  "title": "Lật Hình Tìm Cặp",
+  "instruction": "Bé lật 2 lá bài để tìm hai hình giống hệt nhau. Mức Khó có 12 cặp nhé!",
+  "difficultyAriaLabel": "Chọn mức độ",
+  "difficulties": [
+    { "pairs": 3, "label": "Dễ · 6 lá", "ariaLabel": "Dễ · 6 lá · 3 cặp" },
+    { "pairs": 6, "label": "Vừa · 12 lá", "ariaLabel": "Vừa · 12 lá · 6 cặp" },
+    { "pairs": 12, "label": "Khó · 24 lá", "ariaLabel": "Khó · 24 lá · 12 cặp" }
+  ],
+  "cards": [
+    {
+      "id": "unicorn",
+      "name": "Kỳ lân",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M14 44c0-12 8-20 20-20 10 0 16 6 16 14 0 8-6 14-16 14H20a6 6 0 0 1-6-6z\" fill=\"#FFF\" stroke=\"#E9A9C6\" stroke-width=\"3\"/><path d=\"M40 26 l3-14 6 12z\" fill=\"#C9B6F5\" stroke=\"#9B85D6\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M44 14 l2-11 4 3z\" fill=\"#FFE0A3\" stroke=\"#EDC46F\" stroke-width=\"2\" stroke-linejoin=\"round\"/><path d=\"M20 30 q-8 4-6 16 q6-4 10-8z\" fill=\"#FFB7C5\"/><circle cx=\"43\" cy=\"34\" r=\"2.6\" fill=\"#6B4E71\"/><path d=\"M50 40 q4 2 4 5\" stroke=\"#E9A9C6\" stroke-width=\"2.5\" fill=\"none\" stroke-linecap=\"round\"/></svg>"
+    },
+    {
+      "id": "rainbow",
+      "name": "Cầu vồng",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><g fill=\"none\" stroke-linecap=\"round\"><path d=\"M8 50 A24 24 0 0 1 56 50\" stroke=\"#FFB7C5\" stroke-width=\"6\"/><path d=\"M14 50 A18 18 0 0 1 50 50\" stroke=\"#FFE0A3\" stroke-width=\"6\"/><path d=\"M20 50 A12 12 0 0 1 44 50\" stroke=\"#A8E6CF\" stroke-width=\"6\"/><path d=\"M26 50 A6 6 0 0 1 38 50\" stroke=\"#C9B6F5\" stroke-width=\"6\"/></g><circle cx=\"10\" cy=\"52\" r=\"6\" fill=\"#fff\" stroke=\"#DCD3E8\" stroke-width=\"2\"/><circle cx=\"54\" cy=\"52\" r=\"6\" fill=\"#fff\" stroke=\"#DCD3E8\" stroke-width=\"2\"/></svg>"
+    },
+    {
+      "id": "star",
+      "name": "Ngôi sao",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M32 6 l7.4 15.6 17 2.2 -12.5 11.9 3.2 17 -15.1-8.2 -15.1 8.2 3.2-17 -12.5-11.9 17-2.2z\" fill=\"#FFE0A3\" stroke=\"#EDC46F\" stroke-width=\"3\" stroke-linejoin=\"round\"/><circle cx=\"26\" cy=\"28\" r=\"2.5\" fill=\"#fff\"/><path d=\"M54 12 l1.6 3.4 3.4 1.6 -3.4 1.6 -1.6 3.4 -1.6-3.4 -3.4-1.6 3.4-1.6z\" fill=\"#FFF2C9\"/></svg>"
+    },
+    {
+      "id": "crown",
+      "name": "Vương miện",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M8 44 L12 18 l12 12 8-16 8 16 12-12 4 26z\" fill=\"#FFE0A3\" stroke=\"#E0A94F\" stroke-width=\"3\" stroke-linejoin=\"round\"/><rect x=\"8\" y=\"44\" width=\"48\" height=\"10\" rx=\"4\" fill=\"#F5CC7A\" stroke=\"#E0A94F\" stroke-width=\"3\"/><circle cx=\"32\" cy=\"34\" r=\"3.5\" fill=\"#FFB7C5\"/><circle cx=\"18\" cy=\"38\" r=\"3\" fill=\"#C9B6F5\"/><circle cx=\"46\" cy=\"38\" r=\"3\" fill=\"#A8E6CF\"/></svg>"
+    },
+    {
+      "id": "cat",
+      "name": "Mèo con",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M14 24 L12 8 l14 8z\" fill=\"#FFCBA4\" stroke=\"#D99A6C\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M50 24 L52 8 l-14 8z\" fill=\"#FFCBA4\" stroke=\"#D99A6C\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><circle cx=\"32\" cy=\"36\" r=\"20\" fill=\"#FFE3CC\" stroke=\"#D99A6C\" stroke-width=\"3\"/><circle cx=\"24\" cy=\"33\" r=\"3\" fill=\"#6B4E71\"/><circle cx=\"40\" cy=\"33\" r=\"3\" fill=\"#6B4E71\"/><path d=\"M32 40 l-3 3 3 2 3-2z\" fill=\"#FFB7C5\"/><path d=\"M10 34 h10 M10 40 h10 M44 34 h10 M44 40 h10\" stroke=\"#D99A6C\" stroke-width=\"2\" stroke-linecap=\"round\"/></svg>"
+    },
+    {
+      "id": "strawberry",
+      "name": "Dâu tây",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M32 56c-12 0-20-9-20-20 0-8 9-14 20-14s20 6 20 14c0 11-8 20-20 20z\" fill=\"#FFB7C5\" stroke=\"#E9799C\" stroke-width=\"3\"/><path d=\"M20 20 h24 l-6 6 h-12z\" fill=\"#A8E6CF\" stroke=\"#7FCFB0\" stroke-width=\"2.5\" stroke-linejoin=\"round\"/><path d=\"M32 20 v-9\" stroke=\"#7FCFB0\" stroke-width=\"3\" stroke-linecap=\"round\"/><circle cx=\"25\" cy=\"34\" r=\"1.8\" fill=\"#fff\"/><circle cx=\"39\" cy=\"34\" r=\"1.8\" fill=\"#fff\"/><circle cx=\"32\" cy=\"42\" r=\"1.8\" fill=\"#fff\"/><circle cx=\"22\" cy=\"45\" r=\"1.8\" fill=\"#fff\"/><circle cx=\"42\" cy=\"45\" r=\"1.8\" fill=\"#fff\"/></svg>"
+    },
+    {
+      "id": "candy-house",
+      "name": "Ngôi nhà kẹo",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><rect x=\"14\" y=\"30\" width=\"36\" height=\"26\" rx=\"5\" fill=\"#FFF3E0\" stroke=\"#DCB88F\" stroke-width=\"3\"/><path d=\"M8 32 L32 12 L56 32 Z\" fill=\"#FFB7C5\" stroke=\"#E9799C\" stroke-width=\"3\" stroke-linejoin=\"round\"/><rect x=\"26\" y=\"40\" width=\"12\" height=\"16\" rx=\"4\" fill=\"#C9B6F5\"/><circle cx=\"32\" cy=\"24\" r=\"4\" fill=\"#FFE0A3\"/><circle cx=\"18\" cy=\"46\" r=\"3\" fill=\"#A8E6CF\"/><circle cx=\"47\" cy=\"46\" r=\"3\" fill=\"#A8E6CF\"/></svg>"
+    },
+    {
+      "id": "butterfly",
+      "name": "Con bướm",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M31 32 C22 16 6 16 10 30 C4 40 20 50 31 34z\" fill=\"#C9B6F5\" stroke=\"#9B85D6\" stroke-width=\"2.5\"/><path d=\"M33 32 C42 16 58 16 54 30 C60 40 44 50 33 34z\" fill=\"#FFB7C5\" stroke=\"#E9799C\" stroke-width=\"2.5\"/><rect x=\"29.5\" y=\"20\" width=\"5\" height=\"30\" rx=\"2.5\" fill=\"#FFE0A3\" stroke=\"#E0A94F\" stroke-width=\"2\"/><path d=\"M31 20 l-6-8 M33 20 l6-8\" stroke=\"#E0A94F\" stroke-width=\"2.5\" stroke-linecap=\"round\"/></svg>"
+    },
+    {
+      "id": "happy-face",
+      "name": "Khuôn mặt vui",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"22\" fill=\"#BFE3FF\" stroke=\"#6EAAD3\" stroke-width=\"3\"/><path d=\"M20 34c4 8 20 8 24 0\" fill=\"none\" stroke=\"#6B4E71\" stroke-width=\"3\" stroke-linecap=\"round\"/><circle cx=\"24\" cy=\"27\" r=\"3\" fill=\"#6B4E71\"/><circle cx=\"40\" cy=\"27\" r=\"3\" fill=\"#6B4E71\"/></svg>"
+    },
+    {
+      "id": "gift-bag",
+      "name": "Túi quà",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M18 48h28l-3-24H21z\" fill=\"#FFE0A3\" stroke=\"#D6A94D\" stroke-width=\"3\" stroke-linejoin=\"round\"/><path d=\"M24 25c0-10 16-10 16 0\" fill=\"none\" stroke=\"#E9799C\" stroke-width=\"4\" stroke-linecap=\"round\"/><circle cx=\"26\" cy=\"37\" r=\"3\" fill=\"#FFB7C5\"/><circle cx=\"38\" cy=\"37\" r=\"3\" fill=\"#C9B6F5\"/></svg>"
+    },
+    {
+      "id": "princess-hat",
+      "name": "Mũ công chúa",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M14 42c0-10 8-18 18-18s18 8 18 18\" fill=\"#A8E6CF\" stroke=\"#58B792\" stroke-width=\"3\"/><path d=\"M22 24l3-10 7 8 7-8 3 10\" fill=\"#FFB7C5\" stroke=\"#E9799C\" stroke-width=\"3\" stroke-linejoin=\"round\"/><rect x=\"13\" y=\"41\" width=\"38\" height=\"10\" rx=\"5\" fill=\"#C9B6F5\" stroke=\"#9B85D6\" stroke-width=\"3\"/></svg>"
+    },
+    {
+      "id": "water-drop",
+      "name": "Giọt nước",
+      "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><path d=\"M32 8c8 10 17 16 17 27a17 17 0 1 1-34 0C15 24 24 18 32 8z\" fill=\"#BFE3FF\" stroke=\"#5B9FCB\" stroke-width=\"3\"/><path d=\"M24 38c4 5 12 5 16 0\" fill=\"none\" stroke=\"#6B4E71\" stroke-width=\"3\" stroke-linecap=\"round\"/><circle cx=\"25\" cy=\"31\" r=\"2.5\" fill=\"#6B4E71\"/><circle cx=\"39\" cy=\"31\" r=\"2.5\" fill=\"#6B4E71\"/></svg>"
+    }
+  ]
+}
