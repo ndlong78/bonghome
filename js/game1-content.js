@@ -33,7 +33,6 @@
       if (typeof card.svg !== 'string' || !/^<svg[\s>]/.test(card.svg.trim())) return null;
       ids.add(card.id);
     }
-
     return JSON.parse(JSON.stringify(value));
   }
 
@@ -42,8 +41,8 @@
     if (!valid) throw new TypeError('Nội dung Game 1 không hợp lệ');
 
     root.BongGame1Content = valid;
-    if (Array.isArray(root.KHO_HINH)) {
-      root.KHO_HINH.splice(0, root.KHO_HINH.length, ...valid.cards.map((card) => card.svg));
+    if (typeof KHO_HINH !== 'undefined' && Array.isArray(KHO_HINH)) {
+      KHO_HINH.splice(0, KHO_HINH.length, ...valid.cards.map((card) => card.svg));
     }
 
     const title = root.document.querySelector('.thanh-tren h1');
@@ -75,11 +74,5 @@
     return applyContent(root, await response.json());
   }
 
-  return Object.freeze({
-    schemaVersion: SCHEMA_VERSION,
-    contentUrl: CONTENT_URL,
-    validateContent,
-    applyContent,
-    load
-  });
+  return Object.freeze({ schemaVersion: SCHEMA_VERSION, contentUrl: CONTENT_URL, validateContent, applyContent, load });
 });
