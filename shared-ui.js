@@ -29,6 +29,7 @@
   loadSharedStyle('./css/components.css', 'data-bh-components');
   loadSharedStyle('./css/common.css', 'data-bh-common');
   loadSharedStyle('./css/themes.css', 'data-bh-themes');
+  loadSharedStyle('./css/theme-picker.css', 'data-bh-theme-picker');
   loadSharedStyle('./css/design-tokens.css', 'data-bh-design-tokens');
   if (isGame1) loadSharedStyle('./css/game1-autosave.css', 'data-bh-game1-autosave-style');
   loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios').catch(() => {});
@@ -90,10 +91,10 @@
     });
   }
 
-  function loadGame1Content() {
+  function loadGame1Content(themeId) {
     if (!isGame1) return Promise.resolve(null);
     return loadSharedScript('./js/game1-content.js', 'data-bh-game1-content')
-      .then(() => window.BongGame1ContentLoader.load(window))
+      .then(() => window.BongGame1ContentLoader.load(window, undefined, themeId))
       .catch((error) => {
         console.warn('[Bông Home] Dùng nội dung Game 1 dự phòng', error);
         return null;
@@ -126,13 +127,28 @@
 
   function loadGame1Autosave() {
     if (!isGame1) return;
-    const contentAndDifficulty = loadGame1Content().then(() => loadGame1Difficulty());
-    Promise.all([window.BongModulesReady, contentAndDifficulty])
-      .then(([modules]) => {
-        if (!modules.progress) return null;
-        return loadSharedScript('./game1-autosave.js', 'data-bh-game1-autosave');
+    window.BongModulesReady
+      .then((modules) => {
+        if (!modules.progress || !modules.themes) return null;
+        const themeId = modules.themes.getActiveTheme()?.id || 'bong-home';
+        return loadGame1Content(themeId)
+          .then(() => loadGame1Difficulty())
+          .then(() => loadSharedScript('./js/game1-theme-progress.js', 'data-bh-game1-theme-progress'))
+          .then(() => {
+            if (window.BongGame1Progress) window.BongProgress = window.BongGame1Progress;
+            return loadSharedScript('./game1-autosave.js', 'data-bh-game1-autosave');
+          });
       })
       .catch((error) => console.error('[Bông Home] Game 1 autosave failed to load', error));
+  }
+
+  function loadThemePicker() {
+    window.BongModulesReady
+      .then((modules) => {
+        if (!modules.themes) return null;
+        return loadSharedScript('./js/theme-picker.js', 'data-bh-theme-picker-script');
+      })
+      .catch((error) => console.warn('[Bông Home] Không tải được bộ chọn chủ đề', error));
   }
 
   function addSoundButton() {
@@ -196,6 +212,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     setEnabled(getEnabled());
     loadGame1Autosave();
+    loadThemePicker();
     addSoundButton();
     updateDifficultyAria();
     improveDialogs();
