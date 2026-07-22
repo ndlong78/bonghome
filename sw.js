@@ -1,10 +1,11 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v9-quality";
+const PHIEN_BAN = "bonghome-v10-design-system";
 const DANH_SACH_LUU = [
   "./", "./index.html",
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
-  "./shared-ui.js", "./pwa-ios.js", "./pwa-quality.js", "./game1-difficulty.js", "./manifest.json", "./icon-192.png", "./icon-512.png",
-  "./icon-maskable-512.png", "./apple-touch-icon.png"
+  "./shared-ui.js", "./pwa-ios.js", "./pwa-quality.js", "./game1-difficulty.js",
+  "./css/design-tokens.css", "./css/common.css", "./css/components.css",
+  "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
 
 async function baoChoTatCa(message) {

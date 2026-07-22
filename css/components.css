@@ -1,0 +1,130 @@
+.thanh-tren {
+  display: flex;
+  align-items: center;
+  gap: var(--bh-space-3);
+}
+
+.nut-ve,
+.bh-button {
+  min-height: var(--bh-touch-target);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bh-space-2);
+  padding: 10px 16px;
+  border: 3px solid var(--bh-color-purple);
+  border-radius: var(--bh-radius-pill);
+  background: var(--bh-color-surface);
+  color: var(--bh-color-text);
+  text-decoration: none;
+  font-weight: var(--bh-font-weight-bold);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+.nut-ve:active,
+.bh-button:active,
+.nhom-nut button:active,
+.nhom-nut a:active,
+.nhom-nut-duoi button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.huong-dan {
+  text-align: center;
+  color: var(--bh-color-muted);
+  font-weight: var(--bh-font-weight-semibold);
+}
+
+.bang-so {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.o-so {
+  min-width: 96px;
+  padding: 8px 16px;
+  border: 3px solid var(--bh-color-mint);
+  border-radius: var(--bh-radius-md);
+  background: var(--bh-color-surface);
+  text-align: center;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.05);
+}
+
+.o-so .nhan,
+.ket-qua .nhan {
+  display: block;
+  font-size: 12px;
+  font-weight: var(--bh-font-weight-semibold);
+}
+
+.o-so .gia-tri,
+.ket-qua .gia-tri {
+  font-weight: var(--bh-font-weight-heavy);
+}
+
+.muc-do button,
+.nhom-nut button,
+.nhom-nut a,
+.nhom-nut-duoi button,
+.nut-am-thanh {
+  min-height: var(--bh-touch-target);
+}
+
+.man-thang {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bh-space-4);
+  background: rgba(122, 78, 134, 0.35);
+}
+
+.man-thang.hien {
+  display: flex;
+}
+
+.hop-thang {
+  width: 100%;
+  max-width: 400px;
+  padding: 26px 24px;
+  border: 6px solid var(--bh-color-yellow);
+  border-radius: var(--bh-radius-xl);
+  background: var(--bh-color-surface);
+  text-align: center;
+  box-shadow: var(--bh-shadow-dialog);
+}
+
+.nhom-nut,
+.nhom-nut-duoi {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nhom-nut button,
+.nhom-nut a,
+.nhom-nut-duoi button {
+  border-radius: var(--bh-radius-pill);
+  font-weight: var(--bh-font-weight-bold);
+  text-decoration: none;
+}
+
+.nut-am-thanh {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 120;
+  padding: 10px 14px;
+  border: 3px solid var(--bh-color-purple);
+  border-radius: var(--bh-radius-pill);
+  background: var(--bh-color-surface);
+  color: var(--bh-color-text);
+  font-weight: var(--bh-font-weight-bold);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.08), 0 10px 22px rgba(120, 80, 140, 0.18);
+}
