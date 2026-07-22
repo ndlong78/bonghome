@@ -6,14 +6,16 @@
 })(typeof window !== 'undefined' ? window : globalThis, function createGame1ContentLoader() {
   'use strict';
 
-  const CONTENT_URLS = Object.freeze({
-    'bong-home': './content/games/game1.json',
-    animals: './content/games/game1-animals.json'
-  });
+  const DEFAULT_THEME_ID = 'bong-home';
+  const DEFAULT_CONTENT_URL = './content/games/game1.json';
+  const THEME_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
   const SCHEMA_VERSION = 1;
 
   function resolveContentUrl(themeId) {
-    return CONTENT_URLS[themeId] || CONTENT_URLS['bong-home'];
+    if (!THEME_ID_PATTERN.test(themeId || '') || themeId === DEFAULT_THEME_ID) {
+      return DEFAULT_CONTENT_URL;
+    }
+    return `./content/themes/${themeId}/game1.json`;
   }
 
   function validateContent(value) {
@@ -44,10 +46,10 @@
     return JSON.parse(JSON.stringify(value));
   }
 
-  function applyContent(root, content, requestedThemeId = 'bong-home') {
+  function applyContent(root, content, requestedThemeId = DEFAULT_THEME_ID) {
     const valid = validateContent(content);
     if (!valid) throw new TypeError('Nội dung Game 1 không hợp lệ');
-    valid.themeId = valid.themeId || requestedThemeId || 'bong-home';
+    valid.themeId = valid.themeId || requestedThemeId || DEFAULT_THEME_ID;
 
     root.BongGame1Content = valid;
     if (typeof KHO_HINH !== 'undefined' && Array.isArray(KHO_HINH)) {
@@ -80,7 +82,7 @@
     return valid;
   }
 
-  async function load(root, fetchImpl = root.fetch?.bind(root), themeId = root.BongThemes?.getActiveTheme()?.id || 'bong-home') {
+  async function load(root, fetchImpl = root.fetch?.bind(root), themeId = root.BongThemes?.getActiveTheme()?.id || DEFAULT_THEME_ID) {
     if (!fetchImpl) throw new Error('Fetch không khả dụng');
     const contentUrl = resolveContentUrl(themeId);
     const response = await fetchImpl(contentUrl, { cache: 'no-cache' });
@@ -90,7 +92,8 @@
 
   return Object.freeze({
     schemaVersion: SCHEMA_VERSION,
-    contentUrls: CONTENT_URLS,
+    defaultThemeId: DEFAULT_THEME_ID,
+    defaultContentUrl: DEFAULT_CONTENT_URL,
     resolveContentUrl,
     validateContent,
     applyContent,

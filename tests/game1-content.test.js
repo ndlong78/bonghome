@@ -5,7 +5,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const content = JSON.parse(read('content/games/game1.json'));
-const animalContent = JSON.parse(read('content/games/game1-animals.json'));
+const animalContent = JSON.parse(read('content/themes/animals/game1.json'));
 const loader = require('../js/game1-content.js');
 const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
@@ -25,8 +25,11 @@ assert.equal(new Set(valid.cards.map((card) => card.id)).size, 12);
 assert.equal(new Set(validAnimals.cards.map((card) => card.id)).size, 12);
 assert.ok(valid.cards.every((card) => card.svg.startsWith('<svg')));
 assert.ok(validAnimals.cards.every((card) => card.svg.startsWith('<svg')));
-assert.equal(loader.resolveContentUrl('animals'), './content/games/game1-animals.json');
-assert.equal(loader.resolveContentUrl('missing'), './content/games/game1.json');
+assert.equal(loader.resolveContentUrl('bong-home'), './content/games/game1.json');
+assert.equal(loader.resolveContentUrl('animals'), './content/themes/animals/game1.json');
+assert.equal(loader.resolveContentUrl('fruits'), './content/themes/fruits/game1.json');
+assert.equal(loader.resolveContentUrl('../animals'), './content/games/game1.json');
+assert.equal(loader.resolveContentUrl(''), './content/games/game1.json');
 
 assert.equal(loader.validateContent({ ...content, cards: content.cards.slice(0, 11) }), null);
 assert.equal(loader.validateContent({ ...content, schemaVersion: 2 }), null);
@@ -35,9 +38,10 @@ assert.equal(loader.validateContent({ ...content, difficulties: [{ pairs: 3, lab
 assert.ok(sharedUi.includes('./js/game1-content.js'));
 assert.ok(sharedUi.includes('loadGame1Content(themeId)'));
 assert.ok(serviceWorker.includes('./content/games/game1.json'));
-assert.ok(serviceWorker.includes('./content/games/game1-animals.json'));
+assert.ok(serviceWorker.includes('./content/themes/animals/game1.json'));
+assert.ok(!serviceWorker.includes('./content/games/game1-animals.json'));
 assert.ok(serviceWorker.includes('./js/game1-content.js'));
-assert.match(serviceWorker, /bonghome-v15-animal-theme/);
+assert.match(serviceWorker, /bonghome-v18-theme-content-paths/);
 assert.ok(!difficulty.includes('HINH_BO_SUNG'));
 assert.ok(difficulty.includes('window.BongGame1Content'));
 
