@@ -124,6 +124,7 @@
 
     const completionResult = baseProgress.completeGame(gameId, {
       ...result,
+      transactionId: `${themeId}:${result.transactionId}`,
       theme: themeId,
       metadata: { ...(result.metadata || {}), themeId }
     });
