@@ -74,7 +74,9 @@
         element.style.setProperty(`--bh-theme-${cssName}`, theme.tokens[name]);
       });
     }
-    root.dispatchEvent?.(new CustomEvent('bonghome:themechange', { detail: { theme: clone(theme) } }));
+    if (root.dispatchEvent && root.CustomEvent) {
+      root.dispatchEvent(new root.CustomEvent('bonghome:themechange', { detail: { theme: clone(theme) } }));
+    }
     return clone(theme);
   }
 
