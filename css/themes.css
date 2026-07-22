@@ -1,0 +1,26 @@
+:root {
+  --bh-theme-background: var(--kem, #FFF7F0);
+  --bh-theme-surface: #FFFFFF;
+  --bh-theme-text: var(--chu, #6B4E71);
+  --bh-theme-primary: var(--tim, #C9B6F5);
+  --bh-theme-primary-strong: #9B85D6;
+  --bh-theme-secondary: var(--hong, #FFB7C5);
+  --bh-theme-accent: var(--vang, #FFE0A3);
+  --bh-theme-success: var(--mint, #A8E6CF);
+  --bh-theme-info: var(--troi, #BFE3FF);
+}
+
+/* Alias tương thích để game hiện tại nhận theme mà không cần viết lại. */
+:root[data-theme] {
+  --kem: var(--bh-theme-background);
+  --chu: var(--bh-theme-text);
+  --tim: var(--bh-theme-primary);
+  --hong: var(--bh-theme-secondary);
+  --vang: var(--bh-theme-accent);
+  --mint: var(--bh-theme-success);
+  --troi: var(--bh-theme-info);
+}
+
+:root[data-theme] body {
+  color: var(--bh-theme-text);
+}
