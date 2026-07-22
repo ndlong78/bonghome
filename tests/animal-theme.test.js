@@ -8,6 +8,7 @@ const registry = JSON.parse(read('content/themes/index.json'));
 const animals = JSON.parse(read('content/games/game1-animals.json'));
 const createAdapter = require('../js/game1-theme-progress.js');
 const sharedUi = read('shared-ui.js');
+const pickerSource = read('js/theme-picker.js');
 const pickerCss = read('css/theme-picker.css');
 const serviceWorker = read('sw.js');
 
@@ -61,7 +62,8 @@ assert.deepEqual(progress.loadGame('game1').state, homeState, 'Hoàn thành them
 
 assert.match(sharedUi, /game1-theme-progress\.js/);
 assert.match(sharedUi, /theme-picker\.js/);
-assert.match(sharedUi, /dispatchEvent\(new CustomEvent\('bonghome:pause'\)\)/);
+assert.match(pickerSource, /bonghome:pause/);
+assert.match(pickerSource, /location\.reload\(\)/);
 assert.match(pickerCss, /min-height:44px/);
 assert.match(pickerCss, /prefers-reduced-motion/);
 assert.ok(serviceWorker.includes('./content/games/game1-animals.json'));
