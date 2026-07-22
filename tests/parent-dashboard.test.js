@@ -15,7 +15,7 @@ assert.match(html, /<main class="bh-parent"/);
 assert.match(html, /id="completedCount"/);
 assert.match(html, /id="starCount"/);
 assert.match(html, /Dữ liệu hồ sơ, tiến độ và phần thưởng chỉ được lưu/);
-assert.doesNotMatch(html, /email|số điện thoại|ngày sinh|trường học/i, 'Trang không được yêu cầu trường dữ liệu cá nhân');
+assert.doesNotMatch(html, /<form|<input|<textarea|<select/, 'Trang phụ huynh nền tảng phải chỉ đọc');
 assert.match(html, /\.\/shared-ui\.js/);
 assert.match(html, /\.\/js\/parent-dashboard\.js/);
 
