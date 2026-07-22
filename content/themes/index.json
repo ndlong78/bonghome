@@ -37,6 +37,24 @@
         "success": "#9FD8C1",
         "info": "#AFCFE8"
       }
+    },
+    {
+      "id": "fruits",
+      "name": "Vườn trái cây",
+      "description": "Cùng Bông nhận biết những loại trái cây nhiều màu sắc.",
+      "icon": "🍎",
+      "available": true,
+      "tokens": {
+        "background": "#FFF8E7",
+        "surface": "#FFFFFF",
+        "text": "#594C3F",
+        "primary": "#F6C66F",
+        "primaryStrong": "#D68C32",
+        "secondary": "#F3A6A0",
+        "accent": "#BFD98F",
+        "success": "#A8D5B5",
+        "info": "#B9D8EE"
+      }
     }
   ]
 }
