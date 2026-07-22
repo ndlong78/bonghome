@@ -1,6 +1,15 @@
 (() => {
   'use strict';
 
+  function loadSharedStyle(href, marker) {
+    if (document.querySelector(`link[${marker}]`)) return;
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.setAttribute(marker, 'true');
+    document.head.prepend(link);
+  }
+
   function loadSharedScript(src, marker) {
     if (document.querySelector(`script[${marker}]`)) return;
     const script = document.createElement('script');
@@ -10,6 +19,9 @@
     document.head.appendChild(script);
   }
 
+  loadSharedStyle('./css/components.css', 'data-bh-components');
+  loadSharedStyle('./css/common.css', 'data-bh-common');
+  loadSharedStyle('./css/design-tokens.css', 'data-bh-design-tokens');
   loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios');
   loadSharedScript('./pwa-quality.js', 'data-bh-pwa-quality');
 
@@ -57,19 +69,6 @@
 
   function addSoundButton() {
     if (document.getElementById('nutAmThanh')) return;
-
-    const style = document.createElement('style');
-    style.textContent = `
-      .nut-am-thanh{
-        position:fixed; right:max(12px, env(safe-area-inset-right)); bottom:max(12px, env(safe-area-inset-bottom));
-        z-index:120; border:3px solid #C9B6F5; border-radius:999px; background:#fff; color:#6B4E71;
-        padding:10px 14px; font:800 14px/1.2 "Segoe UI","Nunito",Arial,sans-serif;
-        box-shadow:0 5px 0 rgba(0,0,0,.08),0 10px 22px rgba(120,80,140,.18); cursor:pointer;
-      }
-      .nut-am-thanh:focus-visible{outline:5px solid #7A4E86;outline-offset:4px}
-      .nut-am-thanh:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(0,0,0,.08)}
-    `;
-    document.head.appendChild(style);
 
     const button = document.createElement('button');
     button.id = 'nutAmThanh';
