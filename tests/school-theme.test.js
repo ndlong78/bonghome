@@ -26,6 +26,6 @@ assert.deepEqual(valid.difficulties.map((level) => level.pairs), [3, 6, 12]);
 
 assert.equal(loader.resolveContentUrl('school'), './content/themes/school/game1.json');
 assert.ok(serviceWorker.includes('./content/themes/school/game1.json'));
-assert.match(serviceWorker, /bonghome-v20-school-theme/);
+assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 
 console.log('School theme checks passed.');

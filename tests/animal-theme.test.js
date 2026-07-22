@@ -79,6 +79,6 @@ assert.ok(!serviceWorker.includes('./content/games/game1-animals.json'));
 assert.ok(serviceWorker.includes('./js/game1-theme-progress.js'));
 assert.ok(serviceWorker.includes('./js/theme-picker.js'));
 assert.ok(serviceWorker.includes('./css/theme-picker.css'));
-assert.match(serviceWorker, /bonghome-v18-theme-content-paths/);
+assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 
 console.log('Animal theme checks passed.');

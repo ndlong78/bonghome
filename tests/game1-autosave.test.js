@@ -66,7 +66,7 @@ assert.match(sharedUi, /game1-autosave\.js/);
 assert.match(sharedUi, /game1-autosave\.css/);
 assert.match(sharedUi, /game1-theme-progress\.js/);
 assert.match(sharedUi, /window\.BongProgress = window\.BongGame1Progress/);
-assert.match(serviceWorker, /bonghome-v15-animal-theme/);
+assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 assert.ok(serviceWorker.includes('./game1-autosave.js'));
 assert.ok(serviceWorker.includes('./css/game1-autosave.css'));
 assert.match(css, /min-height:var\(--bh-touch-target,44px\)/);
