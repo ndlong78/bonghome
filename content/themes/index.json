@@ -19,6 +19,24 @@
         "success": "#A8E6CF",
         "info": "#BFE3FF"
       }
+    },
+    {
+      "id": "animals",
+      "name": "Thế giới động vật",
+      "description": "Cùng Bông làm quen với những người bạn động vật đáng yêu.",
+      "icon": "🐾",
+      "available": true,
+      "tokens": {
+        "background": "#F4F8E8",
+        "surface": "#FFFFFF",
+        "text": "#405447",
+        "primary": "#B9D89C",
+        "primaryStrong": "#6F9D62",
+        "secondary": "#F4BFA7",
+        "accent": "#F6D889",
+        "success": "#9FD8C1",
+        "info": "#AFCFE8"
+      }
     }
   ]
 }
