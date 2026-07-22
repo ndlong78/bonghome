@@ -1,15 +1,48 @@
 (function (root) {
   'use strict';
 
-  function isSupportedPage(pathname) {
+  function isHomePage(pathname) {
     const path = typeof pathname === 'string' ? pathname : '';
-    return path.endsWith('/') || /\/index\.html$/.test(path) || /\/game1\.html$/.test(path);
+    return path.endsWith('/') || /\/index\.html$/.test(path);
+  }
+
+  function isSupportedPage(pathname) {
+    return isHomePage(pathname) || /\/game1\.html$/.test(typeof pathname === 'string' ? pathname : '');
+  }
+
+  function loadDailyJourney() {
+    if (!isHomePage(root.location.pathname) || root.__bongDailyJourneyLoading) return;
+    root.__bongDailyJourneyLoading = true;
+
+    if (!root.document.querySelector('link[data-bh-daily-journey]')) {
+      const link = root.document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = './css/daily-journey.css';
+      link.dataset.bhDailyJourney = 'true';
+      root.document.head.appendChild(link);
+    }
+
+    const start = () => root.BongDailyJourney?.init(root)
+      .catch((error) => console.warn('[Bông Home] Không tải được Hôm nay của Bông', error));
+
+    if (root.BongDailyJourney) {
+      start();
+      return;
+    }
+
+    const script = root.document.createElement('script');
+    script.src = './js/daily-journey.js';
+    script.dataset.bhDailyJourney = 'true';
+    script.addEventListener('load', start, { once: true });
+    script.addEventListener('error', () => console.warn('[Bông Home] Không tải được module Hôm nay của Bông'), { once: true });
+    root.document.head.appendChild(script);
   }
 
   function start() {
     if (root.__bongThemePickerStarted || !root.BongThemes) return;
     if (!isSupportedPage(root.location.pathname)) return;
     root.__bongThemePickerStarted = true;
+    loadDailyJourney();
 
     const themes = root.BongThemes.listThemes();
     if (themes.length < 2) return;
@@ -55,7 +88,7 @@
     renderActive();
   }
 
-  if (typeof module === 'object' && module.exports) module.exports = { isSupportedPage };
+  if (typeof module === 'object' && module.exports) module.exports = { isHomePage, isSupportedPage };
   if (root.document) {
     if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', start, { once: true });
     else start();
