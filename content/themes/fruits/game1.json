@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "gameId": "game1",
+  "themeId": "fruits",
+  "title": "Lật Hình Trái Cây",
+  "instruction": "Bé lật 2 lá bài để tìm hai loại trái cây giống hệt nhau nhé!",
+  "difficultyAriaLabel": "Chọn mức độ trò chơi trái cây",
+  "difficulties": [
+    { "pairs": 3, "label": "Dễ · 6 lá", "ariaLabel": "Dễ · 6 lá · 3 cặp trái cây" },
+    { "pairs": 6, "label": "Vừa · 12 lá", "ariaLabel": "Vừa · 12 lá · 6 cặp trái cây" },
+    { "pairs": 12, "label": "Khó · 24 lá", "ariaLabel": "Khó · 24 lá · 12 cặp trái cây" }
+  ],
+  "cards": [
+    { "id": "apple", "name": "Táo đỏ", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FDE5E3\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🍎</text></svg>" },
+    { "id": "banana", "name": "Chuối vàng", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FFF3BF\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🍌</text></svg>" },
+    { "id": "grapes", "name": "Nho tím", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#EEE3F7\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🍇</text></svg>" },
+    { "id": "orange", "name": "Cam ngọt", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FFE7C2\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🍊</text></svg>" },
+    { "id": "watermelon", "name": "Dưa hấu", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#E1F3DF\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🍉</text></svg>" },
+    { "id": "pineapple", "name": "Dứa", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FFF0B8\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🍍</text></svg>" },
+    { "id": "mango", "name": "Xoài chín", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FFE4A8\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🥭</text></svg>" },
+    { "id": "pear", "name": "Lê xanh", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#ECF3C9\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🍐</text></svg>" },
+    { "id": "strawberry", "name": "Dâu tây", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#FBE0E6\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🍓</text></svg>" },
+    { "id": "kiwi", "name": "Kiwi", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#E5F0CC\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🥝</text></svg>" },
+    { "id": "cherries", "name": "Anh đào", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#F7DDE3\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🍒</text></svg>" },
+    { "id": "blueberries", "name": "Việt quất", "svg": "<svg viewBox=\"0 0 64 64\" aria-hidden=\"true\"><circle cx=\"32\" cy=\"32\" r=\"27\" fill=\"#E1E8F7\"/><text x=\"32\" y=\"45\" text-anchor=\"middle\" font-size=\"38\">🫐</text></svg>" }
+  ]
+}
