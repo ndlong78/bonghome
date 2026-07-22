@@ -10,6 +10,7 @@
   'use strict';
 
   const SNAPSHOT_VERSION = 1;
+  const BUNDLE_VERSION = 1;
   const GAME_ID = 'game1';
   const ALLOWED_DIFFICULTIES = new Set([3, 6, 8, 12]);
 
@@ -58,6 +59,45 @@
     };
   }
 
+  function emptyBundle() {
+    return { bundleVersion: BUNDLE_VERSION, activeDifficulty: null, snapshots: {} };
+  }
+
+  function validateBundle(value, legacyStartedAt = null) {
+    const bundle = emptyBundle();
+    const legacySnapshot = validateSnapshot(value);
+    if (legacySnapshot) {
+      bundle.activeDifficulty = legacySnapshot.difficulty;
+      bundle.snapshots[String(legacySnapshot.difficulty)] = {
+        snapshot: legacySnapshot,
+        startedAt: legacyStartedAt || null
+      };
+      return bundle;
+    }
+
+    if (!value || typeof value !== 'object' || Array.isArray(value) || value.bundleVersion !== BUNDLE_VERSION) {
+      return bundle;
+    }
+
+    for (const [key, entry] of Object.entries(value.snapshots || {})) {
+      const snapshot = validateSnapshot(entry?.snapshot);
+      if (!snapshot || String(snapshot.difficulty) !== key) continue;
+      bundle.snapshots[key] = {
+        snapshot,
+        startedAt: typeof entry.startedAt === 'string' && entry.startedAt ? entry.startedAt : null
+      };
+    }
+
+    const active = Number(value.activeDifficulty);
+    if (ALLOWED_DIFFICULTIES.has(active) && bundle.snapshots[String(active)]) {
+      bundle.activeDifficulty = active;
+    } else {
+      const first = Object.keys(bundle.snapshots)[0];
+      bundle.activeDifficulty = first ? Number(first) : null;
+    }
+    return bundle;
+  }
+
   function makeTransactionId(startedAt, difficulty) {
     const safeStartedAt = typeof startedAt === 'string' && startedAt ? startedAt : 'unknown';
     return `game1:${difficulty}:${safeStartedAt}`;
@@ -87,6 +127,28 @@
       status.textContent = message;
       status.hidden = false;
       statusTimer = root.setTimeout(() => { status.hidden = true; }, 2200);
+    }
+
+    function readBundle() {
+      const saved = progress.loadGame(GAME_ID);
+      return { saved, bundle: validateBundle(saved?.state, saved?.startedAt) };
+    }
+
+    function writeBundle(bundle) {
+      const keys = Object.keys(bundle.snapshots);
+      if (!keys.length) {
+        progress.clearGame(GAME_ID);
+        return null;
+      }
+      if (!bundle.activeDifficulty || !bundle.snapshots[String(bundle.activeDifficulty)]) {
+        bundle.activeDifficulty = Number(keys[0]);
+      }
+      return progress.saveGame(GAME_ID, {
+        status: 'in_progress',
+        difficulty: String(bundle.activeDifficulty),
+        state: bundle,
+        startedAt: bundle.snapshots[String(bundle.activeDifficulty)]?.startedAt || undefined
+      });
     }
 
     function setDifficultyButton(difficulty) {
@@ -137,14 +199,21 @@
       if (completed) return false;
       const snapshot = captureSnapshot();
       if (!isMeaningful(snapshot)) return false;
-      const saved = progress.saveGame(GAME_ID, {
-        status: 'in_progress',
-        difficulty: String(snapshot.difficulty),
-        state: snapshot,
-        startedAt
-      });
-      startedAt = saved.startedAt;
+      const { bundle } = readBundle();
+      const key = String(snapshot.difficulty);
+      const previousStartedAt = bundle.snapshots[key]?.startedAt;
+      startedAt = startedAt || previousStartedAt || new Date().toISOString();
+      bundle.snapshots[key] = { snapshot, startedAt };
+      bundle.activeDifficulty = snapshot.difficulty;
+      writeBundle(bundle);
       return true;
+    }
+
+    function clearDifficulty(difficulty) {
+      const { bundle } = readBundle();
+      delete bundle.snapshots[String(difficulty)];
+      if (bundle.activeDifficulty === difficulty) bundle.activeDifficulty = null;
+      writeBundle(bundle);
     }
 
     function closePendingMismatch(delay = 700) {
@@ -167,11 +236,11 @@
       return button;
     }
 
-    function restoreSnapshot(snapshot, saved) {
+    function restoreSnapshot(snapshot, entry, message = '🌷 Bé tiếp tục từ chỗ đang chơi nhé!') {
       root.clearInterval(dongHoChay);
       dongHoChay = null;
       completed = false;
-      startedAt = saved.startedAt || null;
+      startedAt = entry?.startedAt || null;
       soCapCanTim = snapshot.difficulty;
       setDifficultyButton(soCapCanTim);
 
@@ -199,10 +268,21 @@
       resizeBoard();
       startClock();
       closePendingMismatch();
-      announce('🌷 Bé tiếp tục từ chỗ đang chơi nhé!');
+      announce(message);
     }
 
-    function showResumeChoice(saved, snapshot) {
+    function restoreDifficulty(difficulty, message) {
+      const { bundle } = readBundle();
+      const entry = bundle.snapshots[String(difficulty)];
+      const snapshot = validateSnapshot(entry?.snapshot);
+      if (!snapshot || !isMeaningful(snapshot)) return false;
+      bundle.activeDifficulty = difficulty;
+      writeBundle(bundle);
+      restoreSnapshot(snapshot, entry, message);
+      return true;
+    }
+
+    function showResumeChoice(entry, snapshot) {
       const overlay = root.document.createElement('div');
       overlay.className = 'bh-game1-resume';
       overlay.setAttribute('role', 'dialog');
@@ -222,13 +302,15 @@
       const continueButton = overlay.querySelector('.bh-game1-continue');
       const restartButton = overlay.querySelector('.bh-game1-restart');
       continueButton.addEventListener('click', () => {
-        restoreSnapshot(snapshot, saved);
+        restoreSnapshot(snapshot, entry);
         overlay.remove();
       });
       restartButton.addEventListener('click', () => {
-        progress.clearGame(GAME_ID);
+        clearDifficulty(snapshot.difficulty);
         startedAt = null;
         completed = false;
+        soCapCanTim = snapshot.difficulty;
+        setDifficultyButton(soCapCanTim);
         vanMoi();
         overlay.remove();
         announce('✨ Bé bắt đầu một ván mới nhé!');
@@ -241,20 +323,40 @@
       originalWin();
       if (completed) return;
       completed = true;
-      const transactionId = makeTransactionId(startedAt, soCapCanTim);
+      const finishedDifficulty = soCapCanTim;
+      const finishedStartedAt = startedAt;
+      const { bundle } = readBundle();
+      delete bundle.snapshots[String(finishedDifficulty)];
+      const remaining = JSON.parse(JSON.stringify(bundle));
       progress.completeGame(GAME_ID, {
-        transactionId,
-        difficulty: String(soCapCanTim),
+        transactionId: makeTransactionId(finishedStartedAt, finishedDifficulty),
+        difficulty: String(finishedDifficulty),
         durationSeconds: giay,
         moves: soLuot,
-        metadata: { pairs: soCapCanTim }
+        metadata: { pairs: finishedDifficulty }
       });
+      writeBundle(remaining);
     };
 
     root.document.addEventListener('click', (event) => {
-      const restart = event.target.closest('#nutChoiLai, #mucDo button');
-      if (restart) {
-        progress.clearGame(GAME_ID);
+      const difficultyButton = event.target.closest('#mucDo button');
+      if (difficultyButton) saveNow();
+    }, true);
+
+    root.document.addEventListener('click', (event) => {
+      const difficultyButton = event.target.closest('#mucDo button');
+      if (difficultyButton) {
+        const targetDifficulty = Number(difficultyButton.dataset.cap);
+        startedAt = null;
+        completed = false;
+        root.setTimeout(() => {
+          restoreDifficulty(targetDifficulty, '🌼 Bé quay lại đúng ván của mức này nhé!');
+        }, 0);
+        return;
+      }
+
+      if (event.target.closest('#nutChoiLai')) {
+        clearDifficulty(soCapCanTim);
         startedAt = null;
         completed = false;
         return;
@@ -270,15 +372,18 @@
     periodicSave = root.setInterval(saveNow, 5000);
     root.addEventListener('beforeunload', () => root.clearInterval(periodicSave), { once: true });
 
-    const saved = progress.loadGame(GAME_ID);
-    const snapshot = validateSnapshot(saved?.state);
-    if (saved && snapshot && isMeaningful(snapshot)) showResumeChoice(saved, snapshot);
-    else if (saved) progress.clearGame(GAME_ID);
+    const { bundle } = readBundle();
+    const activeKey = bundle.activeDifficulty ? String(bundle.activeDifficulty) : null;
+    const entry = activeKey ? bundle.snapshots[activeKey] : null;
+    const snapshot = validateSnapshot(entry?.snapshot);
+    if (snapshot && isMeaningful(snapshot)) showResumeChoice(entry, snapshot);
   }
 
   return Object.freeze({
     snapshotVersion: SNAPSHOT_VERSION,
+    bundleVersion: BUNDLE_VERSION,
     validateSnapshot,
+    validateBundle,
     makeTransactionId,
     start
   });
