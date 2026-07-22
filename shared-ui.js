@@ -11,6 +11,7 @@
   }
 
   loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios');
+  loadSharedScript('./pwa-quality.js', 'data-bh-pwa-quality');
 
   const STORAGE_KEY = 'bonghome_sound_enabled';
   const getEnabled = () => localStorage.getItem(STORAGE_KEY) !== 'false';
