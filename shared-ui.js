@@ -83,6 +83,16 @@
     });
   }
 
+  function loadGame1Content() {
+    if (!isGame1) return Promise.resolve(null);
+    return loadSharedScript('./js/game1-content.js', 'data-bh-game1-content')
+      .then(() => window.BongGame1ContentLoader.load(window))
+      .catch((error) => {
+        console.warn('[Bông Home] Dùng nội dung Game 1 dự phòng', error);
+        return null;
+      });
+  }
+
   function loadGame1Difficulty() {
     if (!isGame1) return Promise.resolve(null);
     const existing = document.querySelector('script[data-game1-difficulty]');
@@ -109,7 +119,8 @@
 
   function loadGame1Autosave() {
     if (!isGame1) return;
-    Promise.all([window.BongModulesReady, loadGame1Difficulty()])
+    const contentAndDifficulty = loadGame1Content().then(() => loadGame1Difficulty());
+    Promise.all([window.BongModulesReady, contentAndDifficulty])
       .then(([modules]) => {
         if (!modules.progress) return null;
         return loadSharedScript('./game1-autosave.js', 'data-bh-game1-autosave');
