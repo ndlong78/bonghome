@@ -29,7 +29,7 @@ assert.deepEqual(catalog.games.map((game) => game.id), expectedTitles.map((_, in
 assert.deepEqual(catalog.games.map((game) => game.title), expectedTitles);
 assert.deepEqual(
   catalog.games.filter((game) => game.rewardsEnabled).map((game) => game.id),
-  ['game1', 'game2', 'game3', 'game4', 'game5', 'game6', 'game7']
+  expectedTitles.map((_, index) => `game${index + 1}`)
 );
 assert.ok(loader.includes("fetchJson('./content/games/index.json')"));
 assert.ok(loader.includes("fetchJson('./content/rewards/catalog.json')"));
