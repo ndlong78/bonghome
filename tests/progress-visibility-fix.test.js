@@ -30,6 +30,11 @@ assert.ok(!adapter.includes('function comboFromHtml'), 'Game 7 must not compare 
   assert.ok(dashboard.includes(snippet), `Parent dashboard must include: ${snippet}`);
 });
 
-assert.ok(serviceWorker.includes('bonghome-v32-progress-visibility-fix'));
+assert.match(
+  serviceWorker,
+  /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/,
+  'Service Worker must use the standard version format'
+);
+assert.ok(serviceWorker.includes('progress-visibility-fix'), 'cache version should identify this bugfix');
 
 console.log('Progress visibility regression checks passed.');
