@@ -33,8 +33,42 @@
     return 1;
   }
 
+  function rewardLines(detail) {
+    const lines = [`⭐ Bé nhận ${detail.stars} sao`];
+    if (detail.newSticker) lines.push('🌟 Sticker mới: Ngôi sao vui vẻ');
+    if (detail.newBadge) lines.push('🎈 Huy hiệu mới: Lần đầu hoàn thành');
+    return lines;
+  }
+
+  function renderInWinDialog(detail) {
+    if (!root?.document || !detail || detail.duplicate) return false;
+    const dialog = root.document.querySelector('#manThang .hop-thang');
+    if (!dialog) return false;
+
+    let summary = dialog.querySelector('.bh-game1-reward-summary');
+    if (!summary) {
+      summary = root.document.createElement('div');
+      summary.className = 'bh-game1-reward-summary';
+      summary.setAttribute('role', 'status');
+      summary.setAttribute('aria-live', 'polite');
+      const actions = dialog.querySelector('.nhom-nut');
+      dialog.insertBefore(summary, actions || null);
+    }
+
+    summary.replaceChildren(...rewardLines(detail).map((text, index) => {
+      const line = root.document.createElement('p');
+      line.className = index === 0 ? 'bh-game1-reward-stars' : 'bh-game1-reward-unlock';
+      line.textContent = text;
+      return line;
+    }));
+    summary.hidden = false;
+    return true;
+  }
+
   function announce(detail) {
     if (!root?.document || !detail || detail.duplicate) return;
+    if (renderInWinDialog(detail)) return;
+
     let status = root.document.getElementById('bhGame1RewardStatus');
     if (!status) {
       status = root.document.createElement('div');
@@ -44,8 +78,7 @@
       status.setAttribute('aria-live', 'polite');
       root.document.body.appendChild(status);
     }
-    const stickerText = detail.newSticker ? ' và sticker Ngôi sao vui vẻ' : '';
-    status.textContent = `⭐ Bé nhận ${detail.stars} sao${stickerText}!`;
+    status.textContent = rewardLines(detail).join(' · ');
     status.hidden = false;
     root.clearTimeout(status.__hideTimer);
     status.__hideTimer = root.setTimeout(() => { status.hidden = true; }, 2800);
@@ -71,13 +104,14 @@
     );
 
     const sticker = rewards.unlockSticker('happy-star', { source: 'game1-completion' });
-    rewards.unlockBadge('first-finish', { source: 'game1-completion' });
+    const badge = rewards.unlockBadge('first-finish', { source: 'game1-completion' });
 
     const detail = {
       duplicate: rewardResult.duplicate,
       stars,
       totalStars: rewardResult.summary.stars,
-      newSticker: !sticker.duplicate
+      newSticker: !sticker.duplicate,
+      newBadge: !badge.duplicate
     };
     announce(detail);
     if (root?.dispatchEvent && root.CustomEvent) {
@@ -94,6 +128,8 @@
     completeGame,
     getSummary: progress.getSummary.bind(progress),
     makeRewardTransactionId,
-    starsForDifficulty
+    starsForDifficulty,
+    rewardLines,
+    renderInWinDialog
   });
 });
