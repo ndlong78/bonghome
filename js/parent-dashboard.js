@@ -7,23 +7,31 @@
 
   const isParentPage = (pathname) => /\/parents\.html$/.test(pathname || '');
 
-  function renderGameSummary(container, byGame) {
+  function renderGameSummary(container, byGame, games) {
     container.textContent = '';
-    const entries = Object.entries(byGame || {}).sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }));
-    if (!entries.length) {
+    const completed = byGame || {};
+    const inProgress = games || {};
+    const gameIds = [...new Set([...Object.keys(completed), ...Object.keys(inProgress)])]
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+    if (!gameIds.length) {
       const empty = document.createElement('p');
       empty.className = 'bh-parent-empty';
-      empty.textContent = 'Chưa có lượt hoàn thành nào trên thiết bị này.';
+      empty.textContent = 'Chưa có hoạt động nào được lưu trên thiết bị này.';
       container.appendChild(empty);
       return;
     }
-    entries.forEach(([gameId, count]) => {
+
+    gameIds.forEach((gameId) => {
+      const count = completed[gameId] || 0;
       const row = document.createElement('div');
       row.className = 'bh-parent-game-row';
       const name = document.createElement('span');
       name.textContent = `Trò chơi ${gameId.replace('game', '')}`;
       const value = document.createElement('strong');
-      value.textContent = `${count} lượt`;
+      value.textContent = inProgress[gameId]
+        ? (count ? `${count} lượt · đang chơi dở` : 'Đang chơi dở')
+        : `${count} lượt`;
       row.append(name, value);
       container.appendChild(row);
     });
@@ -44,7 +52,7 @@
 
   function render(modules) {
     const profile = modules.profile?.getProfile?.() || { displayName: 'Bông', avatarId: 'flower' };
-    const progress = modules.progress?.getSummary?.() || { completed: 0, inProgress: 0, byGame: {} };
+    const progress = modules.progress?.getSummary?.() || { completed: 0, inProgress: 0, byGame: {}, games: {} };
     const rewards = modules.rewards?.getSummary?.() || { stars: 0, stickerIds: [], badgeIds: [] };
     const statistics = window.BongStatisticsFactory && modules.storage
       ? window.BongStatisticsFactory(modules.storage).summarize()
@@ -60,7 +68,7 @@
     document.getElementById('latestActivity').textContent = formatDate(statistics.latestCompletedAt);
     document.getElementById('averageDuration').textContent = formatDuration(statistics.averageDurationSeconds);
     document.getElementById('averageMoves').textContent = Number.isFinite(statistics.averageMoves) ? `${statistics.averageMoves} lượt` : 'Chưa có';
-    renderGameSummary(document.getElementById('gameSummary'), progress.byGame);
+    renderGameSummary(document.getElementById('gameSummary'), progress.byGame, progress.games);
   }
 
   if (!isParentPage(window.location.pathname)) return;
