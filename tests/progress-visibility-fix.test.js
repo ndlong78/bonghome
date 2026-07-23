@@ -21,10 +21,10 @@ const serviceWorker = read('sw.js');
 assert.ok(!adapter.includes('function comboFromHtml'), 'Game 7 must not compare rendered HTML strings');
 
 [
-  'function renderGameSummary(container, byGame, games, catalog)',
+  'function renderGameSummary(container, byGame, games, catalog, rewardsByGame)',
   'Object.keys(inProgress)',
   'Đang chơi dở',
-  'progress.byGame, progress.games, catalog',
+  'progress.byGame, progress.games, catalog, rewardsByGame',
   'Chưa có hoạt động nào được lưu'
 ].forEach((snippet) => {
   assert.ok(dashboard.includes(snippet), `Parent dashboard must include: ${snippet}`);

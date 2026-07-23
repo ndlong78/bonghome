@@ -1,15 +1,15 @@
 {
   "schemaVersion": 1,
   "games": [
-    { "id": "game1", "title": "Lật Hình Tìm Cặp" },
-    { "id": "game2", "title": "Tìm Điểm Khác Biệt" },
-    { "id": "game3", "title": "Tìm Bóng Cho Hình" },
-    { "id": "game4", "title": "Gom Đồ Theo Màu" },
-    { "id": "game5", "title": "Nối Điểm Theo Số" },
-    { "id": "game6", "title": "Tìm Cặp Sinh Đôi" },
-    { "id": "game7", "title": "Đoán Hình Tiếp Theo" },
-    { "id": "game8", "title": "Mê Cung Về Nhà" },
-    { "id": "game9", "title": "Nghe Truyện Tìm Từ" },
-    { "id": "game10", "title": "Gõ Phím Theo Nhịp" }
+    { "id": "game1", "title": "Lật Hình Tìm Cặp", "rewardsEnabled": true },
+    { "id": "game2", "title": "Tìm Điểm Khác Biệt", "rewardsEnabled": true },
+    { "id": "game3", "title": "Tìm Bóng Cho Hình", "rewardsEnabled": true },
+    { "id": "game4", "title": "Gom Đồ Theo Màu", "rewardsEnabled": true },
+    { "id": "game5", "title": "Nối Điểm Theo Số", "rewardsEnabled": false },
+    { "id": "game6", "title": "Tìm Cặp Sinh Đôi", "rewardsEnabled": false },
+    { "id": "game7", "title": "Đoán Hình Tiếp Theo", "rewardsEnabled": false },
+    { "id": "game8", "title": "Mê Cung Về Nhà", "rewardsEnabled": false },
+    { "id": "game9", "title": "Nghe Truyện Tìm Từ", "rewardsEnabled": false },
+    { "id": "game10", "title": "Gõ Phím Theo Nhịp", "rewardsEnabled": false }
   ]
 }

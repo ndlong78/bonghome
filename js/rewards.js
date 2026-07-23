@@ -9,6 +9,7 @@
 
   const STORAGE_KEY = 'rewards';
   const SCHEMA_VERSION = 1;
+  const GAME_ID_PATTERN = /^game(?:10|[1-9])$/;
   const clone = (value) => value == null ? value : JSON.parse(JSON.stringify(value));
   const emptyRewards = () => ({
     schemaVersion: SCHEMA_VERSION,
@@ -103,12 +104,49 @@
     };
   }
 
+  function gameIdFromMetadata(metadata) {
+    const direct = metadata?.gameId;
+    if (GAME_ID_PATTERN.test(direct || '')) return direct;
+    const source = metadata?.source;
+    const match = typeof source === 'string' ? source.match(/^(game(?:10|[1-9]))-completion$/) : null;
+    return match ? match[1] : null;
+  }
+
+  function getByGameSummary() {
+    const rewards = read();
+    const byGame = Object.create(null);
+    const ensure = (gameId) => {
+      if (!byGame[gameId]) byGame[gameId] = { stars: 0, stickerIds: [], badgeIds: [] };
+      return byGame[gameId];
+    };
+
+    Object.values(rewards.transactions).forEach((transaction) => {
+      const gameId = gameIdFromMetadata(transaction?.metadata);
+      if (!gameId || transaction?.type !== 'stars') return;
+      const amount = Number.isFinite(transaction.amount) ? Math.max(0, Math.floor(transaction.amount)) : 0;
+      ensure(gameId).stars += amount;
+    });
+
+    Object.entries(rewards.stickers).forEach(([id, reward]) => {
+      const gameId = gameIdFromMetadata(reward?.metadata);
+      if (gameId) ensure(gameId).stickerIds.push(id);
+    });
+
+    Object.entries(rewards.badges).forEach(([id, reward]) => {
+      const gameId = gameIdFromMetadata(reward?.metadata);
+      if (gameId) ensure(gameId).badgeIds.push(id);
+    });
+
+    return clone(byGame);
+  }
+
   return Object.freeze({
     schemaVersion: SCHEMA_VERSION,
     migrate,
     awardStars,
     unlockSticker,
     unlockBadge,
-    getSummary
+    getSummary,
+    getByGameSummary
   });
 });
