@@ -35,7 +35,7 @@ jobs:
           while IFS= read -r -d '' file; do
             node -e "JSON.parse(require('fs').readFileSync(process.argv[1], 'utf8'))" "$file"
             echo "✓ $file"
-          done < <(find . -type f -name '*.json' -not -path './.git/*' -print0)
+          done < <(find . -type f -name '*.json' -not -path './.git/*' -not -path './node_modules/*' -print0)
 
       - name: Check JavaScript syntax
         shell: bash
@@ -44,7 +44,7 @@ jobs:
           while IFS= read -r -d '' file; do
             node --check "$file"
             echo "✓ $file"
-          done < <(find . -type f -name '*.js' -not -path './.git/*' -print0)
+          done < <(find . -type f -name '*.js' -not -path './.git/*' -not -path './node_modules/*' -print0)
 
       - name: Run repository tests
         shell: bash
@@ -84,3 +84,33 @@ jobs:
           if (missing.length) throw new Error(`Service Worker tham chiếu tệp không tồn tại: ${missing.join(', ')}`);
           console.log(`✓ Đã kiểm tra ${paths.length} đường dẫn offline`);
           NODE
+
+  mobile-e2e:
+    name: iPhone and iPad E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Run mobile E2E tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
