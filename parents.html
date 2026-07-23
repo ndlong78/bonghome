@@ -10,6 +10,7 @@
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <link rel="stylesheet" href="./css/parent-dashboard.css">
   <script src="./shared-ui.js" defer></script>
+  <script src="./js/statistics.js" defer></script>
   <script src="./js/parent-dashboard.js" defer></script>
 </head>
 <body>
@@ -38,6 +39,17 @@
         <article><strong id="starCount">0</strong><span>Ngôi sao</span></article>
         <article><strong id="collectionCount">0</strong><span>Sticker và huy hiệu</span></article>
       </div>
+    </section>
+
+    <section aria-labelledby="recentTitle">
+      <h2 id="recentTitle">Hoạt động gần đây</h2>
+      <p class="bh-parent-note">Các số liệu chỉ để người lớn tham khảo, không tạo mục tiêu ngày hay áp lực cho bé.</p>
+      <dl class="bh-parent-insights">
+        <div><dt>7 ngày gần đây</dt><dd id="recentCount">0</dd><span>lượt hoàn thành</span></div>
+        <div><dt>Hoạt động gần nhất</dt><dd id="latestActivity">Chưa có</dd></div>
+        <div><dt>Thời lượng trung bình</dt><dd id="averageDuration">Chưa có</dd></div>
+        <div><dt>Số lượt trung bình</dt><dd id="averageMoves">Chưa có</dd></div>
+      </dl>
     </section>
 
     <section aria-labelledby="gamesTitle">
