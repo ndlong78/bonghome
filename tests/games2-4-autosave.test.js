@@ -9,7 +9,7 @@ const sharedUi = read('shared-ui.js');
 const css = read('css/games-autosave.css');
 const serviceWorker = read('sw.js');
 
-assert.match(adapter, /\/(game\[234\]\)\\\.html/);
+assert.ok(adapter.includes("match(/\\/(game[234])\\.html$/)"), 'Adapter must target Game 2-4 routes');
 ['game2', 'game3', 'game4'].forEach((gameId) => {
   assert.match(adapter, new RegExp(`${gameId}: \\{ capture:`), `${gameId} must have an adapter`);
 });
@@ -36,7 +36,7 @@ assert.match(sharedUi, /\.\/js\/games2-4-autosave\.js/);
 assert.match(sharedUi, /\.\/css\/games-autosave\.css/);
 assert.match(sharedUi, /loadGames2To4Autosave\(\)/);
 
-assert.match(css, /aria-live|bh-game-autosave-status/);
+assert.match(css, /bh-game-autosave-status/);
 assert.match(css, /prefers-reduced-motion/);
 assert.match(css, /safe-area-inset/);
 
