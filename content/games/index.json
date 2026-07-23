@@ -8,8 +8,8 @@
     { "id": "game5", "title": "Nối Điểm Theo Số", "rewardsEnabled": true },
     { "id": "game6", "title": "Tìm Cặp Sinh Đôi", "rewardsEnabled": true },
     { "id": "game7", "title": "Đoán Hình Tiếp Theo", "rewardsEnabled": true },
-    { "id": "game8", "title": "Mê Cung Về Nhà", "rewardsEnabled": false },
-    { "id": "game9", "title": "Nghe Truyện Tìm Từ", "rewardsEnabled": false },
-    { "id": "game10", "title": "Gõ Phím Theo Nhịp", "rewardsEnabled": false }
+    { "id": "game8", "title": "Mê Cung Về Nhà", "rewardsEnabled": true },
+    { "id": "game9", "title": "Nghe Truyện Tìm Từ", "rewardsEnabled": true },
+    { "id": "game10", "title": "Gõ Phím Theo Nhịp", "rewardsEnabled": true }
   ]
 }

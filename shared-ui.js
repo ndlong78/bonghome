@@ -185,8 +185,9 @@
     if (!isGames8To10) return;
     window.BongModulesReady
       .then((modules) => {
-        if (!modules.progress) return null;
-        return loadSharedScript('./js/games8-10-autosave.js', 'data-bh-games8-10-autosave');
+        if (!modules.progress || !modules.rewards) return null;
+        return loadSharedScript('./js/games8-10-rewards.js', 'data-bh-games8-10-rewards')
+          .then(() => loadSharedScript('./js/games8-10-autosave.js', 'data-bh-games8-10-autosave'));
       })
       .catch((error) => console.error('[Bông Home] Autosave Game 8-10 failed to load', error));
   }

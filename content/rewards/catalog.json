@@ -7,12 +7,16 @@
     { "id": "kind-heart", "name": "Trái tim ấm áp", "icon": "💛" },
     { "id": "diligent-pencil", "name": "Bút chì chăm chỉ", "icon": "✏️" },
     { "id": "best-friends", "name": "Đôi bạn thân", "icon": "👯" },
-    { "id": "bright-idea", "name": "Bóng đèn thông minh", "icon": "💡" }
+    { "id": "bright-idea", "name": "Bóng đèn thông minh", "icon": "💡" },
+    { "id": "explorer-compass", "name": "La bàn khám phá", "icon": "🧭" },
+    { "id": "story-book", "name": "Cuốn sách kể chuyện", "icon": "📖" },
+    { "id": "happy-note", "name": "Nốt nhạc vui", "icon": "🎵" }
   ],
   "badges": [
     { "id": "first-finish", "name": "Lần đầu hoàn thành", "icon": "🎈" },
     { "id": "curious-learner", "name": "Bé ham khám phá", "icon": "🔎" },
     { "id": "memory-friend", "name": "Bạn của trí nhớ", "icon": "🧠" },
-    { "id": "thinking-kid", "name": "Bé tư duy", "icon": "🧠" }
+    { "id": "thinking-kid", "name": "Bé tư duy", "icon": "🧠" },
+    { "id": "conqueror-kid", "name": "Bé chinh phục", "icon": "🏆" }
   ]
 }
