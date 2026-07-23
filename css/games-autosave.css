@@ -1,0 +1,18 @@
+.bh-game-autosave-status{
+  position:fixed;
+  right:max(12px,env(safe-area-inset-right));
+  bottom:max(12px,env(safe-area-inset-bottom));
+  z-index:9200;
+  max-width:min(260px,calc(100vw - 24px));
+  padding:9px 14px;
+  border:3px solid var(--mint,#A8E6CF);
+  border-radius:999px;
+  background:rgba(255,255,255,.96);
+  color:#4E7E69;
+  font:800 14px/1.25 "Segoe UI","Nunito",Arial,sans-serif;
+  box-shadow:0 6px 18px rgba(80,110,95,.15);
+  pointer-events:none;
+}
+.bh-game-autosave-status[hidden]{display:none;}
+@media(max-width:480px){.bh-game-autosave-status{left:12px;right:12px;text-align:center;}}
+@media(prefers-reduced-motion:reduce){.bh-game-autosave-status{transition:none!important;animation:none!important;}}
