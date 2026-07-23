@@ -7,8 +7,8 @@ const faviconPath = path.join(root, 'favicon.ico');
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 
 assert.ok(fs.existsSync(faviconPath), 'favicon.ico must exist at the site root');
-const header = fs.readFileSync(faviconPath).subarray(0, 4);
-assert.deepEqual([...header], [0, 0, 1, 0], 'favicon.ico must be a valid ICO file');
+const favicon = fs.readFileSync(faviconPath, 'utf8');
+assert.match(favicon, /<svg[\s>]/, 'favicon.ico must contain the shared SVG favicon');
 assert.ok(serviceWorker.includes('./favicon.ico'), 'favicon.ico must be cached for offline use');
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 
