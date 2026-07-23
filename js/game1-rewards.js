@@ -41,7 +41,7 @@
   }
 
   function renderInWinDialog(detail) {
-    if (!root?.document || !detail || detail.duplicate) return false;
+    if (!root?.document || typeof root.document.querySelector !== 'function' || !detail || detail.duplicate) return false;
     const dialog = root.document.querySelector('#manThang .hop-thang');
     if (!dialog) return false;
 
