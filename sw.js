@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v32-progress-visibility-fix";
+const PHIEN_BAN = "bonghome-v33-root-favicon";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
@@ -12,7 +12,7 @@ const TEP_SHELL = [
   "./shared-ui.js", "./pwa-ios.js", "./pwa-quality.js",
   "./js/storage.js", "./js/themes.js", "./js/theme-picker.js", "./js/progress.js", "./js/rewards.js", "./js/profile.js", "./js/profile-ui.js", "./js/statistics.js", "./js/parent-dashboard.js", "./js/daily-journey.js",
   "./css/design-tokens.css", "./css/themes.css", "./css/theme-picker.css", "./css/common.css", "./css/components.css", "./css/daily-journey.css", "./css/profile.css", "./css/parent-dashboard.css",
-  "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"
+  "./manifest.json", "./favicon.ico", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
 
 const TEP_GAME = [
