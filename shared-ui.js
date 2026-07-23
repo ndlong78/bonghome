@@ -163,8 +163,9 @@
     if (!isGames2To4) return;
     window.BongModulesReady
       .then((modules) => {
-        if (!modules.progress) return null;
-        return loadSharedScript('./js/games2-4-autosave.js', 'data-bh-games2-4-autosave');
+        if (!modules.progress || !modules.rewards) return null;
+        return loadSharedScript('./js/games2-4-rewards.js', 'data-bh-games2-4-rewards')
+          .then(() => loadSharedScript('./js/games2-4-autosave.js', 'data-bh-games2-4-autosave'));
       })
       .catch((error) => console.error('[Bông Home] Autosave Game 2-4 failed to load', error));
   }
