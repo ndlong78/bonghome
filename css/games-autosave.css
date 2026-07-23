@@ -14,5 +14,24 @@
   pointer-events:none;
 }
 .bh-game-autosave-status[hidden]{display:none;}
-@media(max-width:480px){.bh-game-autosave-status{left:12px;right:12px;text-align:center;}}
-@media(prefers-reduced-motion:reduce){.bh-game-autosave-status{transition:none!important;animation:none!important;}}
+.bh-reward-summary{
+  margin:12px 0 0;
+  padding:10px 12px;
+  border:3px dashed var(--mint,#A8E6CF);
+  border-radius:16px;
+  background:#F2FFF8;
+  color:#3F7F67;
+  text-align:center;
+}
+.bh-reward-summary[hidden]{display:none;}
+.bh-reward-summary p{margin:0;font-weight:800;line-height:1.35;}
+.bh-reward-summary p+p{margin-top:4px;}
+.bh-reward-stars{font-size:18px;}
+.bh-reward-unlock{font-size:15px;}
+@media(max-width:480px){
+  .bh-game-autosave-status{left:12px;right:12px;text-align:center;}
+  .bh-reward-summary{padding:9px 10px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .bh-game-autosave-status,.bh-reward-summary{transition:none!important;animation:none!important;}
+}
