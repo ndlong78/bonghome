@@ -11,7 +11,10 @@ const game5 = read('game5.html');
 const game6 = read('game6.html');
 const game7 = read('game7.html');
 
-assert.match(adapter, /\/(game\[567\])\\\.html/);
+assert.ok(
+  adapter.includes('match(/\\/(game[567])\\.html$/)'),
+  'adapter must only run on Game 5-7 pages'
+);
 ['game5', 'game6', 'game7'].forEach((gameId) => {
   assert.match(adapter, new RegExp(`${gameId}: \\{`), `${gameId} must have an adapter`);
 });
