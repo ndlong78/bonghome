@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Góc phụ huynh · Bông Home</title>
+  <meta name="description" content="Tổng quan cục bộ về tiến độ và phần thưởng của bé trong Bông Home.">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#FFB7C5">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link rel="stylesheet" href="./css/parent-dashboard.css">
+  <script src="./shared-ui.js" defer></script>
+  <script src="./js/parent-dashboard.js" defer></script>
+</head>
+<body>
+  <main class="bh-parent" aria-labelledby="parentTitle">
+    <a class="bh-parent-back" href="./index.html">← Về trang chủ</a>
+
+    <header class="bh-parent-header">
+      <p class="bh-parent-kicker">Dành cho người lớn</p>
+      <h1 id="parentTitle">Góc phụ huynh</h1>
+      <p>Xem nhanh hoạt động của bé trên thiết bị này. Trang hiện chỉ đọc và không gửi dữ liệu ra ngoài.</p>
+    </header>
+
+    <section class="bh-parent-profile" aria-labelledby="profileTitle">
+      <div id="parentAvatar" class="bh-parent-avatar" aria-hidden="true">🌸</div>
+      <div>
+        <h2 id="profileTitle">Hồ sơ của bé</h2>
+        <p id="parentName">Bông</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="overviewTitle">
+      <h2 id="overviewTitle">Tổng quan</h2>
+      <div class="bh-parent-stats">
+        <article><strong id="completedCount">0</strong><span>Lượt hoàn thành</span></article>
+        <article><strong id="inProgressCount">0</strong><span>Trò đang chơi dở</span></article>
+        <article><strong id="starCount">0</strong><span>Ngôi sao</span></article>
+        <article><strong id="collectionCount">0</strong><span>Sticker và huy hiệu</span></article>
+      </div>
+    </section>
+
+    <section aria-labelledby="gamesTitle">
+      <h2 id="gamesTitle">Hoạt động theo trò chơi</h2>
+      <div id="gameSummary" class="bh-parent-games">
+        <p class="bh-parent-empty">Chưa có lượt hoàn thành nào trên thiết bị này.</p>
+      </div>
+    </section>
+
+    <aside class="bh-parent-privacy" aria-labelledby="privacyTitle">
+      <h2 id="privacyTitle">Quyền riêng tư</h2>
+      <p>Dữ liệu hồ sơ, tiến độ và phần thưởng chỉ được lưu trong trình duyệt trên thiết bị này. Bông Home không yêu cầu email, số điện thoại, trường học, ngày sinh hoặc ảnh thật của trẻ.</p>
+    </aside>
+  </main>
+</body>
+</html>
