@@ -174,8 +174,9 @@
     if (!isGames5To7) return;
     window.BongModulesReady
       .then((modules) => {
-        if (!modules.progress) return null;
-        return loadSharedScript('./js/games5-7-autosave.js', 'data-bh-games5-7-autosave');
+        if (!modules.progress || !modules.rewards) return null;
+        return loadSharedScript('./js/games5-7-rewards.js', 'data-bh-games5-7-rewards')
+          .then(() => loadSharedScript('./js/games5-7-autosave.js', 'data-bh-games5-7-autosave'));
       })
       .catch((error) => console.error('[Bông Home] Autosave Game 5-7 failed to load', error));
   }

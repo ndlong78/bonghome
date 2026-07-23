@@ -4,11 +4,15 @@
     { "id": "happy-star", "name": "Ngôi sao vui vẻ", "icon": "🌟" },
     { "id": "little-flower", "name": "Bông hoa nhỏ", "icon": "🌼" },
     { "id": "rainbow-friend", "name": "Bạn cầu vồng", "icon": "🌈" },
-    { "id": "kind-heart", "name": "Trái tim ấm áp", "icon": "💛" }
+    { "id": "kind-heart", "name": "Trái tim ấm áp", "icon": "💛" },
+    { "id": "diligent-pencil", "name": "Bút chì chăm chỉ", "icon": "✏️" },
+    { "id": "best-friends", "name": "Đôi bạn thân", "icon": "👯" },
+    { "id": "bright-idea", "name": "Bóng đèn thông minh", "icon": "💡" }
   ],
   "badges": [
     { "id": "first-finish", "name": "Lần đầu hoàn thành", "icon": "🎈" },
     { "id": "curious-learner", "name": "Bé ham khám phá", "icon": "🔎" },
-    { "id": "memory-friend", "name": "Bạn của trí nhớ", "icon": "🧠" }
+    { "id": "memory-friend", "name": "Bạn của trí nhớ", "icon": "🧠" },
+    { "id": "thinking-kid", "name": "Bé tư duy", "icon": "🧠" }
   ]
 }

@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v38-game1-reward-dialog";
+const PHIEN_BAN = "bonghome-v39-games5-7-rewards";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
@@ -18,7 +18,7 @@ const TEP_SHELL = [
 const TEP_GAME = [
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
   "./game1-difficulty.js", "./game1-autosave.js",
-  "./js/game1-rewards.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/games2-4-rewards.js", "./js/games2-4-autosave.js", "./js/games5-7-autosave.js", "./js/games8-10-autosave.js",
+  "./js/game1-rewards.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/games2-4-rewards.js", "./js/games2-4-autosave.js", "./js/games5-7-rewards.js", "./js/games5-7-autosave.js", "./js/games8-10-autosave.js",
   "./css/game1-autosave.css", "./css/games-autosave.css"
 ];
 
