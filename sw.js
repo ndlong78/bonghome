@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v33-root-favicon";
+const PHIEN_BAN = "bonghome-v34-parent-game-titles";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
@@ -10,7 +10,7 @@ const TEN_CACHE = Object.freeze({
 const TEP_SHELL = [
   "./", "./index.html", "./parents.html",
   "./shared-ui.js", "./pwa-ios.js", "./pwa-quality.js",
-  "./js/storage.js", "./js/themes.js", "./js/theme-picker.js", "./js/progress.js", "./js/rewards.js", "./js/profile.js", "./js/profile-ui.js", "./js/statistics.js", "./js/parent-dashboard.js", "./js/daily-journey.js",
+  "./js/storage.js", "./js/themes.js", "./js/theme-picker.js", "./js/progress.js", "./js/rewards.js", "./js/profile.js", "./js/profile-ui.js", "./js/statistics.js", "./js/game-catalog.js", "./js/parent-dashboard.js", "./js/daily-journey.js",
   "./css/design-tokens.css", "./css/themes.css", "./css/theme-picker.css", "./css/common.css", "./css/components.css", "./css/daily-journey.css", "./css/profile.css", "./css/parent-dashboard.css",
   "./manifest.json", "./favicon.ico", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
@@ -23,7 +23,7 @@ const TEP_GAME = [
 ];
 
 const TEP_NOI_DUNG = [
-  "./content/games/game1.json", "./content/themes/animals/game1.json", "./content/themes/fruits/game1.json", "./content/themes/school/game1.json", "./content/themes/index.json", "./content/daily/index.json", "./content/rewards/catalog.json", "./content/profile/avatars.json"
+  "./content/games/index.json", "./content/games/game1.json", "./content/themes/animals/game1.json", "./content/themes/fruits/game1.json", "./content/themes/school/game1.json", "./content/themes/index.json", "./content/daily/index.json", "./content/rewards/catalog.json", "./content/profile/avatars.json"
 ];
 
 const NHOM_PRECACHE = Object.freeze([
