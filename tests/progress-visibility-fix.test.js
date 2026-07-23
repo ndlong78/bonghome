@@ -8,20 +8,28 @@ const adapter = read('js/games5-7-autosave.js');
 const dashboard = read('js/parent-dashboard.js');
 const serviceWorker = read('sw.js');
 
-assert.match(adapter, /function comboFromElement\(element\)/);
-assert.match(adapter, /querySelector\('path'\)/);
-assert.match(adapter, /path\.getAttribute\('d'\)/);
-assert.match(adapter, /path\.getAttribute\('fill'\)/);
-assert.match(adapter, /path\.getAttribute\('stroke'\)/);
-assert.doesNotMatch(adapter, /function comboFromHtml/);
-assert.match(adapter, /\.map\(comboFromElement\)\.filter\(Boolean\)/);
+[
+  'function comboFromElement(element)',
+  "querySelector('path')",
+  "path.getAttribute('d')",
+  "path.getAttribute('fill')",
+  "path.getAttribute('stroke')",
+  '.map(comboFromElement).filter(Boolean)'
+].forEach((snippet) => {
+  assert.ok(adapter.includes(snippet), `Game 7 adapter must include: ${snippet}`);
+});
+assert.ok(!adapter.includes('function comboFromHtml'), 'Game 7 must not compare rendered HTML strings');
 
-assert.match(dashboard, /function renderGameSummary\(container, byGame, games\)/);
-assert.match(dashboard, /Object\.keys\(inProgress\)/);
-assert.match(dashboard, /Đang chơi dở/);
-assert.match(dashboard, /progress\.byGame, progress\.games/);
-assert.match(dashboard, /Chưa có hoạt động nào được lưu/);
+[
+  'function renderGameSummary(container, byGame, games)',
+  'Object.keys(inProgress)',
+  'Đang chơi dở',
+  'progress.byGame, progress.games',
+  'Chưa có hoạt động nào được lưu'
+].forEach((snippet) => {
+  assert.ok(dashboard.includes(snippet), `Parent dashboard must include: ${snippet}`);
+});
 
-assert.match(serviceWorker, /bonghome-v32-progress-visibility-fix/);
+assert.ok(serviceWorker.includes('bonghome-v32-progress-visibility-fix'));
 
 console.log('Progress visibility regression checks passed.');
