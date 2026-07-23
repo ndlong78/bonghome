@@ -138,13 +138,14 @@
     return true;
   }
 
-  function comboFromHtml(html) {
-    for (let shape = 0; shape < DUONG.length; shape++) {
-      for (let color = 0; color < MAU.length; color++) {
-        if (veHinh({ h: shape, m: color }) === html) return { h: shape, m: color };
-      }
-    }
-    return null;
+  function comboFromElement(element) {
+    const path = element?.querySelector('path');
+    if (!path) return null;
+    const shape = DUONG.indexOf(path.getAttribute('d'));
+    const fill = String(path.getAttribute('fill') || '').toLowerCase();
+    const stroke = String(path.getAttribute('stroke') || '').toLowerCase();
+    const color = MAU.findIndex((item) => item.c.toLowerCase() === fill && item.v.toLowerCase() === stroke);
+    return shape >= 0 && color >= 0 ? { h: shape, m: color } : null;
   }
 
   function captureGame7() {
@@ -153,9 +154,9 @@
       sessionId,
       question: cau,
       correct: dungNgay,
-      sequence: [...oChuoi.querySelectorAll('.o-chuoi:not(.o-hoi)')].map((item) => comboFromHtml(item.innerHTML)).filter(Boolean),
+      sequence: [...oChuoi.querySelectorAll('.o-chuoi:not(.o-hoi)')].map(comboFromElement).filter(Boolean),
       answer: dapAn ? { h: dapAn.h, m: dapAn.m } : null,
-      choices: [...oLuaChon.children].map((item) => comboFromHtml(item.innerHTML)).filter(Boolean),
+      choices: [...oLuaChon.children].map(comboFromElement).filter(Boolean),
       seconds: giay,
       started: daBatDau
     };
