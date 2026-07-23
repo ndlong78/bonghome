@@ -27,6 +27,7 @@
   const isGame1 = /\/game1\.html$/.test(window.location.pathname);
   const isGames2To4 = /\/game[234]\.html$/.test(window.location.pathname);
   const isGames5To7 = /\/game[567]\.html$/.test(window.location.pathname);
+  const isGames8To10 = /\/game(?:8|9|10)\.html$/.test(window.location.pathname);
   const isHome = /(?:^|\/)index\.html$/.test(window.location.pathname) || /\/$/.test(window.location.pathname);
 
   loadSharedStyle('./css/components.css', 'data-bh-components');
@@ -35,7 +36,7 @@
   loadSharedStyle('./css/theme-picker.css', 'data-bh-theme-picker');
   loadSharedStyle('./css/design-tokens.css', 'data-bh-design-tokens');
   if (isGame1) loadSharedStyle('./css/game1-autosave.css', 'data-bh-game1-autosave-style');
-  if (isGames2To4 || isGames5To7) loadSharedStyle('./css/games-autosave.css', 'data-bh-games-autosave-style');
+  if (isGames2To4 || isGames5To7 || isGames8To10) loadSharedStyle('./css/games-autosave.css', 'data-bh-games-autosave-style');
   if (isHome) loadSharedStyle('./css/profile.css', 'data-bh-profile-style');
   loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios').catch(() => {});
   loadSharedScript('./pwa-quality.js', 'data-bh-pwa-quality').catch(() => {});
@@ -178,6 +179,16 @@
       .catch((error) => console.error('[Bông Home] Autosave Game 5-7 failed to load', error));
   }
 
+  function loadGames8To10Autosave() {
+    if (!isGames8To10) return;
+    window.BongModulesReady
+      .then((modules) => {
+        if (!modules.progress) return null;
+        return loadSharedScript('./js/games8-10-autosave.js', 'data-bh-games8-10-autosave');
+      })
+      .catch((error) => console.error('[Bông Home] Autosave Game 8-10 failed to load', error));
+  }
+
   function loadThemePicker() {
     window.BongModulesReady
       .then((modules) => {
@@ -261,6 +272,7 @@
     loadGame1Autosave();
     loadGames2To4Autosave();
     loadGames5To7Autosave();
+    loadGames8To10Autosave();
     loadThemePicker();
     loadProfileUI();
     addSoundButton();
