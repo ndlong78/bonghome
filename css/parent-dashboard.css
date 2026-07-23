@@ -24,10 +24,14 @@ body{margin:0;min-height:100vh;background:linear-gradient(180deg,#E8F4FF 0%,#FFF
 .bh-parent-insights dd{margin:0;font-size:23px;font-weight:900;color:#4C7665;line-height:1.25;}
 .bh-parent-insights span{font-size:13px;font-weight:750;color:#6E8B80;}
 .bh-parent-games{display:grid;gap:10px;}
-.bh-parent-game-row{display:flex;justify-content:space-between;gap:16px;padding:14px 16px;border-radius:16px;background:#F3EEFF;font-weight:800;}
+.bh-parent-game-row{display:grid;gap:8px;padding:14px 16px;border-radius:18px;background:#F3EEFF;}
+.bh-parent-game-main{display:flex;align-items:baseline;justify-content:space-between;gap:16px;}
+.bh-parent-game-name{font-size:16px;font-weight:900;color:#714F7A;}
+.bh-parent-game-progress{font-size:15px;font-weight:850;color:#714F7A;text-align:right;}
+.bh-parent-game-rewards{margin:0;padding-top:7px;border-top:2px solid rgba(122,78,134,.12);font-size:14px;font-weight:800;line-height:1.4;color:#557565;}
 .bh-parent-empty{margin:0;color:#816F88;font-weight:700;}
 .bh-parent-privacy{border-color:#A8E6CF;background:#F1FFF8;}
 .bh-parent-privacy p{margin:0;line-height:1.6;font-weight:650;color:#557565;}
-@media(max-width:680px){.bh-parent-stats,.bh-parent-insights{grid-template-columns:repeat(2,1fr)}.bh-parent section,.bh-parent-privacy{padding:18px}.bh-parent-profile{align-items:flex-start}.bh-parent-avatar{flex-basis:68px;width:68px;height:68px;font-size:36px}}
-@media(max-width:420px){.bh-parent-insights{grid-template-columns:1fr}}
+@media(max-width:680px){.bh-parent-stats,.bh-parent-insights{grid-template-columns:repeat(2,1fr)}.bh-parent section,.bh-parent-privacy{padding:18px}.bh-parent-profile{align-items:flex-start}.bh-parent-avatar{flex-basis:68px;width:68px;height:68px;font-size:36px}.bh-parent-game-main{align-items:flex-start;flex-direction:column;gap:4px}.bh-parent-game-progress{text-align:left}}
+@media(max-width:420px){.bh-parent-insights{grid-template-columns:1fr}.bh-parent-game-row{padding:13px 14px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important;}}
