@@ -7,7 +7,7 @@
 
   const isParentPage = (pathname) => /\/parents\.html$/.test(pathname || '');
 
-  function renderGameSummary(container, byGame, games) {
+  function renderGameSummary(container, byGame, games, catalog) {
     container.textContent = '';
     const completed = byGame || {};
     const inProgress = games || {};
@@ -27,7 +27,7 @@
       const row = document.createElement('div');
       row.className = 'bh-parent-game-row';
       const name = document.createElement('span');
-      name.textContent = `Trò chơi ${gameId.replace('game', '')}`;
+      name.textContent = catalog?.getTitle?.(gameId) || `Trò chơi ${gameId.replace('game', '')}`;
       const value = document.createElement('strong');
       value.textContent = inProgress[gameId]
         ? (count ? `${count} lượt · đang chơi dở` : 'Đang chơi dở')
@@ -50,13 +50,15 @@
     return Number.isNaN(date.getTime()) ? 'Chưa có' : new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium' }).format(date);
   }
 
-  function render(modules) {
+  async function render(modules) {
     const profile = modules.profile?.getProfile?.() || { displayName: 'Bông', avatarId: 'flower' };
     const progress = modules.progress?.getSummary?.() || { completed: 0, inProgress: 0, byGame: {}, games: {} };
     const rewards = modules.rewards?.getSummary?.() || { stars: 0, stickerIds: [], badgeIds: [] };
     const statistics = window.BongStatisticsFactory && modules.storage
       ? window.BongStatisticsFactory(modules.storage).summarize()
       : { last7DaysCompleted: 0, latestCompletedAt: null, averageDurationSeconds: null, averageMoves: null };
+    const catalog = window.BongGameCatalog;
+    await catalog?.ready;
 
     document.getElementById('parentAvatar').textContent = AVATAR_ICONS[profile.avatarId] || AVATAR_ICONS.flower;
     document.getElementById('parentName').textContent = profile.displayName || 'Bông';
@@ -68,7 +70,7 @@
     document.getElementById('latestActivity').textContent = formatDate(statistics.latestCompletedAt);
     document.getElementById('averageDuration').textContent = formatDuration(statistics.averageDurationSeconds);
     document.getElementById('averageMoves').textContent = Number.isFinite(statistics.averageMoves) ? `${statistics.averageMoves} lượt` : 'Chưa có';
-    renderGameSummary(document.getElementById('gameSummary'), progress.byGame, progress.games);
+    renderGameSummary(document.getElementById('gameSummary'), progress.byGame, progress.games, catalog);
   }
 
   if (!isParentPage(window.location.pathname)) return;
