@@ -35,6 +35,7 @@ assert.match(
   /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/,
   'Service Worker must use the standard version format'
 );
-assert.ok(serviceWorker.includes('progress-visibility-fix'), 'cache version should identify this bugfix');
+assert.ok(serviceWorker.includes('./js/games5-7-autosave.js'), 'Game 7 restore adapter must remain cached offline');
+assert.ok(serviceWorker.includes('./js/parent-dashboard.js'), 'Parent progress dashboard must remain cached offline');
 
 console.log('Progress visibility regression checks passed.');
