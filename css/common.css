@@ -32,6 +32,11 @@ a,
   touch-action: manipulation;
 }
 
+[role="button"] {
+  min-width: var(--bh-touch-target);
+  min-height: var(--bh-touch-target);
+}
+
 button:not([disabled]),
 a[href],
 [role="button"]:not([aria-disabled="true"]) {
