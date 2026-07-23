@@ -33,8 +33,42 @@
     return `${gameId}-reward-${hashText(progressTransactionId)}`;
   }
 
+  function rewardLines(detail) {
+    const lines = [`⭐ Bé nhận ${detail.stars} sao`];
+    if (detail.newSticker) lines.push(`🎁 Sticker mới: ${detail.stickerName}`);
+    if (detail.newBadge) lines.push('🔎 Huy hiệu mới: Bé ham khám phá');
+    return lines;
+  }
+
+  function renderInWinDialog(detail) {
+    if (!root?.document || !detail || detail.duplicate) return false;
+    const dialog = root.document.querySelector('.man-thang .hop-thang');
+    if (!dialog) return false;
+
+    let summary = dialog.querySelector('.bh-reward-summary');
+    if (!summary) {
+      summary = root.document.createElement('div');
+      summary.className = 'bh-reward-summary';
+      summary.setAttribute('role', 'status');
+      summary.setAttribute('aria-live', 'polite');
+      const actions = dialog.querySelector('.nhom-nut');
+      dialog.insertBefore(summary, actions || null);
+    }
+
+    summary.replaceChildren(...rewardLines(detail).map((text, index) => {
+      const line = root.document.createElement('p');
+      line.className = index === 0 ? 'bh-reward-stars' : 'bh-reward-unlock';
+      line.textContent = text;
+      return line;
+    }));
+    summary.hidden = false;
+    return true;
+  }
+
   function announce(detail) {
     if (!root?.document || !detail || detail.duplicate) return;
+    if (renderInWinDialog(detail)) return;
+
     let status = root.document.getElementById('bhGameRewardStatus');
     if (!status) {
       status = root.document.createElement('div');
@@ -44,9 +78,7 @@
       status.setAttribute('aria-live', 'polite');
       root.document.body.appendChild(status);
     }
-    const stickerText = detail.newSticker ? ` và sticker ${detail.stickerName}` : '';
-    const badgeText = detail.newBadge ? ' cùng huy hiệu Bé ham khám phá' : '';
-    status.textContent = `⭐ Bé nhận ${detail.stars} sao${stickerText}${badgeText}!`;
+    status.textContent = rewardLines(detail).join(' · ');
     status.hidden = false;
     root.clearTimeout(status.__hideTimer);
     status.__hideTimer = root.setTimeout(() => { status.hidden = true; }, 3000);
@@ -99,6 +131,8 @@
     completeGame,
     getSummary: progress.getSummary.bind(progress),
     makeRewardTransactionId,
+    rewardLines,
+    renderInWinDialog,
     rewardConfig: REWARD_CONFIG
   });
 });
