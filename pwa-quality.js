@@ -23,7 +23,7 @@
       @keyframes bhLaunchIn{from{opacity:0;transform:translateY(10px) scale(.94)}to{opacity:1;transform:none}}
       .bh-update-toast{position:fixed;z-index:9000;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:var(--bh-safe-bottom);max-width:620px;margin:auto;display:flex;align-items:center;gap:10px;padding:12px 14px;border:3px solid #C9B6F5;border-radius:20px;background:rgba(255,255,255,.98);box-shadow:0 14px 38px rgba(80,50,95,.24);color:#6B4E71;font:700 14px/1.35 system-ui,sans-serif;}
       .bh-update-toast[hidden]{display:none;}
-      .bh-update-toast button{margin-left:auto;border:0;border-radius:999px;padding:9px 13px;background:#FFB7C5;color:#fff;font:800 14px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;}
+      .bh-update-toast button{margin-left:auto;min-height:44px;border:0;border-radius:999px;padding:9px 13px;background:#FFB7C5;color:#fff;font:800 14px system-ui,sans-serif;cursor:pointer;touch-action:manipulation;}
       .bh-resume-toast{position:fixed;z-index:8500;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);padding:8px 13px;border-radius:999px;background:#EAFBF3;border:2px solid #A8E6CF;color:#3F7F65;font:800 13px system-ui,sans-serif;box-shadow:0 8px 22px rgba(80,50,95,.14);}
       .bh-resume-toast[hidden]{display:none;}
       html.bh-game1-compact #sanBai{gap:clamp(5px,1.2vw,9px)!important;grid-template-columns:repeat(var(--bh-game1-cols,4),minmax(0,1fr))!important;width:min(100%,720px);margin-inline:auto;}
@@ -64,6 +64,69 @@
       setTimeout(() => { location.href = url.href; }, reducedMotion ? 0 : 180);
     });
     addEventListener('pageshow', () => root.classList.remove('bh-leaving'));
+  }
+
+  function setupCustomButtons() {
+    document.querySelectorAll('[role="button"]').forEach((button) => {
+      if (!button.hasAttribute('tabindex')) button.tabIndex = 0;
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.defaultPrevented || (event.key !== 'Enter' && event.key !== ' ')) return;
+      const button = event.target.closest('[role="button"]');
+      if (!button || button.getAttribute('aria-disabled') === 'true') return;
+      event.preventDefault();
+      button.click();
+    });
+  }
+
+  function setupDialogFocus() {
+    document.querySelectorAll('.man-thang').forEach((dialog) => {
+      let previousFocus = null;
+      let inertSiblings = [];
+      dialog.setAttribute('aria-hidden', dialog.classList.contains('hien') ? 'false' : 'true');
+      if (!dialog.hasAttribute('tabindex')) dialog.tabIndex = -1;
+
+      const focusable = () => [...dialog.querySelectorAll('button:not([disabled]),a[href],[role="button"]:not([aria-disabled="true"]),[tabindex]:not([tabindex="-1"])')];
+      const open = () => {
+        previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        dialog.setAttribute('aria-hidden', 'false');
+        inertSiblings = [...document.body.children].filter((item) => item !== dialog && !item.contains(dialog));
+        inertSiblings.forEach((item) => { item.inert = true; });
+        const target = focusable()[0] || dialog;
+        requestAnimationFrame(() => target.focus({ preventScroll: true }));
+      };
+      const close = () => {
+        dialog.setAttribute('aria-hidden', 'true');
+        inertSiblings.forEach((item) => { item.inert = false; });
+        inertSiblings = [];
+        if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+        previousFocus = null;
+      };
+
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key !== 'Tab') return;
+        const items = focusable();
+        if (!items.length) {
+          event.preventDefault();
+          dialog.focus();
+          return;
+        }
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+
+      new MutationObserver(() => {
+        if (dialog.classList.contains('hien')) open();
+        else close();
+      }).observe(dialog, { attributes: true, attributeFilter: ['class'] });
+    });
   }
 
   function setupLifecycle() {
@@ -143,6 +206,8 @@
   setupPageTransitions();
 
   const start = () => {
+    setupCustomButtons();
+    setupDialogFocus();
     setupLifecycle();
     setupControlledUpdates();
     setupGame1ResponsiveBoard();
