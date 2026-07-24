@@ -165,7 +165,10 @@
       .then((modules) => {
         if (!modules.progress || !modules.rewards) return null;
         return loadSharedScript('./js/games2-4-rewards.js', 'data-bh-games2-4-rewards')
-          .then(() => loadSharedScript('./js/games2-4-autosave.js', 'data-bh-games2-4-autosave'));
+          .then(() => {
+            modules.progress = window.BongProgress;
+            return loadSharedScript('./js/games2-4-autosave.js', 'data-bh-games2-4-autosave');
+          });
       })
       .catch((error) => console.error('[Bông Home] Autosave Game 2-4 failed to load', error));
   }
@@ -176,7 +179,10 @@
       .then((modules) => {
         if (!modules.progress || !modules.rewards) return null;
         return loadSharedScript('./js/games5-7-rewards.js', 'data-bh-games5-7-rewards')
-          .then(() => loadSharedScript('./js/games5-7-autosave.js', 'data-bh-games5-7-autosave'));
+          .then(() => {
+            modules.progress = window.BongProgress;
+            return loadSharedScript('./js/games5-7-autosave.js', 'data-bh-games5-7-autosave');
+          });
       })
       .catch((error) => console.error('[Bông Home] Autosave Game 5-7 failed to load', error));
   }
@@ -187,7 +193,10 @@
       .then((modules) => {
         if (!modules.progress || !modules.rewards) return null;
         return loadSharedScript('./js/games8-10-rewards.js', 'data-bh-games8-10-rewards')
-          .then(() => loadSharedScript('./js/games8-10-autosave.js', 'data-bh-games8-10-autosave'));
+          .then(() => {
+            modules.progress = window.BongProgress;
+            return loadSharedScript('./js/games8-10-autosave.js', 'data-bh-games8-10-autosave');
+          });
       })
       .catch((error) => console.error('[Bông Home] Autosave Game 8-10 failed to load', error));
   }
