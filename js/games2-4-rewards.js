@@ -1,8 +1,23 @@
 (function (root, factory) {
   'use strict';
+
+  function loadGame3KeyboardMatching() {
+    if (!root?.document || !/\/game3\.html$/.test(root.location?.pathname || '')) return;
+    if (root.document.querySelector('script[data-bh-game3-keyboard-matching]')) return;
+    const script = root.document.createElement('script');
+    script.src = './js/game3-keyboard-matching.js';
+    script.async = false;
+    script.setAttribute('data-bh-game3-keyboard-matching', 'true');
+    script.addEventListener('error', () => {
+      console.warn('[Bông Home] Không tải được thao tác bàn phím Game 3');
+    }, { once: true });
+    root.document.head.appendChild(script);
+  }
+
   if (typeof module === 'object' && module.exports) module.exports = factory;
   if (root?.BongProgress && root?.BongRewards) {
     root.BongProgress = factory(root.BongProgress, root.BongRewards, root);
+    loadGame3KeyboardMatching();
   }
 })(typeof window !== 'undefined' ? window : globalThis, function createGames2To4Rewards(progress, rewards, root) {
   'use strict';
