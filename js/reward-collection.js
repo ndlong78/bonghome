@@ -13,6 +13,14 @@
     return source;
   }
 
+  function normalizeAvatarCatalog(input) {
+    const source = input && typeof input === 'object' ? input : {};
+    if (source.schemaVersion !== 1 || !Array.isArray(source.avatars) || !source.avatars.length) {
+      throw new Error('Avatar catalog is invalid');
+    }
+    return source;
+  }
+
   function createCard(document, reward, unlocked) {
     const card = document.createElement('article');
     card.className = 'bh-reward-card';
@@ -33,6 +41,25 @@
     return card;
   }
 
+  function renderProfile(document, profile, avatarCatalog) {
+    const title = document.getElementById('collectionTitle');
+    const intro = document.getElementById('collectionIntro');
+    const avatar = document.getElementById('collectionAvatar');
+    if (!title || !intro || !avatar) return false;
+
+    const current = profile || { displayName: 'Bông', avatarId: avatarCatalog.defaultAvatarId };
+    const avatarItem = avatarCatalog.avatars.find((item) => item.id === current.avatarId)
+      || avatarCatalog.avatars.find((item) => item.id === avatarCatalog.defaultAvatarId)
+      || avatarCatalog.avatars[0];
+    const displayName = String(current.displayName || 'Bông').trim() || 'Bông';
+
+    title.textContent = `Bộ sưu tập của ${displayName}`;
+    intro.textContent = `Mỗi phần thưởng là một lời khen nhẹ nhàng dành cho ${displayName}.`;
+    avatar.textContent = avatarItem.icon;
+    document.title = `Bộ sưu tập của ${displayName}`;
+    return true;
+  }
+
   function render(document, catalog, summary) {
     const stars = document.getElementById('collectionStars');
     const stickers = document.getElementById('collectionStickers');
@@ -51,11 +78,18 @@
   async function init() {
     if (!root?.document) return false;
     const modules = await root.BongModulesReady;
-    if (!modules?.rewards) throw new Error('BongRewards is unavailable');
-    const response = await root.fetch('./content/rewards/catalog.json');
-    if (!response.ok) throw new Error(`Reward catalog HTTP ${response.status}`);
-    const catalog = normalizeCatalog(await response.json());
-    return render(root.document, catalog, modules.rewards.getSummary());
+    if (!modules?.rewards || !modules?.profile) throw new Error('BongRewards or BongProfile is unavailable');
+    const [rewardResponse, avatarResponse] = await Promise.all([
+      root.fetch('./content/rewards/catalog.json'),
+      root.fetch('./content/profile/avatars.json')
+    ]);
+    if (!rewardResponse.ok) throw new Error(`Reward catalog HTTP ${rewardResponse.status}`);
+    if (!avatarResponse.ok) throw new Error(`Avatar catalog HTTP ${avatarResponse.status}`);
+
+    const rewardCatalog = normalizeCatalog(await rewardResponse.json());
+    const avatarCatalog = normalizeAvatarCatalog(await avatarResponse.json());
+    renderProfile(root.document, modules.profile.getProfile(), avatarCatalog);
+    return render(root.document, rewardCatalog, modules.rewards.getSummary());
   }
 
   if (root?.document) {
@@ -68,5 +102,5 @@
     }, { once: true });
   }
 
-  return Object.freeze({ normalizeCatalog, createCard, render, init });
+  return Object.freeze({ normalizeCatalog, normalizeAvatarCatalog, createCard, renderProfile, render, init });
 });
