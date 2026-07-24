@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 const cases = [
   { path: '/game2.html', expected: ['.nut-ve', '#nutGoiY', '#nutVanMoi', '.nut-am-thanh'] },
-  { path: '/game3.html', expected: ['.nut-ve', '#nutVanMoi', '.nut-am-thanh'], ready: () => window.BongGame3KeyboardMatching },
+  { path: '/game3.html', expected: ['.nut-ve', '#nutVanMoi', '.nut-am-thanh'] },
   { path: '/game4.html', expected: ['.nut-ve', '#nutVanMoi', '.nut-am-thanh'] }
 ];
 
@@ -57,6 +57,9 @@ test.describe('Thứ tự Tab Game 2–4', () => {
       await page.waitForFunction(() => document.querySelector('.nut-am-thanh'));
       if (item.path === '/game3.html') {
         await page.waitForFunction(() => window.BongGame3KeyboardMatching && document.querySelectorAll('.mieng-hinh[tabindex="0"]').length > 0);
+      }
+      if (item.path === '/game4.html') {
+        await page.waitForFunction(() => window.BongGame4KeyboardSorting && document.querySelectorAll('.do-vat[tabindex="0"]').length > 0);
       }
 
       const sequence = await collectTabSequence(page);
