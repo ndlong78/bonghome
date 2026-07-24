@@ -212,10 +212,6 @@
     const saved = progress.loadGame(gameId);
     if (saved?.state && adapter.restore(saved.state)) showStatus('↩️ Đã khôi phục ván đang chơi');
 
-    document.querySelectorAll('#nutVanMoi, #nutChoiLai').forEach((button) => {
-      button.addEventListener('click', () => queueMicrotask(resetRewardSession));
-    });
-
     function save() {
       if (manThang.classList.contains('hien')) return;
       const state = adapter.capture();
@@ -226,6 +222,17 @@
         startedAt: saved?.startedAt || new Date().toISOString()
       });
     }
+
+    document.querySelectorAll('#nutVanMoi, #nutChoiLai').forEach((button) => {
+      button.addEventListener('click', () => {
+        queueMicrotask(() => {
+          resetRewardSession();
+          clearInterval(saveTimer);
+          save();
+          saveTimer = setInterval(save, SAVE_INTERVAL_MS);
+        });
+      });
+    });
 
     saveTimer = setInterval(save, SAVE_INTERVAL_MS);
     window.addEventListener('pagehide', save);
