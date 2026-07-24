@@ -43,6 +43,19 @@ a[href],
   cursor: pointer;
 }
 
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.58;
+  filter: saturate(0.55);
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+[role="button"][aria-disabled="true"] {
+  pointer-events: none;
+}
+
 :focus-visible {
   outline: var(--bh-focus-ring);
   outline-offset: 4px;
