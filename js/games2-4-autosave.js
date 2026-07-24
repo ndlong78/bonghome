@@ -8,7 +8,20 @@
   const SAVE_INTERVAL_MS = 2000;
   let saveTimer = null;
   let statusTimer = null;
-  let sessionId = `${gameId}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+
+  function createSessionId() {
+    return `${gameId}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  let sessionId = createSessionId();
+
+  function resetRewardSession() {
+    sessionId = createSessionId();
+    const summary = document.querySelector('.man-thang .bh-reward-summary');
+    if (!summary) return;
+    summary.replaceChildren();
+    summary.hidden = true;
+  }
 
   function showStatus(message) {
     let status = document.getElementById('bhGameAutosaveStatus');
@@ -209,6 +222,17 @@
         startedAt: saved?.startedAt || new Date().toISOString()
       });
     }
+
+    document.querySelectorAll('#nutVanMoi, #nutChoiLai').forEach((button) => {
+      button.addEventListener('click', () => {
+        queueMicrotask(() => {
+          resetRewardSession();
+          clearInterval(saveTimer);
+          save();
+          saveTimer = setInterval(save, SAVE_INTERVAL_MS);
+        });
+      });
+    });
 
     saveTimer = setInterval(save, SAVE_INTERVAL_MS);
     window.addEventListener('pagehide', save);
