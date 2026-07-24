@@ -11,7 +11,7 @@ const game4 = fs.readFileSync(path.join(root, 'game4.html'), 'utf8');
 
 function readFixedSize(source, selector) {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const block = source.match(new RegExp(`${escaped}\\s*\\{([^}]]+)\\}`));
+  const block = source.match(new RegExp(`${escaped}\\s*\\{([^}]*)\\}`));
   assert.ok(block, `Không tìm thấy CSS cho ${selector}`);
   const width = Number(block[1].match(/width\s*:\s*(\d+)px/)?.[1]);
   const height = Number(block[1].match(/height\s*:\s*(\d+)px/)?.[1]);
