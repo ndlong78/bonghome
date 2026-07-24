@@ -25,6 +25,7 @@
   }
 
   const isGame1 = /\/game1\.html$/.test(window.location.pathname);
+  const isGame2 = /\/game2\.html$/.test(window.location.pathname);
   const isGames2To4 = /\/game[234]\.html$/.test(window.location.pathname);
   const isGames5To7 = /\/game[567]\.html$/.test(window.location.pathname);
   const isGames8To10 = /\/game(?:8|9|10)\.html$/.test(window.location.pathname);
@@ -43,6 +44,10 @@
   if (isGame1) {
     loadSharedScript('./js/game1-keyboard-accessibility.js', 'data-bh-game1-keyboard-accessibility')
       .catch((error) => console.warn('[Bông Home] Không tải được trạng thái bàn phím Game 1', error));
+  }
+  if (isGame2) {
+    loadSharedScript('./js/game2-keyboard-cursor.js', 'data-bh-game2-keyboard-cursor')
+      .catch((error) => console.warn('[Bông Home] Không tải được con trỏ bàn phím Game 2', error));
   }
 
   window.BongModulesReady = loadSharedScript('./js/storage.js', 'data-bh-storage')
