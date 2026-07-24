@@ -48,24 +48,30 @@
     const start = centerOf(piece);
     const end = centerOf(shadow);
     const pointerId = 91;
-    piece.dispatchEvent(new PointerEvent('pointerdown', {
-      bubbles: true,
-      cancelable: true,
-      pointerId,
-      pointerType: 'mouse',
-      clientX: start.x,
-      clientY: start.y,
-      buttons: 1
-    }));
-    piece.dispatchEvent(new PointerEvent('pointerup', {
-      bubbles: true,
-      cancelable: true,
-      pointerId,
-      pointerType: 'mouse',
-      clientX: end.x,
-      clientY: end.y,
-      buttons: 0
-    }));
+    const originalSetPointerCapture = piece.setPointerCapture;
+    piece.setPointerCapture = () => {};
+    try {
+      piece.dispatchEvent(new PointerEvent('pointerdown', {
+        bubbles: true,
+        cancelable: true,
+        pointerId,
+        pointerType: 'mouse',
+        clientX: start.x,
+        clientY: start.y,
+        buttons: 1
+      }));
+      piece.dispatchEvent(new PointerEvent('pointerup', {
+        bubbles: true,
+        cancelable: true,
+        pointerId,
+        pointerType: 'mouse',
+        clientX: end.x,
+        clientY: end.y,
+        buttons: 0
+      }));
+    } finally {
+      piece.setPointerCapture = originalSetPointerCapture;
+    }
   }
 
   function clearSelection() {
