@@ -79,6 +79,23 @@
     });
   }
 
+  function setupLiveRegions() {
+    const selector = '[role="status"],[aria-live]:not([aria-live="off"])';
+    const enhance = (node) => {
+      if (!(node instanceof Element)) return;
+      const regions = node.matches(selector) ? [node] : [];
+      regions.push(...node.querySelectorAll(selector));
+      regions.forEach((region) => {
+        if (!region.hasAttribute('aria-atomic')) region.setAttribute('aria-atomic', 'true');
+      });
+    };
+
+    enhance(document.body);
+    new MutationObserver((records) => {
+      records.forEach((record) => record.addedNodes.forEach(enhance));
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
   function setupDialogFocus() {
     document.querySelectorAll('.man-thang').forEach((dialog) => {
       let previousFocus = null;
@@ -207,6 +224,7 @@
 
   const start = () => {
     setupCustomButtons();
+    setupLiveRegions();
     setupDialogFocus();
     setupLifecycle();
     setupControlledUpdates();
