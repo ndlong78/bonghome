@@ -25,21 +25,30 @@ test.describe('Vùng chạm giao diện chung trên iPhone và iPad', () => {
       await page.goto(path, { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => document.querySelector('.nut-am-thanh'));
 
-      const controls = page.locator(sharedControls).filter({ visible: true });
-      expect(await controls.count(), `${path} cần có ít nhất một điều khiển chung`).toBeGreaterThan(0);
-
-      const undersized = await controls.evaluateAll((elements) => elements
-        .map((element) => {
+      const audit = await page.locator(sharedControls).evaluateAll((elements) => {
+        const visible = elements.filter((element) => {
+          const style = getComputedStyle(element);
           const rect = element.getBoundingClientRect();
-          return {
-            label: element.getAttribute('aria-label') || element.textContent?.trim() || element.className,
-            width: Math.round(rect.width * 10) / 10,
-            height: Math.round(rect.height * 10) / 10
-          };
-        })
-        .filter(({ width, height }) => width < 44 || height < 44));
+          return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+        });
 
-      expect(undersized, `${path} có vùng chạm nhỏ hơn 44px`).toEqual([]);
+        return {
+          visibleCount: visible.length,
+          undersized: visible
+            .map((element) => {
+              const rect = element.getBoundingClientRect();
+              return {
+                label: element.getAttribute('aria-label') || element.textContent?.trim() || element.className,
+                width: Math.round(rect.width * 10) / 10,
+                height: Math.round(rect.height * 10) / 10
+              };
+            })
+            .filter(({ width, height }) => width < 44 || height < 44)
+        };
+      });
+
+      expect(audit.visibleCount, `${path} cần có ít nhất một điều khiển chung`).toBeGreaterThan(0);
+      expect(audit.undersized, `${path} có vùng chạm nhỏ hơn 44px`).toEqual([]);
     });
   }
 });
