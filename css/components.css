@@ -56,6 +56,7 @@
 .o-so .nhan,
 .ket-qua .nhan {
   display: block;
+  color: #806987;
   font-size: 12px;
   font-weight: var(--bh-font-weight-semibold);
 }
