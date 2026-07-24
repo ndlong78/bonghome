@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v51-game4-keyboard-sorting";
+const PHIEN_BAN = "bonghome-v52-game5-touch-target";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
@@ -18,7 +18,7 @@ const TEP_SHELL = [
 const TEP_GAME = [
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
   "./game1-difficulty.js", "./game1-autosave.js",
-  "./js/game1-rewards.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/game1-keyboard-accessibility.js", "./js/game2-keyboard-cursor.js", "./js/game3-keyboard-matching.js", "./js/game4-keyboard-sorting.js", "./js/games2-4-rewards.js", "./js/games2-4-autosave.js", "./js/games5-7-rewards.js", "./js/games5-7-autosave.js", "./js/games8-10-rewards.js", "./js/games8-10-autosave.js",
+  "./js/game1-rewards.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/game1-keyboard-accessibility.js", "./js/game2-keyboard-cursor.js", "./js/game3-keyboard-matching.js", "./js/game4-keyboard-sorting.js", "./js/game5-touch-target.js", "./js/games2-4-rewards.js", "./js/games2-4-autosave.js", "./js/games5-7-rewards.js", "./js/games5-7-autosave.js", "./js/games8-10-rewards.js", "./js/games8-10-autosave.js",
   "./css/game1-autosave.css", "./css/games-autosave.css"
 ];
 
