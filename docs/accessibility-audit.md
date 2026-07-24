@@ -25,10 +25,11 @@ Ngày rà soát: 24/07/2026
 - Game 1 dùng native button cho từng lá bài; trạng thái đang úp, đang mở và đã ghép đúng được đồng bộ bằng ARIA, lá đã ghép được loại khỏi thứ tự Tab.
 - Game 2–4 có baseline thứ tự Tab cho các điều khiển chính; hộp thắng đang ẩn và điều khiển disabled không được nhận focus.
 - Game 5–7 có baseline thứ tự Tab dựa trên điều khiển render thực tế; nút Về nhà đứng trước nội dung trò chơi và nút âm thanh đứng sau các điều khiển chính.
+- Game 8–10 có baseline thứ tự Tab theo cùng hợp đồng render thực tế; phần tử ẩn và disabled bị bỏ qua.
 
 ## Baseline tự động
 
-`tests/accessibility-baseline.test.js` khóa các yêu cầu nền tảng trên cho toàn bộ 13 trang. `tests/live-region-accessibility.test.js` ngăn hồi quy đối với thông báo động dành cho trình đọc màn hình. `e2e/touch-targets.spec.js` đo kích thước thực tế của các nút điều khiển chung trên iPhone/iPad. `e2e/focus-visible.spec.js` xác nhận focus ring khi điều hướng bằng bàn phím. `tests/disabled-controls.test.js` kiểm tra trạng thái disabled qua hợp đồng tải chung của `shared-ui.js`. `e2e/text-contrast.spec.js` đo màu chữ và nền thực tế của các nút dùng chung. `tests/game1-keyboard-accessibility.test.js` khóa trạng thái ARIA và vòng đời lá bài Game 1. `e2e/games2-4-tab-order.spec.js` kiểm tra thứ tự Tab và việc bỏ qua phần tử ẩn/disabled của Game 2–4. `e2e/games5-7-tab-order.spec.js` kiểm tra thứ tự Tab tương đối và phần tử ẩn/disabled của Game 5–7.
+`tests/accessibility-baseline.test.js` khóa các yêu cầu nền tảng trên cho toàn bộ 13 trang. `tests/live-region-accessibility.test.js` ngăn hồi quy đối với thông báo động dành cho trình đọc màn hình. `e2e/touch-targets.spec.js` đo kích thước thực tế của các nút điều khiển chung trên iPhone/iPad. `e2e/focus-visible.spec.js` xác nhận focus ring khi điều hướng bằng bàn phím. `tests/disabled-controls.test.js` kiểm tra trạng thái disabled qua hợp đồng tải chung của `shared-ui.js`. `e2e/text-contrast.spec.js` đo màu chữ và nền thực tế của các nút dùng chung. `tests/game1-keyboard-accessibility.test.js` khóa trạng thái ARIA và vòng đời lá bài Game 1. `e2e/games2-4-tab-order.spec.js` kiểm tra thứ tự Tab và việc bỏ qua phần tử ẩn/disabled của Game 2–4. `e2e/games5-7-tab-order.spec.js` kiểm tra thứ tự Tab tương đối và phần tử ẩn/disabled của Game 5–7. `e2e/games8-10-tab-order.spec.js` áp dụng cùng baseline cho Game 8–10.
 
 ## Quy ước viết regression test
 
@@ -42,12 +43,11 @@ Ngày rà soát: 24/07/2026
 
 Mỗi mục sẽ được xử lý trong PR nhỏ, độc lập:
 
-1. Tiếp tục kiểm tra thứ tự focus và phương án thao tác bàn phím cho Game 8–10.
-2. Xây phương án thao tác bàn phím thay thế cho các game kéo/thả hoặc chọn trực tiếp, bắt đầu từ Game 2–4.
-3. Rà soát riêng vùng chạm của các vật thể gameplay có cơ chế kéo, thả hoặc chọn trực tiếp.
-4. Rà soát độ tương phản của chữ nội dung nhỏ, nhãn thống kê và vật thể gameplay.
-5. Kiểm thử thực tế thông báo phần thưởng và auto-save với VoiceOver/TalkBack.
-6. Mở rộng E2E accessibility cho các luồng tương tác hoàn chỉnh trên iPhone/iPad.
+1. Xây phương án thao tác bàn phím thay thế cho các game kéo/thả hoặc chọn trực tiếp, bắt đầu từ Game 2–4.
+2. Rà soát riêng vùng chạm của các vật thể gameplay có cơ chế kéo, thả hoặc chọn trực tiếp.
+3. Rà soát độ tương phản của chữ nội dung nhỏ, nhãn thống kê và vật thể gameplay.
+4. Kiểm thử thực tế thông báo phần thưởng và auto-save với VoiceOver/TalkBack.
+5. Mở rộng E2E accessibility cho các luồng tương tác hoàn chỉnh trên iPhone/iPad.
 
 ## Ngoài phạm vi baseline
 
