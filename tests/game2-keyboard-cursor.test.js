@@ -11,7 +11,7 @@ const sharedUi = fs.readFileSync(path.join(root, 'shared-ui.js'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 
 test('Game 2 keyboard cursor is loaded only on Game 2 and stays available offline', () => {
-  assert.match(sharedUi, /const isGame2 = \/\\\/game2\\\.html\$\//);
+  assert.ok(sharedUi.includes("const isGame2 = /\\/game2\\.html$/.test(window.location.pathname);"));
   assert.match(sharedUi, /game2-keyboard-cursor\.js/);
   assert.match(sharedUi, /data-bh-game2-keyboard-cursor/);
   assert.match(serviceWorker, /\.\/js\/game2-keyboard-cursor\.js/);
