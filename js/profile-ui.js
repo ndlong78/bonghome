@@ -36,6 +36,12 @@
       button.type = 'button';
       button.className = 'bh-profile-button';
 
+      const collectionLink = root.document.createElement('a');
+      collectionLink.className = 'bh-parent-link';
+      collectionLink.href = './collection.html';
+      collectionLink.textContent = '🎁 Bộ sưu tập của Bông';
+      collectionLink.setAttribute('aria-label', 'Mở bộ sưu tập sao, sticker và huy hiệu');
+
       const parentLink = root.document.createElement('a');
       parentLink.className = 'bh-parent-link';
       parentLink.href = './parents.html';
@@ -65,7 +71,7 @@
           </div>
         </form>`;
       root.document.body.appendChild(dialog);
-      actions.append(button, parentLink);
+      actions.append(button, collectionLink, parentLink);
       header.appendChild(actions);
 
       const form = dialog.querySelector('form');
@@ -116,7 +122,7 @@
       });
 
       render();
-      return { button, parentLink, dialog };
+      return { button, collectionLink, parentLink, dialog };
     }).catch((error) => {
       console.warn('[Bông Home] Không tải được hồ sơ cục bộ', error);
       return null;
