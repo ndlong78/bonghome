@@ -19,8 +19,26 @@ const sharedControls = [
   '.bh-collection__back'
 ].join(',');
 
+const tabbableSelector = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])'
+].join(',');
+
 async function tabToSharedControl(page) {
-  for (let attempt = 0; attempt < 20; attempt += 1) {
+  const maxAttempts = await page.evaluate((selector) => {
+    const isVisible = (element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
+    };
+    return [...document.querySelectorAll(selector)].filter(isVisible).length + 1;
+  }, tabbableSelector);
+
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     await page.keyboard.press('Tab');
     const matches = await page.evaluate((selector) => {
       const active = document.activeElement;
