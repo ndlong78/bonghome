@@ -4,7 +4,7 @@ const MIN_TARGET_PX = 44;
 const MIN_TARGET_VIEWBOX_UNITS = 44;
 
 async function readPictureTargetState(page, selector) {
-  return page.locator(selector).evaluate((svg, config) => {
+  return page.locator(selector).evaluate((svg, minimumViewBoxTarget) => {
     const rect = svg.getBoundingClientRect();
     const viewBox = svg.viewBox.baseVal;
     const style = getComputedStyle(svg);
@@ -16,10 +16,10 @@ async function readPictureTargetState(page, selector) {
       height: rect.height,
       pointerEvents: style.pointerEvents,
       visible: style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0,
-      centerBelongsToPicture: Boolean(centerElement?.closest(selector)),
-      minimumRenderedTarget: Math.min(scaleX, scaleY) * config.minimumViewBoxTarget
+      centerBelongsToPicture: Boolean(centerElement && (centerElement === svg || svg.contains(centerElement))),
+      minimumRenderedTarget: Math.min(scaleX, scaleY) * minimumViewBoxTarget
     };
-  }, { minimumViewBoxTarget: MIN_TARGET_VIEWBOX_UNITS });
+  }, MIN_TARGET_VIEWBOX_UNITS);
 }
 
 test.describe('Vùng chạm gameplay Game 2', () => {
