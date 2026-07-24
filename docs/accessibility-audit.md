@@ -18,20 +18,21 @@ Ngày rà soát: 24/07/2026
 - Trang phụ huynh và Bộ sưu tập có landmark `main` được gắn nhãn bởi tiêu đề cấp 1.
 - Các điều khiển tùy biến có `role="button"` được bổ sung `tabindex` và hỗ trợ Enter/Space qua module dùng chung.
 - Các vùng thông báo phần thưởng, auto-save, tiếp tục chơi và cập nhật PWA được chuẩn hóa `aria-atomic="true"`, kể cả vùng được tạo động sau khi trang đã tải.
+- Các nút điều khiển giao diện chung được kiểm tra vùng chạm tối thiểu 44×44px trên cấu hình iPhone 13 và iPad Mini.
 
 ## Baseline tự động
 
-`tests/accessibility-baseline.test.js` khóa các yêu cầu nền tảng trên cho toàn bộ 13 trang. `tests/live-region-accessibility.test.js` ngăn hồi quy đối với thông báo động dành cho trình đọc màn hình.
+`tests/accessibility-baseline.test.js` khóa các yêu cầu nền tảng trên cho toàn bộ 13 trang. `tests/live-region-accessibility.test.js` ngăn hồi quy đối với thông báo động dành cho trình đọc màn hình. `e2e/touch-targets.spec.js` đo kích thước thực tế của các nút điều khiển chung trên iPhone/iPad.
 
 ## Việc cần rà soát tiếp theo
 
 Mỗi mục sẽ được xử lý trong PR nhỏ, độc lập:
 
 1. Kiểm tra thứ tự focus và thao tác chỉ bằng bàn phím trong từng loại game.
-2. Kiểm tra kích thước vùng chạm tối thiểu trên iPhone/iPad.
+2. Rà soát riêng vùng chạm của các vật thể gameplay có cơ chế kéo, thả hoặc chọn trực tiếp.
 3. Kiểm tra độ tương phản chữ, trạng thái focus và trạng thái disabled.
 4. Kiểm thử thực tế thông báo phần thưởng và auto-save với VoiceOver/TalkBack.
-5. Bổ sung kiểm thử E2E accessibility ở kích thước iPhone/iPad.
+5. Mở rộng E2E accessibility cho các luồng tương tác hoàn chỉnh trên iPhone/iPad.
 
 ## Ngoài phạm vi baseline
 
