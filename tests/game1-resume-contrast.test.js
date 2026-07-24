@@ -1,3 +1,5 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
@@ -29,16 +31,16 @@ function colorFor(selector) {
 }
 
 test('hộp tiếp tục Game 1 dùng màu chữ phụ qua token tương phản', () => {
-  expect(css).toMatch(/\.bh-game1-resume p\{[^}]*color:var\(--bh-color-muted,#806987\)/s);
-  expect(contrastRatio('#806987', '#FFFFFF')).toBeGreaterThanOrEqual(4.5);
+  assert.match(css, /\.bh-game1-resume p\{[^}]*color:var\(--bh-color-muted,#806987\)/s);
+  assert.ok(contrastRatio('#806987', '#FFFFFF') >= 4.5);
 });
 
 test('hai nút tiếp tục và chơi lại đạt tương phản tối thiểu 4.5:1', () => {
   const continueColor = colorFor('.bh-game1-continue');
   const restartColor = colorFor('.bh-game1-restart');
 
-  expect(continueColor).toBe('#5B3C62');
-  expect(restartColor).toBe('#365E80');
-  expect(contrastRatio(continueColor, '#FFB7C5')).toBeGreaterThanOrEqual(4.5);
-  expect(contrastRatio(restartColor, '#BFE3FF')).toBeGreaterThanOrEqual(4.5);
+  assert.equal(continueColor, '#5B3C62');
+  assert.equal(restartColor, '#365E80');
+  assert.ok(contrastRatio(continueColor, '#FFB7C5') >= 4.5);
+  assert.ok(contrastRatio(restartColor, '#BFE3FF') >= 4.5);
 });
