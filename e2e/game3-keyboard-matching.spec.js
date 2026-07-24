@@ -5,8 +5,10 @@ test.describe('Ghép hình bằng bàn phím trong Game 3', () => {
     await page.goto('/game3.html', { waitUntil: 'domcontentloaded' });
     await page.waitForFunction(() => window.BongGame3KeyboardMatching && document.querySelectorAll('.mieng-hinh[tabindex="0"]').length > 0);
 
-    const piece = page.locator('.mieng-hinh:not(.xong)').first();
-    const id = await piece.getAttribute('data-id');
+    const firstAvailablePiece = page.locator('.mieng-hinh:not(.xong)').first();
+    const id = await firstAvailablePiece.getAttribute('data-id');
+    expect(id, 'Hình được chọn cần có data-id').toBeTruthy();
+    const piece = page.locator(`.mieng-hinh[data-id="${id}"]`);
     const shadow = page.locator(`.o-bong[data-id="${id}"]`);
 
     await piece.focus();
@@ -28,10 +30,12 @@ test.describe('Ghép hình bằng bàn phím trong Game 3', () => {
 
   test('chọn sai trả focus về hình và cho phép thử lại', async ({ page }) => {
     await page.goto('/game3.html', { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(() => window.BongGame3KeyboardMatching);
+    await page.waitForFunction(() => window.BongGame3KeyboardMatching && document.querySelectorAll('.mieng-hinh[tabindex="0"]').length > 0);
 
-    const piece = page.locator('.mieng-hinh:not(.xong)').first();
-    const id = await piece.getAttribute('data-id');
+    const firstAvailablePiece = page.locator('.mieng-hinh:not(.xong)').first();
+    const id = await firstAvailablePiece.getAttribute('data-id');
+    expect(id, 'Hình được chọn cần có data-id').toBeTruthy();
+    const piece = page.locator(`.mieng-hinh[data-id="${id}"]`);
     const wrongShadow = page.locator(`.o-bong:not([data-id="${id}"])`).first();
 
     await piece.focus();
