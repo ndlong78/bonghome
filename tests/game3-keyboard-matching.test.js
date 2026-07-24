@@ -11,8 +11,7 @@ const rewards = fs.readFileSync(path.join(root, 'js/games2-4-rewards.js'), 'utf8
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 
 test('Game 3 keyboard matching module is loaded only on Game 3 and cached offline', () => {
-  assert.match(rewards, /\/game3\\\.html\$/);
-  assert.match(rewards, /game3-keyboard-matching\.js/);
+  assert.match(rewards, /loadKeyboardModule\('game3', 'game3-keyboard-matching\.js'/);
   assert.match(rewards, /data-bh-game3-keyboard-matching/);
   assert.match(serviceWorker, /\.\/js\/game3-keyboard-matching\.js/);
 });
