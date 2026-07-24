@@ -40,6 +40,10 @@
   if (isHome) loadSharedStyle('./css/profile.css', 'data-bh-profile-style');
   loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios').catch(() => {});
   loadSharedScript('./pwa-quality.js', 'data-bh-pwa-quality').catch(() => {});
+  if (isGame1) {
+    loadSharedScript('./js/game1-keyboard-accessibility.js', 'data-bh-game1-keyboard-accessibility')
+      .catch((error) => console.warn('[Bông Home] Không tải được trạng thái bàn phím Game 1', error));
+  }
 
   window.BongModulesReady = loadSharedScript('./js/storage.js', 'data-bh-storage')
     .then(() => {
