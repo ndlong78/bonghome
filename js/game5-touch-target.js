@@ -3,7 +3,7 @@
 
   const DOT_SELECTOR = '#lopDiem .diem';
   const HIT_CLASS = 'bh-game5-hit-target';
-  const HIT_RADIUS = 26;
+  const HIT_RADIUS = 27;
 
   function addHitTarget(dot) {
     if (!(dot instanceof SVGGElement) || dot.querySelector(`.${HIT_CLASS}`)) return;
