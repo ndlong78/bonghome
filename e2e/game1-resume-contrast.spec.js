@@ -40,9 +40,21 @@ test('hộp tiếp tục Game 1 giữ tương phản chữ tối thiểu 4.5:1',
 
   for (const selector of ['.bh-game1-resume p', '.bh-game1-continue', '.bh-game1-restart']) {
     const colors = await page.locator(selector).evaluate((element) => {
-      const style = getComputedStyle(element);
-      return { foreground: style.color, background: style.backgroundColor };
+      const foreground = getComputedStyle(element).color;
+      let current = element;
+      let background = 'rgba(0, 0, 0, 0)';
+
+      while (current) {
+        background = getComputedStyle(current).backgroundColor;
+        const alpha = background.match(/rgba?\([^)]*(?:,|\/)\s*([\d.]+)\s*\)$/)?.[1];
+        const isTransparent = background === 'transparent' || (background.startsWith('rgba') && Number(alpha) === 0);
+        if (!isTransparent) break;
+        current = current.parentElement;
+      }
+
+      return { foreground, background };
     });
+
     const ratio = contrastRatio(parseRgb(colors.foreground), parseRgb(colors.background));
     expect(ratio, `${selector} cần đạt tương phản 4.5:1`).toBeGreaterThanOrEqual(4.5);
   }
