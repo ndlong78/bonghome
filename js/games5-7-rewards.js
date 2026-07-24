@@ -1,8 +1,23 @@
 (function (root, factory) {
   'use strict';
+
+  function loadGame5TouchTarget() {
+    if (!root?.document || !/\/game5\.html$/.test(root.location?.pathname || '')) return;
+    if (root.document.querySelector('script[data-bh-game5-touch-target]')) return;
+    const script = root.document.createElement('script');
+    script.src = './js/game5-touch-target.js';
+    script.async = false;
+    script.setAttribute('data-bh-game5-touch-target', 'true');
+    script.addEventListener('error', () => {
+      console.warn('[Bông Home] Không tải được vùng chạm mở rộng Game 5');
+    }, { once: true });
+    root.document.head.appendChild(script);
+  }
+
   if (typeof module === 'object' && module.exports) module.exports = factory;
   if (root?.BongProgress && root?.BongRewards) {
     root.BongProgress = factory(root.BongProgress, root.BongRewards, root);
+    loadGame5TouchTarget();
   }
 })(typeof window !== 'undefined' ? window : globalThis, function createGames5To7Rewards(progress, rewards, root) {
   'use strict';
