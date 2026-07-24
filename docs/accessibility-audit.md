@@ -21,10 +21,11 @@ Ngày rà soát: 24/07/2026
 - Các nút điều khiển giao diện chung được kiểm tra vùng chạm tối thiểu 44×44px trên cấu hình iPhone 13 và iPad Mini.
 - Focus bàn phím của các điều khiển chung được kiểm tra bằng phím Tab; focus ring phải có outline nhìn thấy, rộng tối thiểu 3px và tách khỏi nút tối thiểu 2px.
 - Nút native `disabled` và nút tùy biến `aria-disabled="true"` dùng trạng thái trực quan chung, không thể kích hoạt nhầm.
+- Chữ trên các nút điều khiển chung được đo bằng màu render thực tế và phải đạt tỷ lệ tương phản tối thiểu 4.5:1.
 
 ## Baseline tự động
 
-`tests/accessibility-baseline.test.js` khóa các yêu cầu nền tảng trên cho toàn bộ 13 trang. `tests/live-region-accessibility.test.js` ngăn hồi quy đối với thông báo động dành cho trình đọc màn hình. `e2e/touch-targets.spec.js` đo kích thước thực tế của các nút điều khiển chung trên iPhone/iPad. `e2e/focus-visible.spec.js` xác nhận focus ring khi điều hướng bằng bàn phím. `tests/disabled-controls.test.js` kiểm tra trạng thái disabled qua hợp đồng tải chung của `shared-ui.js`.
+`tests/accessibility-baseline.test.js` khóa các yêu cầu nền tảng trên cho toàn bộ 13 trang. `tests/live-region-accessibility.test.js` ngăn hồi quy đối với thông báo động dành cho trình đọc màn hình. `e2e/touch-targets.spec.js` đo kích thước thực tế của các nút điều khiển chung trên iPhone/iPad. `e2e/focus-visible.spec.js` xác nhận focus ring khi điều hướng bằng bàn phím. `tests/disabled-controls.test.js` kiểm tra trạng thái disabled qua hợp đồng tải chung của `shared-ui.js`. `e2e/text-contrast.spec.js` đo màu chữ và nền thực tế của các nút dùng chung.
 
 ## Quy ước viết regression test
 
@@ -40,7 +41,7 @@ Mỗi mục sẽ được xử lý trong PR nhỏ, độc lập:
 
 1. Kiểm tra thứ tự focus và thao tác chỉ bằng bàn phím trong từng loại game.
 2. Rà soát riêng vùng chạm của các vật thể gameplay có cơ chế kéo, thả hoặc chọn trực tiếp.
-3. Kiểm tra độ tương phản chữ.
+3. Rà soát độ tương phản của chữ nội dung nhỏ, nhãn thống kê và vật thể gameplay.
 4. Kiểm thử thực tế thông báo phần thưởng và auto-save với VoiceOver/TalkBack.
 5. Mở rộng E2E accessibility cho các luồng tương tác hoàn chỉnh trên iPhone/iPad.
 

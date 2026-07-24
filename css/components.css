@@ -73,6 +73,20 @@
   min-height: var(--bh-touch-target);
 }
 
+/* Giữ bảng màu pastel nhưng dùng chữ đậm hơn để đạt tương phản cho nút hành động. */
+.nut-choi-lai {
+  color: #5B3C62 !important;
+}
+
+.nhom-nut a,
+.nut-van-moi {
+  color: #365E80 !important;
+}
+
+.nut-goi-y {
+  color: #765117 !important;
+}
+
 .man-thang {
   position: fixed;
   inset: 0;
