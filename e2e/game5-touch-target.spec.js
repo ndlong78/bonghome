@@ -22,7 +22,6 @@ test.describe('Vùng chạm Game 5', () => {
       expect(box.height, `Chấm ${index + 1} cao ${box.height.toFixed(1)}px`).toBeGreaterThanOrEqual(MIN_TARGET_PX);
     }
 
-    const firstDot = dots.filter({ has: page.locator('[data-i="0"]') });
     const first = page.locator('#lopDiem .diem[data-i="0"]');
     const firstBox = await first.boundingBox();
     expect(firstBox).not.toBeNull();
