@@ -39,8 +39,8 @@ test('reward and autosave modules expose polite status regions for enhancement',
   });
 });
 
-test('service worker refreshes the cached quality module', () => {
+test('service worker refreshes the cached quality module without pinning a cache version', () => {
   const serviceWorker = read('sw.js');
-  assert.match(serviceWorker, /bonghome-v44-live-regions/);
+  assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
   assert.match(serviceWorker, /\.\/pwa-quality\.js/);
 });
