@@ -25,7 +25,9 @@ test.describe('Vùng chạm Game 5', () => {
     const first = page.locator('#lopDiem .diem[data-i="0"]');
     const firstBox = await first.boundingBox();
     expect(firstBox).not.toBeNull();
-    await page.mouse.click(firstBox.x + 3, firstBox.y + firstBox.height / 2);
+
+    // Nhấn tại bán kính khoảng 17px: ngoài chấm nhìn thấy r=13 nhưng nằm chắc trong vùng chạm r=27.
+    await page.mouse.click(firstBox.x + 10, firstBox.y + firstBox.height / 2);
     await expect(page.locator('#chamKeTiep')).toHaveText('2');
     await expect(first.locator('.bh-game5-hit-target')).toHaveAttribute('r', '27');
     await expect(first.locator('circle:not(.bh-game5-hit-target)')).toHaveAttribute('r', '13');
