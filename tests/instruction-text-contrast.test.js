@@ -7,6 +7,19 @@ const root = path.join(__dirname, '..');
 const tokens = fs.readFileSync(path.join(root, 'css/design-tokens.css'), 'utf8');
 const components = fs.readFileSync(path.join(root, 'css/components.css'), 'utf8');
 
+const instructionTargets = [
+  { file: 'game1.html', selectorPattern: /class="huong-dan"/ },
+  { file: 'game2.html', selectorPattern: /class="huong-dan"/ },
+  { file: 'game3.html', selectorPattern: /class="huong-dan"/ },
+  { file: 'game4.html', selectorPattern: /class="huong-dan"/ },
+  { file: 'game5.html', selectorPattern: /class="huong-dan"/ },
+  { file: 'game6.html', selectorPattern: /class="huong-dan"/ },
+  { file: 'game7.html', selectorPattern: /class="huong-dan"/ },
+  { file: 'game8.html', selectorPattern: /class="huong-dan"/ },
+  { file: 'game9.html', selectorPattern: /class="nho"/ },
+  { file: 'game10.html', selectorPattern: /class="huong-dan"/ }
+];
+
 function channel(value) {
   const normalized = value / 255;
   return normalized <= 0.04045
@@ -35,7 +48,22 @@ test('màu chữ phụ đạt tối thiểu 4.5:1 trên nền kem và trắng', 
   assert.ok(contrastRatio(muted, surface) >= 4.5, 'Chữ phụ phải đạt 4.5:1 trên nền trắng');
 });
 
-test('hướng dẫn và nhãn thống kê cùng dùng token màu chữ phụ', () => {
-  assert.match(components, /\.huong-dan\s*\{[^}]*color:\s*var\(--bh-color-muted\)/s);
-  assert.match(components, /\.o-so \.nhan,[\s\S]*?\.ket-qua \.nhan\s*\{[^}]*color:\s*var\(--bh-color-muted\)/s);
+test('các kiểu hướng dẫn và nhãn thống kê cùng dùng token màu chữ phụ', () => {
+  assert.match(
+    components,
+    /\.huong-dan,\s*\.the-nhiem-vu \.nho\s*\{[^}]*color:\s*var\(--bh-color-muted\)\s*!important/s
+  );
+  assert.match(
+    components,
+    /\.o-so \.nhan,[\s\S]*?\.ket-qua \.nhan\s*\{[^}]*color:\s*var\(--bh-color-muted\)\s*!important/s
+  );
+});
+
+test('mọi game có selector hướng dẫn được khai báo rõ ràng', () => {
+  assert.equal(instructionTargets.length, 10);
+
+  for (const target of instructionTargets) {
+    const html = fs.readFileSync(path.join(root, target.file), 'utf8');
+    assert.match(html, target.selectorPattern, `${target.file} cần phần tử hướng dẫn đã khai báo trong E2E`);
+  }
 });
