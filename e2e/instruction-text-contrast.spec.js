@@ -1,6 +1,17 @@
 const { test, expect } = require('@playwright/test');
 
-const games = Array.from({ length: 10 }, (_, index) => `/game${index + 1}.html`);
+const instructionTargets = [
+  { path: '/game1.html', selector: '.huong-dan' },
+  { path: '/game2.html', selector: '.huong-dan' },
+  { path: '/game3.html', selector: '.huong-dan' },
+  { path: '/game4.html', selector: '.huong-dan' },
+  { path: '/game5.html', selector: '.huong-dan' },
+  { path: '/game6.html', selector: '.huong-dan' },
+  { path: '/game7.html', selector: '.huong-dan' },
+  { path: '/game8.html', selector: '.huong-dan' },
+  { path: '/game9.html', selector: '.the-nhiem-vu .nho' },
+  { path: '/game10.html', selector: '.huong-dan' }
+];
 
 function channel(value) {
   const normalized = value / 255;
@@ -25,26 +36,40 @@ function parseRgb(value) {
   return match[1].split(',').slice(0, 3).map((part) => Number.parseFloat(part.trim()));
 }
 
+async function renderedColors(locator) {
+  return locator.evaluate((element) => {
+    const foreground = getComputedStyle(element).color;
+    let current = element;
+    let background = 'rgba(0, 0, 0, 0)';
+
+    while (current) {
+      background = getComputedStyle(current).backgroundColor;
+      if (background !== 'transparent' && background !== 'rgba(0, 0, 0, 0)') break;
+      current = current.parentElement;
+    }
+
+    if (!current) background = getComputedStyle(document.body).backgroundColor;
+    return { foreground, background };
+  });
+}
+
 test.describe('Độ tương phản chữ hướng dẫn', () => {
-  for (const path of games) {
-    test(`${path} đạt tối thiểu 4.5:1`, async ({ page }) => {
-      await page.goto(path, { waitUntil: 'domcontentloaded' });
-      const instruction = page.locator('.huong-dan').first();
-      await expect(instruction).toBeVisible();
+  for (const target of instructionTargets) {
+    test(`${target.path} đạt tối thiểu 4.5:1`, async ({ page }) => {
+      await page.goto(target.path, { waitUntil: 'domcontentloaded' });
+      const instruction = page.locator(target.selector).first();
+      await expect(instruction, `${target.path} cần phần hướng dẫn ${target.selector}`).toBeVisible();
 
-      const colors = await instruction.evaluate((element) => {
-        const style = getComputedStyle(element);
-        return {
-          foreground: style.color,
-          background: getComputedStyle(document.body).backgroundColor
-        };
-      });
-
+      const colors = await renderedColors(instruction);
       const foreground = parseRgb(colors.foreground);
       const background = parseRgb(colors.background);
-      expect(foreground, `${path} cần màu chữ render hợp lệ`).not.toBeNull();
-      expect(background, `${path} cần màu nền render hợp lệ`).not.toBeNull();
-      expect(contrastRatio(foreground, background), `${path} có chữ hướng dẫn dưới 4.5:1`).toBeGreaterThanOrEqual(4.5);
+
+      expect(foreground, `${target.path} cần màu chữ render hợp lệ`).not.toBeNull();
+      expect(background, `${target.path} cần màu nền render hợp lệ`).not.toBeNull();
+      expect(
+        contrastRatio(foreground, background),
+        `${target.path} ${target.selector} có chữ hướng dẫn dưới 4.5:1`
+      ).toBeGreaterThanOrEqual(4.5);
     });
   }
 });
