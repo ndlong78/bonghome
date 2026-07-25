@@ -30,7 +30,8 @@
   box-shadow: none;
 }
 
-.huong-dan {
+.huong-dan,
+.the-nhiem-vu .nho {
   text-align: center;
   color: var(--bh-color-muted) !important;
   font-weight: var(--bh-font-weight-semibold);
