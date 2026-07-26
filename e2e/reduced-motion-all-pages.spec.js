@@ -6,48 +6,50 @@ const pages = [
   ...Array.from({ length: 10 }, (_, index) => `/game${index + 1}.html`)
 ];
 
-function parseDurations(value) {
-  return value.split(',').map((item) => {
-    const duration = item.trim();
-    if (duration.endsWith('ms')) return Number.parseFloat(duration) / 1000;
-    if (duration.endsWith('s')) return Number.parseFloat(duration);
-    return 0;
-  });
-}
-
 test.describe('Giảm chuyển động trên toàn bộ Bông Home', () => {
   test.use({ reducedMotion: 'reduce' });
 
-  test('mọi trang đều rút animation và transition xuống gần 0', async ({ page }) => {
+  test('mọi trang đều vô hiệu hóa animation và transition nhìn thấy', async ({ page }) => {
     for (const path of pages) {
       await page.goto(path, { waitUntil: 'domcontentloaded' });
       await expect(page.locator('body'), `${path} phải hiển thị`).toBeVisible();
 
       const movingElements = await page.evaluate(() => {
-        const parse = (value) => value.split(',').map((item) => {
+        const parseDurations = (value) => value.split(',').map((item) => {
           const duration = item.trim();
           if (duration.endsWith('ms')) return Number.parseFloat(duration) / 1000;
           if (duration.endsWith('s')) return Number.parseFloat(duration);
           return 0;
         });
+        const parseList = (value) => value.split(',').map((item) => item.trim());
+        const hasActiveTimedItem = (names, durations) => names.some((name, index) => {
+          const duration = durations[index % durations.length] || 0;
+          return name !== 'none' && duration > 0.001;
+        });
 
         return [...document.querySelectorAll('*')]
           .map((element) => {
             const style = getComputedStyle(element);
-            const animation = Math.max(...parse(style.animationDuration), 0);
-            const transition = Math.max(...parse(style.transitionDuration), 0);
+            const animationNames = parseList(style.animationName);
+            const animationDurations = parseDurations(style.animationDuration);
+            const transitionProperties = parseList(style.transitionProperty);
+            const transitionDurations = parseDurations(style.transitionDuration);
             return {
               tag: element.tagName.toLowerCase(),
               id: element.id,
               className: typeof element.className === 'string' ? element.className : '',
-              animation,
-              transition
+              animationNames,
+              animationDurations,
+              transitionProperties,
+              transitionDurations,
+              activeAnimation: hasActiveTimedItem(animationNames, animationDurations),
+              activeTransition: hasActiveTimedItem(transitionProperties, transitionDurations)
             };
           })
-          .filter((item) => item.animation > 0.001 || item.transition > 0.001);
+          .filter((item) => item.activeAnimation || item.activeTransition);
       });
 
-      expect(movingElements, `${path} không được giữ chuyển động dài hơn 1ms`).toEqual([]);
+      expect(movingElements, `${path} không được giữ chuyển động nhìn thấy dài hơn 1ms`).toEqual([]);
     }
   });
 });
