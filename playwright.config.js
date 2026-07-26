@@ -19,7 +19,15 @@ module.exports = defineConfig({
   },
   projects: [
     {
+      name: 'Desktop Chromium',
+      testMatch: /desktop-smoke\.spec\.js/,
+      use: {
+        viewport: { width: 1440, height: 900 }
+      }
+    },
+    {
       name: 'iPhone 13',
+      testIgnore: /desktop-smoke\.spec\.js/,
       use: {
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 3,
@@ -29,6 +37,7 @@ module.exports = defineConfig({
     },
     {
       name: 'iPad Mini',
+      testIgnore: /desktop-smoke\.spec\.js/,
       use: {
         viewport: { width: 768, height: 1024 },
         deviceScaleFactor: 2,
