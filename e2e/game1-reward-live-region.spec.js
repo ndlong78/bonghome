@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 test('phần thưởng Game 1 có live region đầy đủ và không cướp focus', async ({ page }) => {
   await page.addInitScript(() => localStorage.clear());
   await page.goto('/game1.html', { waitUntil: 'domcontentloaded' });
-  await page.waitForSelector('script[data-bh-game1-rewards]');
+  await expect(page.locator('script[data-bh-game1-rewards]')).toBeAttached();
   await page.waitForFunction(() => typeof window.BongProgress?.completeGame === 'function');
 
   const soundButton = page.locator('#nutAmThanh');
