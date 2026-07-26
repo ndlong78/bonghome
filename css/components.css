@@ -115,6 +115,10 @@
   box-shadow: var(--bh-shadow-dialog);
 }
 
+.hop-thang .loi {
+  color: var(--bh-color-muted) !important;
+}
+
 .nhom-nut,
 .nhom-nut-duoi {
   display: flex;
