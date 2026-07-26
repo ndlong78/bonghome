@@ -69,6 +69,7 @@
       summary.className = 'bh-reward-summary';
       summary.setAttribute('role', 'status');
       summary.setAttribute('aria-live', 'polite');
+      summary.setAttribute('aria-atomic', 'true');
       const actions = dialog.querySelector('.nhom-nut');
       dialog.insertBefore(summary, actions || null);
     }
@@ -94,6 +95,7 @@
       status.className = 'bh-game-autosave-status';
       status.setAttribute('role', 'status');
       status.setAttribute('aria-live', 'polite');
+      status.setAttribute('aria-atomic', 'true');
       root.document.body.appendChild(status);
     }
     status.textContent = rewardLines(detail).join(' · ');
