@@ -30,9 +30,10 @@
   box-shadow: none;
 }
 
-.huong-dan {
+.huong-dan,
+.the-nhiem-vu .nho {
   text-align: center;
-  color: var(--bh-color-muted);
+  color: var(--bh-color-muted) !important;
   font-weight: var(--bh-font-weight-semibold);
 }
 
@@ -56,7 +57,7 @@
 .o-so .nhan,
 .ket-qua .nhan {
   display: block;
-  color: var(--bh-color-muted);
+  color: var(--bh-color-muted) !important;
   font-size: 12px;
   font-weight: var(--bh-font-weight-semibold);
 }

@@ -32,7 +32,7 @@
 
 .bh-game1-resume p{
   margin:0;
-  color:#8D7595;
+  color:var(--bh-color-muted,#806987);
   font-size:17px;
   font-weight:700;
   line-height:1.45;
@@ -55,8 +55,8 @@
   box-shadow:var(--bh-shadow-button,0 5px 0 rgba(0,0,0,.12));
 }
 
-.bh-game1-continue{background:var(--bh-color-pink,var(--hong));color:#fff;}
-.bh-game1-restart{background:var(--bh-color-sky,var(--troi));color:#3E6E96;}
+.bh-game1-continue{background:var(--bh-color-pink,var(--hong));color:#5B3C62;}
+.bh-game1-restart{background:var(--bh-color-sky,var(--troi));color:#365E80;}
 
 .bh-game1-resume-actions button:active{
   transform:translateY(3px);
