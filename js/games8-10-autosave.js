@@ -22,6 +22,7 @@
       status.className = 'bh-game-autosave-status';
       status.setAttribute('role', 'status');
       status.setAttribute('aria-live', 'polite');
+      status.setAttribute('aria-atomic', 'true');
       document.body.appendChild(status);
     }
     status.textContent = message;
