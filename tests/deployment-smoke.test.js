@@ -1,6 +1,19 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+
+const root = path.resolve(__dirname, '..');
+const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
 (async () => {
+  const assetsIgnore = read('.assetsignore');
+  const packageJson = JSON.parse(read('package.json'));
+  const workflow = read('.github/workflows/deployment-smoke.yml');
+  assert.match(assetsIgnore, /^scripts\/$/m, 'Deployment scripts must not be published as static assets');
+  assert.equal(packageJson.scripts?.['test:deployment'], 'node scripts/verify-deployment.mjs');
+  assert.match(workflow, /^  workflow_dispatch:$/m, 'Deployment smoke workflow must be manually triggered');
+  assert.doesNotMatch(workflow, /^  pull_request:$/m, 'Production network checks must not run on every pull request');
+
   const smoke = await import('../scripts/verify-deployment.mjs');
   const html = '<!DOCTYPE html><html lang="vi"><head><title>Bông Home\'s</title></head><body>OK</body></html>';
   const calls = [];
