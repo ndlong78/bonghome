@@ -1,8 +1,17 @@
 (function (root, factory) {
   'use strict';
 
+  function matchesGameRoute(gameId, pathname, routes) {
+    const numericId = Number(String(gameId).replace(/^game/, ''));
+    if (!Number.isInteger(numericId) || numericId < 1) return false;
+    const path = typeof pathname === 'string' ? pathname : '';
+    const sharedResult = routes?.isGame?.(numericId, path);
+    if (typeof sharedResult === 'boolean') return sharedResult;
+    return new RegExp(`/${gameId}(?:\\.html)?/?$`).test(path);
+  }
+
   function loadKeyboardModule(gameId, filename, marker, warning) {
-    if (!root?.document || !new RegExp(`/${gameId}\\.html$`).test(root.location?.pathname || '')) return;
+    if (!root?.document || !matchesGameRoute(gameId, root.location?.pathname, root.BongRoutes)) return;
     if (root.document.querySelector(`script[${marker}]`)) return;
     const script = root.document.createElement('script');
     script.src = `./js/${filename}`;
@@ -17,6 +26,7 @@
     loadKeyboardModule('game4', 'game4-keyboard-sorting.js', 'data-bh-game4-keyboard-sorting', '[Bông Home] Không tải được thao tác bàn phím Game 4');
   }
 
+  factory.matchesGameRoute = matchesGameRoute;
   if (typeof module === 'object' && module.exports) module.exports = factory;
   if (root?.BongProgress && root?.BongRewards) {
     root.BongProgress = factory(root.BongProgress, root.BongRewards, root);

@@ -5,9 +5,18 @@ const path = require('node:path');
 const rootPath = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(rootPath, file), 'utf8');
 const createRewardsAdapter = require('../js/games2-4-rewards.js');
+const routes = require('../js/routes.js');
 const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
 const catalog = JSON.parse(read('content/rewards/catalog.json'));
+
+assert.equal(createRewardsAdapter.matchesGameRoute('game3', '/game3.html', routes), true);
+assert.equal(createRewardsAdapter.matchesGameRoute('game3', '/game3', routes), true);
+assert.equal(createRewardsAdapter.matchesGameRoute('game4', '/game4/', routes), true);
+assert.equal(createRewardsAdapter.matchesGameRoute('game3', '/game4.html', routes), false);
+assert.equal(createRewardsAdapter.matchesGameRoute('game3', '/game3', null), true, 'fallback phải hỗ trợ URL không đuôi');
+assert.equal(createRewardsAdapter.matchesGameRoute('game4', '/game4/', null), true, 'fallback phải hỗ trợ dấu gạch chéo cuối');
+assert.equal(createRewardsAdapter.matchesGameRoute('unknown', '/unknown', routes), false);
 
 const completions = [];
 const completedByGame = {};
