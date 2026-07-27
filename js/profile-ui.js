@@ -6,6 +6,8 @@
   'use strict';
 
   function isHomePage(pathname) {
+    const sharedResult = root?.BongRoutes?.isHome?.(pathname);
+    if (typeof sharedResult === 'boolean') return sharedResult;
     return /(?:^|\/)index\.html$/.test(pathname) || /\/$/.test(pathname);
   }
 
