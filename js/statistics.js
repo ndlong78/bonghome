@@ -2,20 +2,16 @@
   'use strict';
   if (typeof module === 'object' && module.exports) module.exports = factory;
   root.BongStatisticsFactory = factory;
-})(typeof window !== 'undefined' ? window : globalThis, function createBongStatistics(storage) {
+})(typeof window !== 'undefined' ? window : globalThis, function createBongStatistics(progress) {
   'use strict';
 
-  if (!storage) throw new Error('BongStatistics requires BongStorage');
+  if (!progress?.listCompletions) throw new Error('BongStatistics requires BongProgress');
 
   const DAY_MS = 24 * 60 * 60 * 1000;
   const clone = (value) => value == null ? value : JSON.parse(JSON.stringify(value));
 
   function readCompletions() {
-    const progress = storage.get('progress', {});
-    const completions = progress && typeof progress === 'object' && !Array.isArray(progress)
-      ? progress.completions
-      : null;
-    return Object.values(completions && typeof completions === 'object' ? completions : {})
+    return progress.listCompletions()
       .filter((item) => item && typeof item === 'object');
   }
 
