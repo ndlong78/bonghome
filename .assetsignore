@@ -1,0 +1,18 @@
+# Development dependencies and generated test output
+node_modules/
+.git/
+.github/
+.claude/
+tests/
+e2e/
+test-results/
+playwright-report/
+coverage/
+*.log
+
+# Development-only project files
+package.json
+package-lock.json
+playwright.config.js
+README.md
+CNAME
