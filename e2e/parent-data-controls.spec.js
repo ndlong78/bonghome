@@ -24,7 +24,10 @@ async function waitForParentDashboardReady(page) {
 
 async function openSeededParentPage(page) {
   await page.addInitScript((document) => {
+    const marker = 'bonghome-parent-data-seeded';
+    if (sessionStorage.getItem(marker) === 'true') return;
     localStorage.setItem('bonghome:data', JSON.stringify(document));
+    sessionStorage.setItem(marker, 'true');
   }, seededDocument);
   await page.goto('/parents.html', { waitUntil: 'domcontentloaded' });
   await waitForParentDashboardReady(page);
@@ -68,6 +71,8 @@ test('xóa lịch sử chơi nhưng giữ hồ sơ và phần thưởng', async 
   expect(document.data.rewards.stars).toBe(5);
   expect(document.data.themes.activeThemeId).toBe('animals');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'animals');
+  await expect(page.locator('#completedCount')).toHaveText('0');
+  await expect(page.locator('#inProgressCount')).toHaveText('0');
 });
 
 test('xóa toàn bộ dữ liệu của bé nhưng giữ lựa chọn chủ đề', async ({ page }) => {
@@ -82,6 +87,7 @@ test('xóa toàn bộ dữ liệu của bé nhưng giữ lựa chọn chủ đ�
   expect(document.data.profile).toEqual(expect.objectContaining({ schemaVersion: 1, displayName: 'Bông' }));
   expect(document.data.themes.activeThemeId).toBe('animals');
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'animals');
+  await expect(page.locator('#parentName')).toHaveText('Bông');
   await expect(page.locator('#completedCount')).toHaveText('0');
   await expect(page.locator('#starCount')).toHaveText('0');
 });
