@@ -51,6 +51,7 @@
       const dialog = root.document.createElement('div');
       dialog.className = 'bh-profile-dialog';
       dialog.hidden = true;
+      dialog.tabIndex = -1;
       dialog.setAttribute('role', 'dialog');
       dialog.setAttribute('aria-modal', 'true');
       dialog.setAttribute('aria-labelledby', 'bhProfileTitle');
@@ -77,12 +78,19 @@
       const form = dialog.querySelector('form');
       const input = form.elements.displayName;
       const avatarList = dialog.querySelector('.bh-profile-avatars');
+      let previousFocus = null;
+      let inertSiblings = [];
+
       catalog.avatars.forEach((avatar) => {
         const label = root.document.createElement('label');
         label.className = 'bh-profile-avatar-option';
         label.innerHTML = `<input type="radio" name="avatarId" value="${avatar.id}"><span aria-hidden="true">${avatar.icon}</span><small>${avatar.name}</small>`;
         avatarList.appendChild(label);
       });
+
+      const focusable = () => [...dialog.querySelectorAll(
+        'button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'
+      )].filter((item) => !item.hidden);
 
       function render() {
         const current = profile.getProfile();
@@ -96,21 +104,49 @@
         input.value = current.displayName;
         const selected = form.querySelector(`input[name="avatarId"][value="${current.avatarId}"]`) || form.querySelector('input[name="avatarId"]');
         if (selected) selected.checked = true;
+        previousFocus = root.document.activeElement instanceof root.HTMLElement ? root.document.activeElement : button;
+        inertSiblings = [...root.document.body.children].filter((item) => item !== dialog);
+        inertSiblings.forEach((item) => { item.inert = true; });
         dialog.hidden = false;
         input.focus();
       }
 
       function close() {
+        if (dialog.hidden) return;
         dialog.hidden = true;
-        button.focus();
+        inertSiblings.forEach((item) => { item.inert = false; });
+        inertSiblings = [];
+        const target = previousFocus?.isConnected ? previousFocus : button;
+        previousFocus = null;
+        target.focus({ preventScroll: true });
       }
 
       button.addEventListener('click', open);
       dialog.addEventListener('click', (event) => {
         if (event.target === dialog || event.target.closest('[data-action="cancel"]')) close();
       });
-      root.document.addEventListener('keydown', (event) => {
-        if (event.key === 'Escape' && !dialog.hidden) close();
+      dialog.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          close();
+          return;
+        }
+        if (event.key !== 'Tab') return;
+        const items = focusable();
+        if (!items.length) {
+          event.preventDefault();
+          dialog.focus();
+          return;
+        }
+        const first = items[0];
+        const last = items[items.length - 1];
+        if (event.shiftKey && root.document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && root.document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
       });
       form.addEventListener('submit', (event) => {
         event.preventDefault();
