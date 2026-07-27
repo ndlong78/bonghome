@@ -13,6 +13,7 @@
   <script src="./js/statistics.js" defer></script>
   <script src="./js/game-catalog.js" defer></script>
   <script src="./js/parent-dashboard.js" defer></script>
+  <script src="./js/parent-data-controls.js" defer></script>
 </head>
 <body>
   <main class="bh-parent" aria-labelledby="parentTitle">
@@ -21,7 +22,7 @@
     <header class="bh-parent-header">
       <p class="bh-parent-kicker">Dành cho người lớn</p>
       <h1 id="parentTitle">Góc phụ huynh</h1>
-      <p>Xem nhanh hoạt động của bé trên thiết bị này. Trang hiện chỉ đọc và không gửi dữ liệu ra ngoài.</p>
+      <p>Xem nhanh hoạt động của bé trên thiết bị này. Trang không gửi dữ liệu ra ngoài.</p>
     </header>
 
     <section class="bh-parent-profile" aria-labelledby="profileTitle">
@@ -60,10 +61,39 @@
       </div>
     </section>
 
+    <section class="bh-parent-data" aria-labelledby="parentDataTitle">
+      <h2 id="parentDataTitle">Quản lý dữ liệu trên thiết bị</h2>
+      <p class="bh-parent-note">Các thao tác dưới đây chỉ tác động đến thiết bị hiện tại và luôn yêu cầu xác nhận lần hai.</p>
+      <div class="bh-parent-data-actions">
+        <button type="button" data-parent-delete="activity">Xóa lịch sử chơi</button>
+        <button type="button" class="bh-parent-danger" data-parent-delete="child">Xóa toàn bộ dữ liệu của bé</button>
+      </div>
+      <p id="parentDataStatus" class="bh-parent-data-status" role="status" aria-live="polite"></p>
+    </section>
+
     <aside class="bh-parent-privacy" aria-labelledby="privacyTitle">
       <h2 id="privacyTitle">Quyền riêng tư</h2>
       <p>Dữ liệu hồ sơ, tiến độ và phần thưởng chỉ được lưu trong trình duyệt trên thiết bị này. Bông Home không yêu cầu email, số điện thoại, trường học, ngày sinh hoặc ảnh thật của trẻ.</p>
     </aside>
   </main>
+
+  <dialog id="parentDataDialog" class="bh-parent-data-dialog" aria-labelledby="parentDataDialogTitle" aria-describedby="parentDataDialogDescription">
+    <div class="bh-parent-data-dialog-card">
+      <h2 id="parentDataDialogTitle">Xác nhận xóa dữ liệu</h2>
+      <p id="parentDataDialogDescription"></p>
+      <div class="bh-parent-data-dialog-actions">
+        <button type="button" id="parentDataCancel">Giữ lại dữ liệu</button>
+        <button type="button" id="parentDataConfirm" class="bh-parent-danger">Xóa dữ liệu</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      window.BongModulesReady?.then((modules) => {
+        window.BongParentDataControlsFactory?.(modules.storage, window).init();
+      });
+    });
+  </script>
 </body>
 </html>
