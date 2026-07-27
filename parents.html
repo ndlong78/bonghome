@@ -89,8 +89,10 @@
   </dialog>
 
   <script>
-    window.BongModulesReady?.then((modules) => {
-      window.BongParentDataControlsFactory?.(modules.storage, window).init();
+    window.addEventListener('DOMContentLoaded', () => {
+      window.BongModulesReady?.then((modules) => {
+        window.BongParentDataControlsFactory?.(modules.storage, window).init();
+      });
     });
   </script>
 </body>
