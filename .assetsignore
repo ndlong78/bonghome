@@ -5,6 +5,7 @@ node_modules/
 .claude/
 tests/
 e2e/
+scripts/
 test-results/
 playwright-report/
 coverage/
