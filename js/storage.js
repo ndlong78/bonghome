@@ -10,6 +10,7 @@
   const CURRENT_SCHEMA_VERSION = 1;
   const memory = new Map();
   let persistent = Boolean(storageAdapter);
+  let recoveryMode = null;
 
   const clone = (value) => value == null ? value : JSON.parse(JSON.stringify(value));
   const emptyDocument = () => ({
@@ -18,10 +19,20 @@
     data: {}
   });
 
+  function useMemoryFallback(document, mode) {
+    persistent = false;
+    recoveryMode = mode;
+    memory.set(STORAGE_KEY, JSON.stringify(document));
+    return document;
+  }
+
   function readRaw() {
     if (persistent) {
       try { return storageAdapter.getItem(STORAGE_KEY); }
-      catch (error) { persistent = false; }
+      catch (error) {
+        persistent = false;
+        recoveryMode = 'storage-unavailable';
+      }
     }
     return memory.get(STORAGE_KEY) || null;
   }
@@ -33,6 +44,7 @@
         return true;
       } catch (error) {
         persistent = false;
+        recoveryMode = 'storage-unavailable';
       }
     }
     memory.set(STORAGE_KEY, value);
@@ -67,9 +79,20 @@
   function readDocument() {
     const raw = readRaw();
     if (!raw) return emptyDocument();
-    try { return normalizeDocument(JSON.parse(raw)); }
-    catch (error) {
-      if (/Unsupported Bông Home storage schema/.test(error.message)) throw error;
+    try {
+      const parsed = JSON.parse(raw);
+      if (
+        parsed
+        && typeof parsed === 'object'
+        && !Array.isArray(parsed)
+        && Number.isInteger(parsed.schemaVersion)
+        && parsed.schemaVersion > CURRENT_SCHEMA_VERSION
+      ) {
+        return useMemoryFallback(emptyDocument(), 'future-schema');
+      }
+      return normalizeDocument(parsed);
+    } catch (error) {
+      recoveryMode = 'corrupt-json';
       return emptyDocument();
     }
   }
@@ -134,6 +157,7 @@
     clearNamespace,
     migrate,
     exportData: () => clone(readDocument()),
-    isPersistent: () => persistent
+    isPersistent: () => persistent,
+    getRecoveryMode: () => recoveryMode
   });
 });
