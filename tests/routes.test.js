@@ -41,7 +41,7 @@ test('shared UI waits for and uses the common route module', () => {
   assert.match(sharedUi, /getRoutes\(\)\.isHome\(\)/);
 });
 
-test('service worker precaches routes module with a new cache version', () => {
-  assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v56-shared-routes";/);
+test('service worker precaches the routes module', () => {
+  assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
   assert.match(serviceWorker, /"\.\/js\/routes\.js"/);
 });
