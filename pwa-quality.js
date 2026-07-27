@@ -5,6 +5,7 @@
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
   const isGame1 = /\/game1\.html$/.test(location.pathname);
+  const isGame3 = window.BongRoutes?.isGame?.(3) === true || /\/game3(?:\.html)?\/?$/.test(location.pathname);
 
   function addStyles() {
     if (document.getElementById('bhQualityStyles')) return;
@@ -218,6 +219,15 @@
     update();
   }
 
+  function loadGame3DragStability() {
+    if (!isGame3 || document.querySelector('script[data-bh-game3-drag-stability]')) return;
+    const script = document.createElement('script');
+    script.src = './js/game3-drag-stability.js';
+    script.dataset.bhGame3DragStability = 'true';
+    script.addEventListener('error', () => console.warn('[Bông Home] Không tải được bộ ổn định kéo thả Game 3'), { once: true });
+    document.head.appendChild(script);
+  }
+
   addStyles();
   setupLaunchScreen();
   setupPageTransitions();
@@ -229,6 +239,7 @@
     setupLifecycle();
     setupControlledUpdates();
     setupGame1ResponsiveBoard();
+    loadGame3DragStability();
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
   else start();
