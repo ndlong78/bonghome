@@ -43,7 +43,7 @@ assert.match(adapter, /schemaVersion: 1/);
 assert.match(sharedUi, /isGames5To7/);
 assert.match(sharedUi, /\.\/js\/games5-7-autosave\.js/);
 assert.match(sharedUi, /loadGames5To7Autosave\(\)/);
-assert.match(sharedUi, /isGames2To4 \|\| isGames5To7/);
+assert.match(sharedUi, /isGames2To4\(\) \|\| isGames5To7\(\)/);
 
 assert.match(game5, /let hinhHienTai=null, viTri=0, soSai=0, giay=0/);
 assert.match(game5, /function thangCuoc\(\)/);

@@ -24,30 +24,54 @@
     });
   }
 
-  const isGame1 = /\/game1\.html$/.test(window.location.pathname);
-  const isGame2 = /\/game2\.html$/.test(window.location.pathname);
-  const isGames2To4 = /\/game[234]\.html$/.test(window.location.pathname);
-  const isGames5To7 = /\/game[567]\.html$/.test(window.location.pathname);
-  const isGames8To10 = /\/game(?:8|9|10)\.html$/.test(window.location.pathname);
-  const isHome = /(?:^|\/)index\.html$/.test(window.location.pathname) || /\/$/.test(window.location.pathname);
+  const FALLBACK_ROUTES = Object.freeze({
+    isGame(gameId, pathname = window.location.pathname) {
+      return new RegExp(`/game${Number(gameId)}\\.html$`).test(pathname);
+    },
+    isGameInRange(startGameId, endGameId, pathname = window.location.pathname) {
+      const match = /\/game(\d+)\.html$/.exec(pathname);
+      const gameId = match ? Number(match[1]) : null;
+      return gameId !== null && gameId >= startGameId && gameId <= endGameId;
+    },
+    isHome(pathname = window.location.pathname) {
+      return /(?:^|\/)index\.html$/.test(pathname) || pathname === '/';
+    }
+  });
+  const getRoutes = () => window.BongRoutes || FALLBACK_ROUTES;
+  const isGame1 = () => getRoutes().isGame(1);
+  const isGame2 = () => getRoutes().isGame(2);
+  const isGames2To4 = () => getRoutes().isGameInRange(2, 4);
+  const isGames5To7 = () => getRoutes().isGameInRange(5, 7);
+  const isGames8To10 = () => getRoutes().isGameInRange(8, 10);
+  const isHome = () => getRoutes().isHome();
+
+  window.BongRoutesReady = loadSharedScript('./js/routes.js', 'data-bh-routes')
+    .then(() => window.BongRoutes || FALLBACK_ROUTES)
+    .catch((error) => {
+      console.warn('[Bông Home] Dùng nhận dạng trang dự phòng', error);
+      return FALLBACK_ROUTES;
+    });
 
   loadSharedStyle('./css/components.css', 'data-bh-components');
   loadSharedStyle('./css/common.css', 'data-bh-common');
   loadSharedStyle('./css/themes.css', 'data-bh-themes');
   loadSharedStyle('./css/theme-picker.css', 'data-bh-theme-picker');
   loadSharedStyle('./css/design-tokens.css', 'data-bh-design-tokens');
-  if (isGame1) loadSharedStyle('./css/game1-autosave.css', 'data-bh-game1-autosave-style');
-  if (isGames2To4 || isGames5To7 || isGames8To10) loadSharedStyle('./css/games-autosave.css', 'data-bh-games-autosave-style');
-  if (isHome) loadSharedStyle('./css/profile.css', 'data-bh-profile-style');
+  if (isGame1()) loadSharedStyle('./css/game1-autosave.css', 'data-bh-game1-autosave-style');
+  if (isGames2To4() || isGames5To7() || isGames8To10()) loadSharedStyle('./css/games-autosave.css', 'data-bh-games-autosave-style');
+  if (isHome()) loadSharedStyle('./css/profile.css', 'data-bh-profile-style');
   loadSharedScript('./pwa-ios.js', 'data-bh-pwa-ios').catch(() => {});
   loadSharedScript('./pwa-quality.js', 'data-bh-pwa-quality').catch(() => {});
-  if (isGame1) {
-    loadSharedScript('./js/game1-keyboard-accessibility.js', 'data-bh-game1-keyboard-accessibility')
-      .catch((error) => console.warn('[Bông Home] Không tải được trạng thái bàn phím Game 1', error));
-  }
-  if (isGame2) {
-    loadSharedScript('./js/game2-keyboard-cursor.js', 'data-bh-game2-keyboard-cursor')
-      .catch((error) => console.warn('[Bông Home] Không tải được con trỏ bàn phím Game 2', error));
+
+  function loadKeyboardAccessibility() {
+    if (isGame1()) {
+      loadSharedScript('./js/game1-keyboard-accessibility.js', 'data-bh-game1-keyboard-accessibility')
+        .catch((error) => console.warn('[Bông Home] Không tải được trạng thái bàn phím Game 1', error));
+    }
+    if (isGame2()) {
+      loadSharedScript('./js/game2-keyboard-cursor.js', 'data-bh-game2-keyboard-cursor')
+        .catch((error) => console.warn('[Bông Home] Không tải được con trỏ bàn phím Game 2', error));
+    }
   }
 
   window.BongModulesReady = loadSharedScript('./js/storage.js', 'data-bh-storage')
@@ -117,7 +141,7 @@
   }
 
   function loadGame1Content(themeId) {
-    if (!isGame1) return Promise.resolve(null);
+    if (!isGame1()) return Promise.resolve(null);
     return loadSharedScript('./js/game1-content.js', 'data-bh-game1-content')
       .then(() => window.BongGame1ContentLoader.load(window, undefined, themeId))
       .catch((error) => {
@@ -127,7 +151,7 @@
   }
 
   function loadGame1Difficulty() {
-    if (!isGame1) return Promise.resolve(null);
+    if (!isGame1()) return Promise.resolve(null);
     const existing = document.querySelector('script[data-game1-difficulty]');
     if (existing?.dataset.loaded === 'true') return Promise.resolve(existing);
     if (existing) {
@@ -151,7 +175,7 @@
   }
 
   function loadGame1Autosave() {
-    if (!isGame1) return;
+    if (!isGame1()) return;
     window.BongModulesReady
       .then((modules) => {
         if (!modules.progress || !modules.themes || !modules.rewards) return null;
@@ -169,7 +193,7 @@
   }
 
   function loadGames2To4Autosave() {
-    if (!isGames2To4) return;
+    if (!isGames2To4()) return;
     window.BongModulesReady
       .then((modules) => {
         if (!modules.progress || !modules.rewards) return null;
@@ -183,7 +207,7 @@
   }
 
   function loadGames5To7Autosave() {
-    if (!isGames5To7) return;
+    if (!isGames5To7()) return;
     window.BongModulesReady
       .then((modules) => {
         if (!modules.progress || !modules.rewards) return null;
@@ -197,7 +221,7 @@
   }
 
   function loadGames8To10Autosave() {
-    if (!isGames8To10) return;
+    if (!isGames8To10()) return;
     window.BongModulesReady
       .then((modules) => {
         if (!modules.progress || !modules.rewards) return null;
@@ -220,7 +244,7 @@
   }
 
   function loadProfileUI() {
-    if (!isHome) return;
+    if (!isHome()) return;
     window.BongModulesReady
       .then((modules) => {
         if (!modules.profile) return null;
@@ -290,14 +314,18 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     setEnabled(getEnabled());
-    loadGame1Autosave();
-    loadGames2To4Autosave();
-    loadGames5To7Autosave();
-    loadGames8To10Autosave();
     loadThemePicker();
-    loadProfileUI();
     addSoundButton();
     updateDifficultyAria();
     improveDialogs();
+
+    window.BongRoutesReady.then(() => {
+      loadKeyboardAccessibility();
+      loadGame1Autosave();
+      loadGames2To4Autosave();
+      loadGames5To7Autosave();
+      loadGames8To10Autosave();
+      loadProfileUI();
+    });
   });
 })();

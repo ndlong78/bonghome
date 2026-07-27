@@ -42,7 +42,7 @@ assert.match(adapter, /longestStreak:/);
 assert.match(sharedUi, /isGames8To10/);
 assert.match(sharedUi, /\.\/js\/games8-10-autosave\.js/);
 assert.match(sharedUi, /loadGames8To10Autosave\(\)/);
-assert.match(sharedUi, /isGames2To4 \|\| isGames5To7 \|\| isGames8To10/);
+assert.match(sharedUi, /isGames2To4\(\) \|\| isGames5To7\(\) \|\| isGames8To10\(\)/);
 
 assert.match(game8, /let N=8;/);
 assert.match(game8, /function taoMeCung\(\)/);

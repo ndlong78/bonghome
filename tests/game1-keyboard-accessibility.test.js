@@ -9,8 +9,10 @@ const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'js/game1-keyboard-accessibility.js'), 'utf8');
 const sharedUi = fs.readFileSync(path.join(root, 'shared-ui.js'), 'utf8');
 
-test('Game 1 card accessibility module is loaded only through the shared loader', () => {
-  assert.match(sharedUi, /if \(isGame1\)[\s\S]*game1-keyboard-accessibility\.js/);
+test('Game 1 card accessibility module is loaded only through the shared route-aware loader', () => {
+  assert.match(sharedUi, /const isGame1 = \(\) => getRoutes\(\)\.isGame\(1\)/);
+  assert.match(sharedUi, /window\.BongRoutesReady\.then\(\(\) => \{[\s\S]*loadKeyboardAccessibility\(\)/);
+  assert.match(sharedUi, /if \(isGame1\(\)\)[\s\S]*game1-keyboard-accessibility\.js/);
   assert.match(sharedUi, /data-bh-game1-keyboard-accessibility/);
 });
 
