@@ -19,7 +19,7 @@ function seed() {
       progress: { schemaVersion: 1, games: { game1: {} }, completions: { done: {} } },
       rewards: { schemaVersion: 1, stars: 5, stickers: {}, badges: {}, transactions: {} },
       profile: { schemaVersion: 1, displayName: 'Bông', avatarId: 'flower' },
-      theme: { schemaVersion: 1, activeThemeId: 'animals' }
+      themes: { schemaVersion: 1, activeThemeId: 'animals' }
     }
   };
 }
@@ -33,7 +33,7 @@ function seed() {
   assert.equal(storage.get('progress', null), null);
   assert.equal(storage.get('rewards').stars, 5);
   assert.equal(storage.get('profile').displayName, 'Bông');
-  assert.equal(storage.get('theme').activeThemeId, 'animals');
+  assert.equal(storage.get('themes').activeThemeId, 'animals');
 }
 
 {
@@ -45,7 +45,7 @@ function seed() {
   assert.equal(storage.get('progress', null), null);
   assert.equal(storage.get('rewards', null), null);
   assert.equal(storage.get('profile', null), null);
-  assert.equal(storage.get('theme').activeThemeId, 'animals');
+  assert.equal(storage.get('themes').activeThemeId, 'animals');
 }
 
 assert.throws(() => {
