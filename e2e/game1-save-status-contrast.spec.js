@@ -28,11 +28,12 @@ test('thông báo lưu Game 1 giữ tương phản chữ tối thiểu 4.5:1', a
   await page.evaluate(() => {
     const status = document.createElement('div');
     status.className = 'bh-game1-save-status';
+    status.setAttribute('data-testid', 'game1-save-status-contrast-probe');
     status.textContent = 'Đã lưu tiến độ';
     document.body.appendChild(status);
   });
 
-  const status = page.locator('.bh-game1-save-status').last();
+  const status = page.getByTestId('game1-save-status-contrast-probe');
   await expect(status).toBeVisible();
 
   const colors = await status.evaluate((element) => {
