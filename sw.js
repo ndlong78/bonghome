@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v55-parent-data-controls";
+const PHIEN_BAN = "bonghome-v56-shared-routes";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
@@ -10,7 +10,7 @@ const TEN_CACHE = Object.freeze({
 const TEP_SHELL = [
   "./", "./index.html", "./parents.html", "./collection.html",
   "./shared-ui.js", "./pwa-ios.js", "./pwa-quality.js",
-  "./js/storage.js", "./js/themes.js", "./js/theme-picker.js", "./js/progress.js", "./js/rewards.js", "./js/profile.js", "./js/profile-ui.js", "./js/statistics.js", "./js/game-catalog.js", "./js/parent-dashboard.js", "./js/parent-data-controls.js", "./js/daily-journey.js", "./js/reward-collection.js",
+  "./js/routes.js", "./js/storage.js", "./js/themes.js", "./js/theme-picker.js", "./js/progress.js", "./js/rewards.js", "./js/profile.js", "./js/profile-ui.js", "./js/statistics.js", "./js/game-catalog.js", "./js/parent-dashboard.js", "./js/parent-data-controls.js", "./js/daily-journey.js", "./js/reward-collection.js",
   "./css/design-tokens.css", "./css/themes.css", "./css/theme-picker.css", "./css/common.css", "./css/components.css", "./css/daily-journey.css", "./css/profile.css", "./css/parent-dashboard.css",
   "./manifest.json", "./favicon.ico", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
