@@ -15,14 +15,30 @@ const seededDocument = {
   }
 };
 
+async function waitForParentDashboardReady(page) {
+  await page.waitForFunction(() => window.BongModulesReady && typeof window.BongModulesReady.then === 'function');
+  await page.evaluate(() => window.BongModulesReady);
+  await expect(page.locator('#completedCount')).toBeVisible();
+  await expect(page.locator('[data-parent-delete="activity"]')).toBeVisible();
+}
+
 async function openSeededParentPage(page) {
   await page.addInitScript((document) => {
     localStorage.setItem('bonghome:data', JSON.stringify(document));
   }, seededDocument);
   await page.goto('/parents.html', { waitUntil: 'domcontentloaded' });
+  await waitForParentDashboardReady(page);
   await expect(page.locator('#parentName')).toHaveText('Bông thử nghiệm');
-  await expect(page.locator('[data-parent-delete="activity"]')).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'animals');
+}
+
+async function confirmAndWaitForReload(page) {
+  await Promise.all([
+    page.waitForEvent('framenavigated', (frame) => frame === page.mainFrame()),
+    page.locator('#parentDataConfirm').click()
+  ]);
+  await page.waitForLoadState('domcontentloaded');
+  await waitForParentDashboardReady(page);
 }
 
 test('hủy xác nhận không xóa dữ liệu', async ({ page }) => {
@@ -44,10 +60,7 @@ test('xóa lịch sử chơi nhưng giữ hồ sơ và phần thưởng', async 
   await openSeededParentPage(page);
   await page.locator('[data-parent-delete="activity"]').click();
   await expect(page.locator('#parentDataDialogDescription')).toContainText('Hồ sơ, sao, sticker và huy hiệu vẫn được giữ lại');
-  await Promise.all([
-    page.waitForLoadState('domcontentloaded'),
-    page.locator('#parentDataConfirm').click()
-  ]);
+  await confirmAndWaitForReload(page);
 
   const document = await page.evaluate(() => JSON.parse(localStorage.getItem('bonghome:data')));
   expect(document.data.progress).toBeUndefined();
@@ -61,10 +74,7 @@ test('xóa toàn bộ dữ liệu của bé nhưng giữ lựa chọn chủ đ�
   await openSeededParentPage(page);
   await page.locator('[data-parent-delete="child"]').click();
   await expect(page.locator('#parentDataDialogDescription')).toContainText('Thao tác này không thể hoàn tác');
-  await Promise.all([
-    page.waitForLoadState('domcontentloaded'),
-    page.locator('#parentDataConfirm').click()
-  ]);
+  await confirmAndWaitForReload(page);
 
   const document = await page.evaluate(() => JSON.parse(localStorage.getItem('bonghome:data')));
   expect(document.data.progress).toBeUndefined();
