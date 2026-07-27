@@ -14,5 +14,6 @@ coverage/
 package.json
 package-lock.json
 playwright.config.js
+wrangler.jsonc
 README.md
 CNAME
