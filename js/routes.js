@@ -25,7 +25,8 @@
   function getPageSlug(value) {
     const pathname = normalizePathname(value);
     if (pathname === '/' || /\/index(?:\.html)?$/i.test(pathname)) return 'home';
-    const segment = pathname.split('/').filter(Boolean).at(-1) || '';
+    const segments = pathname.split('/').filter(Boolean);
+    const segment = segments[segments.length - 1] || '';
     return segment.toLowerCase().replace(/\.html$/i, '');
   }
 
