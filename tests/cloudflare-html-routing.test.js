@@ -17,6 +17,12 @@ assert.equal(
   'Cloudflare must preserve .html paths used by the current route detection logic'
 );
 
+assert.match(
+  redirects,
+  /^\/ \/index\.html 200$/m,
+  'Worker root must proxy index.html without changing the visible URL'
+);
+
 for (const page of ['index', 'parents', 'collection', ...Array.from({ length: 10 }, (_, index) => `game${index + 1}`)]) {
   const escaped = page.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   assert.match(
