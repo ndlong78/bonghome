@@ -11,7 +11,7 @@ const seededDocument = {
     },
     rewards: { schemaVersion: 1, stars: 5, stickers: {}, badges: {}, transactions: {} },
     profile: { schemaVersion: 1, displayName: 'Bông thử nghiệm', avatarId: 'flower' },
-    theme: { schemaVersion: 1, activeThemeId: 'animals' }
+    themes: { schemaVersion: 1, activeThemeId: 'animals' }
   }
 };
 
@@ -22,6 +22,7 @@ async function openSeededParentPage(page) {
   await page.goto('/parents.html', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('#parentName')).toHaveText('Bông thử nghiệm');
   await expect(page.locator('[data-parent-delete="activity"]')).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'animals');
 }
 
 test('hủy xác nhận không xóa dữ liệu', async ({ page }) => {
@@ -36,6 +37,7 @@ test('hủy xác nhận không xóa dữ liệu', async ({ page }) => {
   const document = await page.evaluate(() => JSON.parse(localStorage.getItem('bonghome:data')));
   expect(document.data.profile.displayName).toBe('Bông thử nghiệm');
   expect(document.data.rewards.stars).toBe(5);
+  expect(document.data.themes.activeThemeId).toBe('animals');
 });
 
 test('xóa lịch sử chơi nhưng giữ hồ sơ và phần thưởng', async ({ page }) => {
@@ -51,7 +53,8 @@ test('xóa lịch sử chơi nhưng giữ hồ sơ và phần thưởng', async 
   expect(document.data.progress).toBeUndefined();
   expect(document.data.profile.displayName).toBe('Bông thử nghiệm');
   expect(document.data.rewards.stars).toBe(5);
-  expect(document.data.theme.activeThemeId).toBe('animals');
+  expect(document.data.themes.activeThemeId).toBe('animals');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'animals');
 });
 
 test('xóa toàn bộ dữ liệu của bé nhưng giữ lựa chọn chủ đề', async ({ page }) => {
@@ -67,7 +70,8 @@ test('xóa toàn bộ dữ liệu của bé nhưng giữ lựa chọn chủ đ�
   expect(document.data.progress).toBeUndefined();
   expect(document.data.rewards).toEqual(expect.objectContaining({ schemaVersion: 1, stars: 0 }));
   expect(document.data.profile).toEqual(expect.objectContaining({ schemaVersion: 1, displayName: 'Bông' }));
-  expect(document.data.theme.activeThemeId).toBe('animals');
+  expect(document.data.themes.activeThemeId).toBe('animals');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'animals');
   await expect(page.locator('#completedCount')).toHaveText('0');
   await expect(page.locator('#starCount')).toHaveText('0');
 });
