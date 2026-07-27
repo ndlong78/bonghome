@@ -5,7 +5,13 @@
     flower: '🌸', rabbit: '🐰', bunny: '🐰', cat: '🐱', bear: '🐻', rainbow: '🌈', star: '⭐'
   });
 
-  const isParentPage = (pathname) => /\/parents\.html$/.test(pathname || '');
+  const FALLBACK_ROUTES = Object.freeze({
+    isParentPage(pathname) {
+      return /\/parents\.html$/.test(pathname || '');
+    }
+  });
+  const getRoutes = () => window.BongRoutes || FALLBACK_ROUTES;
+  const isParentPage = (pathname) => getRoutes().isParentPage(pathname);
 
   function formatProgress(count, isInProgress) {
     if (isInProgress && count) return `${count} lượt hoàn thành · đang chơi dở`;
@@ -106,13 +112,19 @@
     renderGameSummary(document.getElementById('gameSummary'), progress.byGame, progress.games, catalog, rewardsByGame);
   }
 
-  if (!isParentPage(window.location.pathname)) return;
-  window.BongModulesReady
-    .then(render)
-    .catch((error) => {
-      console.error('[Bông Home] Không tải được Góc phụ huynh', error);
-      render({});
-    });
+  function start() {
+    if (!isParentPage(window.location.pathname)) return null;
+    return window.BongModulesReady
+      .then(render)
+      .catch((error) => {
+        console.error('[Bông Home] Không tải được Góc phụ huynh', error);
+        return render({});
+      });
+  }
+
+  Promise.resolve(window.BongRoutesReady)
+    .catch((error) => console.warn('[Bông Home] Dùng nhận dạng trang dự phòng cho Góc phụ huynh', error))
+    .then(start);
 
   window.BongParentDashboard = Object.freeze({
     isParentPage,
