@@ -49,16 +49,27 @@ jobs:
       - name: Run repository tests
         shell: bash
         run: |
-          set -euo pipefail
+          set -uo pipefail
+          : > repository-tests.log
+          status=0
           mapfile -d '' tests < <(find tests -maxdepth 1 -type f -name '*.test.js' -print0 | sort -z)
           if [ "${#tests[@]}" -eq 0 ]; then
-            echo 'Không tìm thấy test.'
+            echo 'Không tìm thấy test.' | tee -a repository-tests.log
             exit 1
           fi
           for test_file in "${tests[@]}"; do
-            echo "Running $test_file"
-            node "$test_file"
+            echo "Running $test_file" | tee -a repository-tests.log
+            node "$test_file" 2>&1 | tee -a repository-tests.log || status=1
           done
+          exit "$status"
+
+      - name: Upload repository test log
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-test-log
+          path: repository-tests.log
+          retention-days: 1
 
       - name: Verify PWA files and offline cache paths
         run: |
