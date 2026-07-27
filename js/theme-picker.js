@@ -1,13 +1,24 @@
 (function (root) {
   'use strict';
 
+  const FALLBACK_ROUTES = Object.freeze({
+    isHome(pathname) {
+      const path = typeof pathname === 'string' ? pathname : '';
+      return path === '/' || path.endsWith('/') || /(?:^|\/)index(?:\.html)?$/.test(path);
+    },
+    isGame(gameId, pathname) {
+      const path = typeof pathname === 'string' ? pathname : '';
+      return new RegExp(`/game${Number(gameId)}(?:\\.html)?/?$`).test(path);
+    }
+  });
+  const getRoutes = () => root.BongRoutes || FALLBACK_ROUTES;
+
   function isHomePage(pathname) {
-    const path = typeof pathname === 'string' ? pathname : '';
-    return path.endsWith('/') || /\/index\.html$/.test(path);
+    return getRoutes().isHome(pathname);
   }
 
   function isSupportedPage(pathname) {
-    return isHomePage(pathname) || /\/game1\.html$/.test(typeof pathname === 'string' ? pathname : '');
+    return isHomePage(pathname) || getRoutes().isGame(1, pathname);
   }
 
   function loadDailyJourney() {
@@ -70,7 +81,7 @@
       button.setAttribute('aria-label', `Chọn chủ đề ${theme.name}`);
       button.addEventListener('click', () => {
         if (root.BongThemes.getActiveTheme()?.id === theme.id) return;
-        const isGame1 = /\/game1\.html$/.test(root.location.pathname);
+        const isGame1 = getRoutes().isGame(1, root.location.pathname);
         if (isGame1) root.dispatchEvent(new CustomEvent('bonghome:pause'));
         root.BongThemes.setActiveTheme(theme.id);
         renderActive();
@@ -88,9 +99,15 @@
     renderActive();
   }
 
+  function startWhenRoutesReady() {
+    Promise.resolve(root.BongRoutesReady)
+      .catch((error) => console.warn('[Bông Home] Dùng nhận dạng trang dự phòng cho chủ đề', error))
+      .then(start);
+  }
+
   if (typeof module === 'object' && module.exports) module.exports = { isHomePage, isSupportedPage };
   if (root.document) {
-    if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', start, { once: true });
-    else start();
+    if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', startWhenRoutesReady, { once: true });
+    else startWhenRoutesReady();
   }
 })(typeof window !== 'undefined' ? window : globalThis);
