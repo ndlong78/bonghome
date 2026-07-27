@@ -101,6 +101,10 @@
     return { duplicate: false, completion: clone(completion) };
   }
 
+  function listCompletions() {
+    return clone(Object.values(readProgress().completions));
+  }
+
   function getSummary() {
     const progress = readProgress();
     const completions = Object.values(progress.completions);
@@ -123,6 +127,7 @@
     loadGame,
     clearGame,
     completeGame,
+    listCompletions,
     getSummary
   });
 });
