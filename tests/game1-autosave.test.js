@@ -4,6 +4,7 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const autosave = require(path.join(root, 'game1-autosave.js'));
+const routes = require(path.join(root, 'js', 'routes.js'));
 const sharedUi = fs.readFileSync(path.join(root, 'shared-ui.js'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'css/game1-autosave.css'), 'utf8');
@@ -41,6 +42,13 @@ assert.equal(autosave.validateSnapshot({ ...validSnapshot, difficulty: 5 }), nul
 assert.equal(autosave.makeTransactionId('2026-07-22T00:00:00.000Z', 3), 'game1:3:2026-07-22T00:00:00.000Z');
 assert.equal(autosave.makeTransactionId(null, 6), 'game1:6:unknown');
 
+assert.equal(autosave.matchesGameRoute('/game1.html', routes), true);
+assert.equal(autosave.matchesGameRoute('/game1', routes), true);
+assert.equal(autosave.matchesGameRoute('/game1/', routes), true);
+assert.equal(autosave.matchesGameRoute('/game2.html', routes), false);
+assert.equal(autosave.matchesGameRoute('/game1', null), true, 'fallback phải hỗ trợ URL không đuôi');
+assert.equal(autosave.matchesGameRoute('/game1/', null), true, 'fallback phải hỗ trợ dấu / cuối');
+
 const bundle = autosave.validateBundle({
   bundleVersion: 1,
   activeDifficulty: 6,
@@ -59,6 +67,8 @@ assert.equal(migratedLegacy.activeDifficulty, 3);
 assert.deepEqual(migratedLegacy.snapshots['3'].snapshot, validSnapshot);
 assert.equal(migratedLegacy.snapshots['3'].startedAt, '2026-07-22T00:00:00.000Z');
 
+assert.match(autosaveSource, /matchesGameRoute\(root\.location\?\.pathname, root\.BongRoutes\)/);
+assert.doesNotMatch(autosaveSource, /if \(!\/\\\/game1\\\.html\$\//);
 assert.match(autosaveSource, /addEventListener\('click',[\s\S]*true\);/);
 assert.match(autosaveSource, /restoreDifficulty\(targetDifficulty/);
 assert.doesNotMatch(autosaveSource, /#nutChoiLai, #mucDo button/);
