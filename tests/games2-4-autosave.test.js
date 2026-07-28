@@ -4,12 +4,24 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
+const routes = require(path.join(root, 'js', 'routes.js'));
 const adapter = read('js/games2-4-autosave.js');
 const sharedUi = read('shared-ui.js');
 const css = read('css/games-autosave.css');
 const serviceWorker = read('sw.js');
 
-assert.ok(adapter.includes("match(/\\/(game[234])\\.html$/)"), 'Adapter must target Game 2-4 routes');
+assert.equal(routes.getGameId('/game2.html'), 2);
+assert.equal(routes.getGameId('/game3'), 3);
+assert.equal(routes.getGameId('/game4/'), 4);
+assert.equal(routes.getGameId('/game5.html'), 5);
+assert.ok(adapter.includes("const sharedGameId = routes?.getGameId?.(path);"), 'Adapter must use the shared route API');
+assert.ok(adapter.includes("const match = path.match(/\\/(game[234])(?:\\.html)?\\/?$/);"), 'Fallback must support extensionless routes');
+assert.ok(adapter.includes('const gameId = resolveGameId(window.location?.pathname, window.BongRoutes);'));
+assert.equal(
+  adapter.includes("window.location.pathname.match(/\\/(game[234])\\.html$/)"),
+  false,
+  'Adapter must not keep the old .html-only route check'
+);
 ['game2', 'game3', 'game4'].forEach((gameId) => {
   assert.match(adapter, new RegExp(`${gameId}: \\{ capture:`), `${gameId} must have an adapter`);
 });
@@ -35,12 +47,13 @@ assert.match(sharedUi, /isGames2To4/);
 assert.match(sharedUi, /\.\/js\/games2-4-autosave\.js/);
 assert.match(sharedUi, /\.\/css\/games-autosave\.css/);
 assert.match(sharedUi, /loadGames2To4Autosave\(\)/);
+assert.match(sharedUi, /BongRoutesReady\.then/);
 
 assert.match(css, /bh-game-autosave-status/);
 assert.match(css, /prefers-reduced-motion/);
 assert.match(css, /safe-area-inset/);
 
-['./js/games2-4-autosave.js', './css/games-autosave.css'].forEach((asset) => {
+['./js/routes.js', './js/games2-4-autosave.js', './css/games-autosave.css'].forEach((asset) => {
   assert.ok(serviceWorker.includes(asset), `${asset} must be cached offline`);
 });
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
