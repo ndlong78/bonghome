@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v60-progress-completions-api";
+const PHIEN_BAN = "bonghome-v61-parent-data-controls-routes";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
