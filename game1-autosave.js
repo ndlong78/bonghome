@@ -103,8 +103,15 @@
     return `game1:${difficulty}:${safeStartedAt}`;
   }
 
+  function matchesGameRoute(pathname, routes) {
+    const path = typeof pathname === 'string' ? pathname : '';
+    const sharedResult = routes?.isGame?.(1, path);
+    if (typeof sharedResult === 'boolean') return sharedResult;
+    return /\/game1(?:\.html)?\/?$/.test(path);
+  }
+
   function start(root) {
-    if (!/\/game1\.html$/.test(root.location.pathname) || root.__bongGame1AutosaveStarted) return;
+    if (!matchesGameRoute(root.location?.pathname, root.BongRoutes) || root.__bongGame1AutosaveStarted) return;
     root.__bongGame1AutosaveStarted = true;
 
     const progress = root.BongProgress;
@@ -385,6 +392,7 @@
     validateSnapshot,
     validateBundle,
     makeTransactionId,
+    matchesGameRoute,
     start
   });
 });
