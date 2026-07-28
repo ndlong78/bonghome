@@ -7,6 +7,14 @@
 
   if (!storage) throw new Error('Parent data controls require BongStorage');
 
+  const FALLBACK_ROUTES = Object.freeze({
+    isParentPage(pathname) {
+      return /^\/parents(?:\.html)?\/?$/.test(pathname || '');
+    }
+  });
+  const getRoutes = () => root?.BongRoutes || FALLBACK_ROUTES;
+  const isParentPage = (pathname) => getRoutes().isParentPage(pathname);
+
   const SCOPES = Object.freeze({
     activity: Object.freeze({
       title: 'Xóa lịch sử chơi?',
@@ -30,7 +38,7 @@
 
   function init() {
     const document = root?.document;
-    if (!document || !/\/parents\.html$/.test(root.location?.pathname || '')) return null;
+    if (!document || !isParentPage(root.location?.pathname || '')) return null;
 
     const dialog = document.getElementById('parentDataDialog');
     const title = document.getElementById('parentDataDialogTitle');
@@ -81,5 +89,5 @@
     return Object.freeze({ clearScope, scopes: SCOPES });
   }
 
-  return Object.freeze({ SCOPES, clearScope, init });
+  return Object.freeze({ SCOPES, clearScope, init, isParentPage });
 });
