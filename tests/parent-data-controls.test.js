@@ -48,6 +48,31 @@ function seed() {
   assert.equal(storage.get('themes').activeThemeId, 'animals');
 }
 
+{
+  const storage = createStorage(new MemoryAdapter(seed()));
+  const controls = createControls(storage);
+  assert.equal(controls.isParentPage('/parents.html'), true);
+  assert.equal(controls.isParentPage('/parents'), true);
+  assert.equal(controls.isParentPage('/parents/'), true);
+  assert.equal(controls.isParentPage('/game1.html'), false);
+}
+
+{
+  const calls = [];
+  const root = {
+    BongRoutes: {
+      isParentPage(pathname) {
+        calls.push(pathname);
+        return pathname === '/custom-parent';
+      }
+    }
+  };
+  const storage = createStorage(new MemoryAdapter(seed()));
+  const controls = createControls(storage, root);
+  assert.equal(controls.isParentPage('/custom-parent'), true);
+  assert.deepEqual(calls, ['/custom-parent']);
+}
+
 assert.throws(() => {
   const storage = createStorage(new MemoryAdapter(seed()));
   createControls(storage).clearScope('unknown');
