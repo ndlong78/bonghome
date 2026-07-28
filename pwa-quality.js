@@ -4,8 +4,13 @@
   const root = document.documentElement;
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
-  const isGame1 = /\/game1\.html$/.test(location.pathname);
-  const isGame3 = window.BongRoutes?.isGame?.(3) === true || /\/game3(?:\.html)?\/?$/.test(location.pathname);
+  const FALLBACK_ROUTES = Object.freeze({
+    isGame(gameId, pathname = location.pathname) {
+      return new RegExp(`/game${Number(gameId)}(?:\\.html)?/?$`).test(pathname || '');
+    }
+  });
+  const getRoutes = () => window.BongRoutes?.isGame ? window.BongRoutes : FALLBACK_ROUTES;
+  const isGame = (gameId, pathname = location.pathname) => getRoutes().isGame(gameId, pathname);
 
   function addStyles() {
     if (document.getElementById('bhQualityStyles')) return;
@@ -208,7 +213,7 @@
   }
 
   function setupGame1ResponsiveBoard() {
-    if (!isGame1) return;
+    if (!isGame(1)) return;
     root.classList.add('bh-game1-compact');
     const update = () => {
       const count = document.querySelectorAll('#sanBai .la-bai').length;
@@ -220,7 +225,7 @@
   }
 
   function loadGame3DragStability() {
-    if (!isGame3 || document.querySelector('script[data-bh-game3-drag-stability]')) return;
+    if (!isGame(3) || document.querySelector('script[data-bh-game3-drag-stability]')) return;
     const script = document.createElement('script');
     script.src = './js/game3-drag-stability.js';
     script.dataset.bhGame3DragStability = 'true';
