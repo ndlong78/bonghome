@@ -93,8 +93,8 @@
     const progress = modules.progress?.getSummary?.() || { completed: 0, inProgress: 0, byGame: {}, games: {} };
     const rewards = modules.rewards?.getSummary?.() || { stars: 0, stickerIds: [], badgeIds: [] };
     const rewardsByGame = modules.rewards?.getByGameSummary?.() || {};
-    const statistics = window.BongStatisticsFactory && modules.storage
-      ? window.BongStatisticsFactory(modules.storage).summarize()
+    const statistics = window.BongStatisticsFactory && modules.progress?.listCompletions
+      ? window.BongStatisticsFactory(modules.progress).summarize()
       : { last7DaysCompleted: 0, latestCompletedAt: null, averageDurationSeconds: null, averageMoves: null };
     const catalog = window.BongGameCatalog;
     await catalog?.ready;

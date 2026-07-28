@@ -5,6 +5,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const createStorage = require('../js/storage.js');
+const createProgress = require('../js/progress.js');
 const createStatistics = require('../js/statistics.js');
 
 const memoryStorage = (() => {
@@ -27,7 +28,13 @@ storage.set('progress', {
   }
 });
 
-const statistics = createStatistics(storage);
+const progress = createProgress(storage);
+const completions = progress.listCompletions();
+assert.equal(completions.length, 3);
+completions[0].gameId = 'tampered';
+assert.equal(progress.listCompletions()[0].gameId, 'game1');
+
+const statistics = createStatistics(progress);
 const summary = statistics.summarize(new Date('2026-07-23T12:00:00.000Z'));
 assert.equal(summary.schemaVersion, 1);
 assert.equal(summary.totalCompleted, 3);
@@ -36,15 +43,21 @@ assert.equal(summary.latestCompletedAt, '2026-07-22T10:00:00.000Z');
 assert.equal(summary.averageDurationSeconds, 120);
 assert.equal(summary.averageMoves, 20);
 assert.throws(() => statistics.summarize(new Date('invalid')), TypeError);
+assert.throws(() => createStatistics(storage), /requires BongProgress/);
 
+const progressSource = read('js/progress.js');
+const statisticsSource = read('js/statistics.js');
 const html = read('parents.html');
 const dashboard = read('js/parent-dashboard.js');
 const css = read('css/parent-dashboard.css');
 const serviceWorker = read('sw.js');
+assert.match(progressSource, /listCompletions/);
+assert.match(statisticsSource, /progress\.listCompletions\(\)/);
+assert.doesNotMatch(statisticsSource, /storage\.get\(['"]progress['"]/);
 assert.match(html, /\.\/js\/statistics\.js/);
 assert.match(html, /id="recentCount"/);
 assert.match(html, /không tạo mục tiêu ngày hay áp lực/);
-assert.match(dashboard, /BongStatisticsFactory/);
+assert.match(dashboard, /BongStatisticsFactory\(modules\.progress\)/);
 assert.match(dashboard, /averageDurationSeconds/);
 assert.doesNotMatch(dashboard, /localStorage/);
 assert.match(css, /\.bh-parent-insights/);
