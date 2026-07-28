@@ -68,7 +68,11 @@ assert.deepEqual(migratedLegacy.snapshots['3'].snapshot, validSnapshot);
 assert.equal(migratedLegacy.snapshots['3'].startedAt, '2026-07-22T00:00:00.000Z');
 
 assert.match(autosaveSource, /matchesGameRoute\(root\.location\?\.pathname, root\.BongRoutes\)/);
-assert.doesNotMatch(autosaveSource, /if \(!\/\\\/game1\\\.html\$\//);
+assert.equal(
+  autosaveSource.includes("if (!/\\/game1\\.html$/.test(root.location.pathname)"),
+  false,
+  'Game 1 autosave không được giữ điều kiện route .html cũ'
+);
 assert.match(autosaveSource, /addEventListener\('click',[\s\S]*true\);/);
 assert.match(autosaveSource, /restoreDifficulty\(targetDifficulty/);
 assert.doesNotMatch(autosaveSource, /#nutChoiLai, #mucDo button/);
