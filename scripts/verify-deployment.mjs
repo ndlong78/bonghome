@@ -11,6 +11,20 @@ export const HTML_PATHS = Object.freeze([
   '/collection.html'
 ]);
 
+const REDIRECT_PAGES = Object.freeze([
+  'index',
+  'parents',
+  'collection',
+  ...Array.from({ length: 10 }, (_, index) => `game${index + 1}`)
+]);
+
+export const REDIRECT_PATHS = Object.freeze(
+  REDIRECT_PAGES.flatMap((page) => [
+    Object.freeze({ pathname: `/${page}`, target: `/${page}.html` }),
+    Object.freeze({ pathname: `/${page}/`, target: `/${page}.html` })
+  ])
+);
+
 function normalizeBaseUrl(value) {
   const url = new URL(value || DEFAULT_BASE_URL);
   if (!['http:', 'https:'].includes(url.protocol)) {
@@ -99,18 +113,30 @@ async function checkServiceWorker(fetchImpl, baseUrl, timeoutMs) {
   return { pathname, status: response.status, type: 'service-worker' };
 }
 
-async function checkGameRedirect(fetchImpl, baseUrl, timeoutMs) {
-  const pathname = '/game1';
-  const response = await fetchWithTimeout(fetchImpl, requestUrl(baseUrl, pathname), { redirect: 'manual' }, timeoutMs);
-  if (response.status !== 301) throw new Error(`${pathname}: expected HTTP 301, received ${response.status}`);
+async function checkRedirect(fetchImpl, baseUrl, route, timeoutMs) {
+  const response = await fetchWithTimeout(
+    fetchImpl,
+    requestUrl(baseUrl, route.pathname),
+    { redirect: 'manual' },
+    timeoutMs
+  );
+  if (response.status !== 301) {
+    throw new Error(`${route.pathname}: expected HTTP 301, received ${response.status}`);
+  }
 
   const location = response.headers.get('location');
-  if (!location) throw new Error(`${pathname}: redirect location is missing`);
-  const redirected = new URL(location, requestUrl(baseUrl, pathname));
-  if (redirected.origin !== baseUrl.origin || redirected.pathname !== '/game1.html') {
-    throw new Error(`${pathname}: expected redirect to /game1.html, received ${redirected.href}`);
+  if (!location) throw new Error(`${route.pathname}: redirect location is missing`);
+  const redirected = new URL(location, requestUrl(baseUrl, route.pathname));
+  const expected = requestUrl(baseUrl, route.target);
+  if (redirected.href !== expected.href) {
+    throw new Error(`${route.pathname}: expected redirect to ${route.target}, received ${redirected.href}`);
   }
-  return { pathname, status: response.status, type: 'redirect', location: redirected.href };
+  return {
+    pathname: route.pathname,
+    status: response.status,
+    type: 'redirect',
+    location: redirected.href
+  };
 }
 
 export async function runDeploymentSmoke(value = DEFAULT_BASE_URL, options = {}) {
@@ -131,9 +157,13 @@ export async function runDeploymentSmoke(value = DEFAULT_BASE_URL, options = {})
   logger.log('✓ /manifest.json — valid PWA manifest');
   results.push(await checkServiceWorker(fetchImpl, baseUrl, timeoutMs));
   logger.log('✓ /sw.js — service worker markers found');
-  const redirect = await checkGameRedirect(fetchImpl, baseUrl, timeoutMs);
-  results.push(redirect);
-  logger.log(`✓ /game1 — HTTP 301 to ${new URL(redirect.location).pathname}`);
+
+  for (const route of REDIRECT_PATHS) {
+    const redirect = await checkRedirect(fetchImpl, baseUrl, route, timeoutMs);
+    results.push(redirect);
+    logger.log(`✓ ${route.pathname} — HTTP 301 to ${new URL(redirect.location).pathname}`);
+  }
+
   logger.log(`Deployment smoke passed: ${results.length} checks`);
   return results;
 }

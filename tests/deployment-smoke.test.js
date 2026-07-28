@@ -17,15 +17,17 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
   const smoke = await import('../scripts/verify-deployment.mjs');
   const html = '<!DOCTYPE html><html lang="vi"><head><title>Bông Home\'s</title></head><body>OK</body></html>';
   const calls = [];
+  const redirectMap = new Map(smoke.REDIRECT_PATHS.map((route) => [route.pathname, route.target]));
 
   const fetchImpl = async (input, options = {}) => {
     const url = new URL(input);
     calls.push({ pathname: url.pathname, redirect: options.redirect });
 
-    if (url.pathname === '/game1') {
+    const redirectTarget = redirectMap.get(url.pathname);
+    if (redirectTarget) {
       return new Response('', {
         status: 301,
-        headers: { location: '/game1.html' }
+        headers: { location: redirectTarget }
       });
     }
     if (url.pathname === '/manifest.json') {
@@ -56,10 +58,17 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
     timeoutMs: 100
   });
 
-  assert.equal(results.length, smoke.HTML_PATHS.length + 3);
-  assert.equal(calls.filter((call) => call.redirect === 'manual').length, 1);
+  assert.equal(smoke.REDIRECT_PATHS.length, 26, '13 trang phải kiểm tra cả URL không đuôi và dấu / cuối');
+  assert.equal(results.length, smoke.HTML_PATHS.length + smoke.REDIRECT_PATHS.length + 2);
+  assert.deepEqual(
+    calls.filter((call) => call.redirect === 'manual').map((call) => call.pathname),
+    smoke.REDIRECT_PATHS.map((route) => route.pathname)
+  );
   assert.ok(calls.some((call) => call.pathname === '/'));
   assert.ok(calls.some((call) => call.pathname === '/game10.html'));
+  assert.ok(calls.some((call) => call.pathname === '/parents'));
+  assert.ok(calls.some((call) => call.pathname === '/collection/'));
+  assert.ok(calls.some((call) => call.pathname === '/game10/'));
   assert.ok(logs.at(-1).includes('Deployment smoke passed'));
 
   await assert.rejects(
@@ -67,10 +76,26 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
     /must be an origin without a path/
   );
 
-  const failingFetch = async (input) => {
+  const wrongRedirectFetch = async (input, options = {}) => {
+    const url = new URL(input);
+    if (url.pathname === '/parents') {
+      return new Response('', { status: 301, headers: { location: '/collection.html' } });
+    }
+    return fetchImpl(input, options);
+  };
+  await assert.rejects(
+    smoke.runDeploymentSmoke('https://example.test', {
+      fetchImpl: wrongRedirectFetch,
+      logger: { log() {} },
+      timeoutMs: 100
+    }),
+    /\/parents: expected redirect to \/parents\.html/
+  );
+
+  const failingFetch = async (input, options = {}) => {
     const url = new URL(input);
     if (url.pathname === '/') return new Response('Unavailable', { status: 503, headers: { 'content-type': 'text/plain' } });
-    return fetchImpl(input, {});
+    return fetchImpl(input, options);
   };
   await assert.rejects(
     smoke.runDeploymentSmoke('https://example.test', { fetchImpl: failingFetch, logger: { log() {} }, timeoutMs: 100 }),
