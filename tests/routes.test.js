@@ -8,6 +8,7 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const routes = require(path.join(root, 'js', 'routes.js'));
 const sharedUi = fs.readFileSync(path.join(root, 'shared-ui.js'), 'utf8');
+const pwaQuality = fs.readFileSync(path.join(root, 'pwa-quality.js'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 
 test('normalizes supported Bông Home paths', () => {
@@ -41,7 +42,17 @@ test('shared UI waits for and uses the common route module', () => {
   assert.match(sharedUi, /getRoutes\(\)\.isHome\(\)/);
 });
 
+test('PWA quality helpers resolve routes when each feature initializes', () => {
+  assert.match(pwaQuality, /const getRoutes = \(\) => window\.BongRoutes\?\.isGame \? window\.BongRoutes : FALLBACK_ROUTES/);
+  assert.match(pwaQuality, /const isGame = \(gameId, pathname = location\.pathname\) => getRoutes\(\)\.isGame\(gameId, pathname\)/);
+  assert.match(pwaQuality, /function setupGame1ResponsiveBoard\(\) \{\s+if \(!isGame\(1\)\) return;/);
+  assert.match(pwaQuality, /function loadGame3DragStability\(\) \{\s+if \(!isGame\(3\)/);
+  assert.doesNotMatch(pwaQuality, /const isGame1 = \/\\\/game1\\\.html\$\//);
+  assert.doesNotMatch(pwaQuality, /const isGame3 = window\.BongRoutes/);
+});
+
 test('service worker precaches the routes module', () => {
   assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
   assert.match(serviceWorker, /"\.\/js\/routes\.js"/);
+  assert.match(serviceWorker, /"\.\/pwa-quality\.js"/);
 });
