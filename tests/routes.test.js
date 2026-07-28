@@ -47,8 +47,8 @@ test('PWA quality helpers resolve routes when each feature initializes', () => {
   assert.match(pwaQuality, /const isGame = \(gameId, pathname = location\.pathname\) => getRoutes\(\)\.isGame\(gameId, pathname\)/);
   assert.match(pwaQuality, /function setupGame1ResponsiveBoard\(\) \{\s+if \(!isGame\(1\)\) return;/);
   assert.match(pwaQuality, /function loadGame3DragStability\(\) \{\s+if \(!isGame\(3\)/);
-  assert.doesNotMatch(pwaQuality, /const isGame1 = \/\\\/game1\\\.html\$\//);
-  assert.doesNotMatch(pwaQuality, /const isGame3 = window\.BongRoutes/);
+  assert.equal(pwaQuality.includes("const isGame1 = /\\/game1\\.html$/.test(location.pathname);"), false);
+  assert.equal(pwaQuality.includes('const isGame3 = window.BongRoutes'), false);
 });
 
 test('service worker precaches the routes module', () => {
