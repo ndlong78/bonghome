@@ -15,17 +15,27 @@
   const getRoutes = () => root?.BongRoutes || FALLBACK_ROUTES;
   const isParentPage = (pathname) => getRoutes().isParentPage(pathname);
 
+  /**
+   * Kỷ lục cá nhân được 10 game ghi thẳng vào localStorage bằng khóa riêng
+   * ("kyluc_game6", "kyluc_game1_de", "kyluc_game8_3"...) nên nằm ngoài tài liệu
+   * `bonghome:data`. Chúng vẫn là dữ liệu chơi của bé, phải bị xóa cùng lịch sử.
+   */
+  const RECORD_KEY_PATTERN = /^kyluc_/;
+  const isRecordKey = (key) => RECORD_KEY_PATTERN.test(key);
+
   const SCOPES = Object.freeze({
     activity: Object.freeze({
       title: 'Xóa lịch sử chơi?',
-      description: 'Tiến độ đang chơi dở và lịch sử hoàn thành sẽ bị xóa. Hồ sơ, sao, sticker và huy hiệu vẫn được giữ lại.',
+      description: 'Tiến độ đang chơi dở, lịch sử hoàn thành và kỷ lục cá nhân của bé sẽ bị xóa. Hồ sơ, sao, sticker và huy hiệu vẫn được giữ lại.',
       keys: Object.freeze(['progress']),
-      success: 'Đã xóa lịch sử chơi trên thiết bị này.'
+      rawKeyFilter: isRecordKey,
+      success: 'Đã xóa lịch sử chơi và kỷ lục trên thiết bị này.'
     }),
     child: Object.freeze({
       title: 'Xóa toàn bộ dữ liệu của bé?',
-      description: 'Hồ sơ, tiến độ, lịch sử chơi, sao, sticker và huy hiệu sẽ bị xóa khỏi thiết bị này. Thao tác này không thể hoàn tác.',
+      description: 'Hồ sơ, tiến độ, lịch sử chơi, kỷ lục cá nhân, sao, sticker và huy hiệu sẽ bị xóa khỏi thiết bị này. Thao tác này không thể hoàn tác.',
       keys: Object.freeze(['progress', 'rewards', 'profile']),
+      rawKeyFilter: isRecordKey,
       success: 'Đã xóa toàn bộ dữ liệu của bé trên thiết bị này.'
     })
   });
@@ -33,7 +43,11 @@
   function clearScope(scopeId) {
     const scope = SCOPES[scopeId];
     if (!scope) throw new TypeError('Unknown parent data control scope');
-    return scope.keys.reduce((removed, key) => removed + (storage.remove(key) ? 1 : 0), 0);
+    const removedKeys = scope.keys.reduce((removed, key) => removed + (storage.remove(key) ? 1 : 0), 0);
+    const removedRawKeys = scope.rawKeyFilter && typeof storage.removeRawKeys === 'function'
+      ? storage.removeRawKeys(scope.rawKeyFilter)
+      : 0;
+    return removedKeys + removedRawKeys;
   }
 
   function init() {
@@ -89,5 +103,5 @@
     return Object.freeze({ clearScope, scopes: SCOPES });
   }
 
-  return Object.freeze({ SCOPES, clearScope, init, isParentPage });
+  return Object.freeze({ SCOPES, RECORD_KEY_PATTERN, isRecordKey, clearScope, init, isParentPage });
 });

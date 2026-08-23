@@ -77,7 +77,15 @@
       const button = root.document.createElement('button');
       button.type = 'button';
       button.dataset.themeId = theme.id;
-      button.innerHTML = `<span aria-hidden="true">${theme.icon || '🎨'}</span><span>${theme.name}</span>`;
+
+      const icon = root.document.createElement('span');
+      icon.setAttribute('aria-hidden', 'true');
+      icon.textContent = theme.icon || '🎨';
+
+      const name = root.document.createElement('span');
+      name.textContent = theme.name;
+
+      button.replaceChildren(icon, name);
       button.setAttribute('aria-label', `Chọn chủ đề ${theme.name}`);
       button.addEventListener('click', () => {
         if (root.BongThemes.getActiveTheme()?.id === theme.id) return;

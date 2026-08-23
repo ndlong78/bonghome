@@ -1,3 +1,8 @@
 
 # Local Claude configuration
 .claude/
+
+# Phụ thuộc và kết quả test sinh ra khi chạy cục bộ
+node_modules/
+test-results/
+playwright-report/

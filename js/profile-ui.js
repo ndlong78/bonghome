@@ -86,7 +86,20 @@
       catalog.avatars.forEach((avatar) => {
         const label = root.document.createElement('label');
         label.className = 'bh-profile-avatar-option';
-        label.innerHTML = `<input type="radio" name="avatarId" value="${avatar.id}"><span aria-hidden="true">${avatar.icon}</span><small>${avatar.name}</small>`;
+
+        const radio = root.document.createElement('input');
+        radio.type = 'radio';
+        radio.name = 'avatarId';
+        radio.value = avatar.id;
+
+        const icon = root.document.createElement('span');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = avatar.icon;
+
+        const name = root.document.createElement('small');
+        name.textContent = avatar.name;
+
+        label.append(radio, icon, name);
         avatarList.appendChild(label);
       });
 
@@ -97,7 +110,17 @@
       function render() {
         const current = profile.getProfile();
         const avatar = avatarMap.get(current.avatarId) || avatarMap.get(catalog.defaultAvatarId) || catalog.avatars[0];
-        button.innerHTML = `<span aria-hidden="true">${avatar.icon}</span><strong>${current.displayName}</strong>`;
+
+        // Tên do phụ huynh tự nhập: luôn dựng bằng textContent để ký tự như "<"
+        // hiển thị đúng thay vì bị trình duyệt hiểu thành thẻ HTML.
+        const icon = root.document.createElement('span');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = avatar.icon;
+
+        const name = root.document.createElement('strong');
+        name.textContent = current.displayName;
+
+        button.replaceChildren(icon, name);
         button.setAttribute('aria-label', `Mở hồ sơ của ${current.displayName}`);
       }
 

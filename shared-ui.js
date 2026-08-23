@@ -24,17 +24,19 @@
     });
   }
 
+  // Bản dự phòng khi js/routes.js chưa kịp tải: phải nhận cùng tập đường dẫn với
+  // BongRoutes, kể cả URL không có đuôi .html và URL có dấu / ở cuối.
   const FALLBACK_ROUTES = Object.freeze({
     isGame(gameId, pathname = window.location.pathname) {
-      return new RegExp(`/game${Number(gameId)}\\.html$`).test(pathname);
+      return new RegExp(`/game${Number(gameId)}(?:\\.html)?/?$`).test(pathname || '');
     },
     isGameInRange(startGameId, endGameId, pathname = window.location.pathname) {
-      const match = /\/game(\d+)\.html$/.exec(pathname);
+      const match = /\/game(\d+)(?:\.html)?\/?$/.exec(pathname || '');
       const gameId = match ? Number(match[1]) : null;
       return gameId !== null && gameId >= startGameId && gameId <= endGameId;
     },
     isHome(pathname = window.location.pathname) {
-      return /(?:^|\/)index\.html$/.test(pathname) || pathname === '/';
+      return /(?:^|\/)index(?:\.html)?\/?$/.test(pathname || '') || pathname === '/';
     }
   });
   const getRoutes = () => window.BongRoutes || FALLBACK_ROUTES;
