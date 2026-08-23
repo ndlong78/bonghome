@@ -11,9 +11,16 @@ const game5 = read('game5.html');
 const game6 = read('game6.html');
 const game7 = read('game7.html');
 
+assert.ok(adapter.includes('const sharedGameId = routes?.getGameId?.(path);'), 'Adapter must use the shared route API');
 assert.ok(
+  adapter.includes("const match = path.match(/\\/(game[567])(?:\\.html)?\\/?$/);"),
+  'Fallback must support extensionless routes'
+);
+assert.ok(adapter.includes('const gameId = resolveGameId(window.location?.pathname, window.BongRoutes);'));
+assert.equal(
   adapter.includes('match(/\\/(game[567])\\.html$/)'),
-  'adapter must only run on Game 5-7 pages'
+  false,
+  'Adapter must not keep the old .html-only route check'
 );
 ['game5', 'game6', 'game7'].forEach((gameId) => {
   assert.match(adapter, new RegExp(`${gameId}: \\{`), `${gameId} must have an adapter`);

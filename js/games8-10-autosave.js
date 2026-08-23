@@ -1,10 +1,19 @@
 (() => {
   'use strict';
 
-  const match = window.location.pathname.match(/\/(game(?:8|9|10))\.html$/);
-  if (!match) return;
+  function resolveGameId(pathname, routes) {
+    const path = typeof pathname === 'string' ? pathname : '';
+    const sharedGameId = routes?.getGameId?.(path);
+    if (Number.isInteger(sharedGameId) && sharedGameId >= 8 && sharedGameId <= 10) {
+      return `game${sharedGameId}`;
+    }
+    const match = path.match(/\/(game(?:8|9|10))(?:\.html)?\/?$/);
+    return match ? match[1] : null;
+  }
 
-  const gameId = match[1];
+  const gameId = resolveGameId(window.location?.pathname, window.BongRoutes);
+  if (!gameId) return;
+
   const SAVE_INTERVAL_MS = 2000;
   let saveTimer = null;
   let statusTimer = null;

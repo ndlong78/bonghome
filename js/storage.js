@@ -148,6 +148,46 @@
     return removed;
   }
 
+  /**
+   * Liệt kê khóa thô của thiết bị (kể cả khóa do 10 game tự ghi ngoài tài liệu
+   * `bonghome:data`). Trả về mảng rỗng khi storage bị chặn hoặc không duyệt được.
+   */
+  function listRawKeys() {
+    if (!persistent) return [];
+    try {
+      const total = Number(storageAdapter.length);
+      if (!Number.isInteger(total) || typeof storageAdapter.key !== 'function') return [];
+      const keys = [];
+      for (let index = 0; index < total; index += 1) {
+        const key = storageAdapter.key(index);
+        if (typeof key === 'string') keys.push(key);
+      }
+      return keys;
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
+   * Xóa các khóa thô thỏa `predicate`. Tài liệu chính luôn được bảo vệ để một
+   * predicate quá rộng không thể xóa nhầm toàn bộ dữ liệu.
+   */
+  function removeRawKeys(predicate) {
+    if (typeof predicate !== 'function') throw new TypeError('removeRawKeys requires a predicate function');
+    let removed = 0;
+    listRawKeys()
+      .filter((key) => key !== STORAGE_KEY && predicate(key))
+      .forEach((key) => {
+        try {
+          storageAdapter.removeItem(key);
+          removed += 1;
+        } catch (error) {
+          /* Bỏ qua khóa không xóa được, vẫn xóa tiếp các khóa còn lại. */
+        }
+      });
+    return removed;
+  }
+
   return Object.freeze({
     STORAGE_KEY,
     schemaVersion: CURRENT_SCHEMA_VERSION,
@@ -155,6 +195,8 @@
     set,
     remove,
     clearNamespace,
+    listRawKeys,
+    removeRawKeys,
     migrate,
     exportData: () => clone(readDocument()),
     isPersistent: () => persistent,

@@ -101,7 +101,7 @@ jobs:
 
       - name: Install Playwright
         run: |
-          npm install
+          npm ci
           npx playwright install --with-deps chromium
 
       - name: Run mobile E2E tests
