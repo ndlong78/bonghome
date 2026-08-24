@@ -28,6 +28,21 @@ const tabbableSelector = [
   '[tabindex]:not([tabindex="-1"])'
 ].join(',');
 
+/**
+ * Trang chủ chèn thêm hồ sơ của bé và "Hôm nay của Bông" sau khi tải, nên số
+ * phần tử nhận focus còn tăng sau DOMContentLoaded. Đếm trước rồi Tab theo con
+ * số cũ sẽ hụt lượt và test đỏ oan. Chờ số lượng ổn định qua hai lần đo liên
+ * tiếp rồi mới bắt đầu.
+ */
+async function waitForStableTabOrder(page) {
+  await page.waitForFunction((selector) => {
+    const count = document.querySelectorAll(selector).length;
+    const previous = window.__bhTabbableCount;
+    window.__bhTabbableCount = count;
+    return previous === count;
+  }, tabbableSelector, { polling: 150, timeout: 5000 });
+}
+
 async function tabToSharedControl(page) {
   const maxAttempts = await page.evaluate((selector) => {
     const isVisible = (element) => {
@@ -54,6 +69,7 @@ test.describe('Focus bàn phím nhìn thấy rõ trên iPhone và iPad', () => {
     test(`${path} có focus ring khi dùng phím Tab`, async ({ page }) => {
       await page.goto(path, { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => document.querySelector('.nut-am-thanh'));
+      await waitForStableTabOrder(page);
 
       expect(await page.locator(sharedControls).count(), `${path} cần có điều khiển chung`).toBeGreaterThan(0);
       expect(await tabToSharedControl(page), `${path} cần đưa focus bằng Tab tới điều khiển chung`).toBe(true);

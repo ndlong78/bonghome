@@ -152,12 +152,14 @@ function countJson(run) {
   assert.equal(progress.loadGame('game3'), null);
 }
 
-// Ba module autosave phải bỏ qua lần ghi khi ván chơi không đổi.
-for (const file of ['js/games2-4-autosave.js', 'js/games5-7-autosave.js', 'js/games8-10-autosave.js']) {
-  const source = fs.readFileSync(path.join(root, file), 'utf8');
-  assert.match(source, /let lastSavedState = null;/, `${file} phải nhớ lần lưu trước`);
-  assert.match(source, /if \(serialized === lastSavedState\) return;/, `${file} phải bỏ qua khi không đổi`);
-  assert.match(source, /lastSavedState = serialized;/, `${file} phải cập nhật mốc so sánh sau khi lưu`);
+// Khung autosave dùng chung phải bỏ qua lần ghi khi ván chơi không đổi.
+{
+  const core = fs.readFileSync(path.join(root, 'js/autosave-core.js'), 'utf8');
+  assert.match(core, /let lastSavedState = null;/, 'khung chung phải nhớ lần lưu trước');
+  assert.match(core, /if \(serialized === lastSavedState\) return;/, 'khung chung phải bỏ qua khi không đổi');
+  assert.match(core, /lastSavedState = serialized;/, 'khung chung phải cập nhật mốc so sánh sau khi lưu');
+  // Đặt lại mốc khi bắt đầu ván mới, nếu không ván mới trùng trạng thái sẽ không được ghi.
+  assert.match(core, /function resetSession\(\)[\s\S]*?lastSavedState = null;/, 'ván mới phải xóa mốc so sánh');
 }
 
 console.log('✓ Storage write cost checks passed');

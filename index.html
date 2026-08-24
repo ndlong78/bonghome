@@ -28,25 +28,23 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bông Home's">
 
+<!-- CSS dùng chung: nạp tĩnh để không phải chờ JavaScript.
+     Thuộc tính data-bh-* là mốc để shared-ui.js biết đã có mà không chèn lại. -->
+<link rel="stylesheet" href="./css/design-tokens.css" data-bh-design-tokens="true">
+<link rel="stylesheet" href="./css/themes.css" data-bh-themes="true">
+<link rel="stylesheet" href="./css/common.css" data-bh-common="true">
+<link rel="stylesheet" href="./css/components.css" data-bh-components="true">
+<link rel="stylesheet" href="./css/theme-picker.css" data-bh-theme-picker="true">
+<link rel="stylesheet" href="./css/profile.css" data-bh-profile-style="true">
+<link rel="stylesheet" href="./css/daily-journey.css" data-bh-daily-journey="true">
 <style>
   /* ===== BẢNG MÀU PASTEL CHỦ ĐẠO ===== */
-  :root{
-    --kem:      #FFF7F0;  /* nền kem nhạt */
-    --hong:     #FFB7C5;  /* hồng phấn */
-    --tim:      #C9B6F5;  /* tím nhạt */
-    --vang:     #FFE0A3;  /* vàng mơ */
-    --mint:     #A8E6CF;  /* xanh mint */
-    --troi:     #BFE3FF;  /* xanh da trời */
-    --cam:      #FFCBA4;  /* cam đào */
-    --chu:      #6B4E71;  /* màu chữ tím than dịu */
-    --day:      #C9A27E;  /* màu dây treo bảng */
-  }
-
+  /* Bảng màu chung lấy từ css/design-tokens.css; chỉ giữ biến riêng của trang. */
+  :root{ --day: #C9A27E; /* màu dây treo bảng */ }
   *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   body{
     margin:0;
-    min-height:100vh;
     font-family:"Segoe UI", "Nunito", Arial, sans-serif;
     color:var(--chu);
     background: var(--kem);

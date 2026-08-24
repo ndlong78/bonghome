@@ -16,11 +16,19 @@
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary_large_image">
+<!-- CSS dùng chung: nạp tĩnh để không phải chờ JavaScript.
+     Thuộc tính data-bh-* là mốc để shared-ui.js biết đã có mà không chèn lại. -->
+<link rel="stylesheet" href="./css/design-tokens.css" data-bh-design-tokens="true">
+<link rel="stylesheet" href="./css/themes.css" data-bh-themes="true">
+<link rel="stylesheet" href="./css/common.css" data-bh-common="true">
+<link rel="stylesheet" href="./css/components.css" data-bh-components="true">
+<link rel="stylesheet" href="./css/theme-picker.css" data-bh-theme-picker="true">
+<link rel="stylesheet" href="./css/games-autosave.css" data-bh-games-autosave-style="true">
 <style>
-  :root{ --kem:#FFF7F0; --hong:#FFB7C5; --tim:#C9B6F5; --vang:#FFE0A3; --mint:#A8E6CF; --troi:#BFE3FF; --chu:#6B4E71; }
+  /* Bảng màu lấy từ css/design-tokens.css */
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body{
-    margin:0; min-height:100vh; padding:14px 12px 34px;
+    margin:0; padding:14px 12px 34px;
     font-family:"Segoe UI","Nunito",Arial,sans-serif; color:var(--chu);
     background:var(--kem);
     background-image:radial-gradient(circle at 10% 6%,rgba(182,215,245,.4),transparent 30%),

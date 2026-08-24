@@ -7,34 +7,15 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const adapter = read('js/games5-7-autosave.js');
 const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
+// Khung autosave dùng chung cho Game 2-10; phần riêng từng game ở file nhóm.
+const core = read('js/autosave-core.js');
 const game5 = read('game5.html');
 const game6 = read('game6.html');
 const game7 = read('game7.html');
 
-assert.ok(adapter.includes('const sharedGameId = routes?.getGameId?.(path);'), 'Adapter must use the shared route API');
-assert.ok(
-  adapter.includes("const match = path.match(/\\/(game[567])(?:\\.html)?\\/?$/);"),
-  'Fallback must support extensionless routes'
-);
-assert.ok(adapter.includes('const gameId = resolveGameId(window.location?.pathname, window.BongRoutes);'));
-assert.equal(
-  adapter.includes('match(/\\/(game[567])\\.html$/)'),
-  false,
-  'Adapter must not keep the old .html-only route check'
-);
 ['game5', 'game6', 'game7'].forEach((gameId) => {
   assert.match(adapter, new RegExp(`${gameId}: \\{`), `${gameId} must have an adapter`);
 });
-
-assert.match(adapter, /progress\.saveGame\(gameId/);
-assert.match(adapter, /progress\.loadGame\(gameId\)/);
-assert.match(adapter, /progress\.completeGame\(gameId/);
-assert.match(adapter, /transactionId: `\$\{gameId\}-finish-\$\{sessionId\}`/);
-assert.match(adapter, /durationSeconds: giay/);
-assert.match(adapter, /MutationObserver/);
-assert.match(adapter, /pagehide/);
-assert.match(adapter, /visibilitychange/);
-assert.match(adapter, /SAVE_INTERVAL_MS = 2000/);
 
 assert.match(adapter, /shapeIndex:/);
 assert.match(adapter, /position: viTri/);
@@ -62,5 +43,31 @@ assert.match(game7, /function raCau\(\)/);
 assert.ok(serviceWorker.includes('./js/games5-7-autosave.js'), 'adapter must be cached offline');
 assert.ok(serviceWorker.includes('./css/games-autosave.css'), 'shared autosave CSS must stay cached');
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
+
+// Hợp đồng khung chung: nhận dạng trang, vòng lưu, và ghi lượt hoàn thành.
+assert.match(core, /function resolveGameId\(pathname, routes, minGameId, maxGameId\)/);
+assert.match(core, /const SAVE_INTERVAL_MS = 2000;/);
+assert.match(core, /progress\.saveGame\(gameId/);
+assert.match(core, /progress\.loadGame\(gameId\)/);
+assert.match(core, /progress\.completeGame\(gameId/);
+assert.match(core, /transactionId: `\$\{gameId\}-finish-\$\{sessionId\}`/);
+assert.match(core, /durationSeconds: adapter\.duration\(\)/);
+assert.match(core, /new root\.MutationObserver/);
+assert.match(core, /pagehide/);
+assert.match(core, /visibilitychange/);
+
+// File nhóm chỉ còn khai báo phần riêng và nối vào khung chung.
+assert.match(adapter, /core\?\.resolveGameId\(window\.location\?\.pathname, window\.BongRoutes, 5, 7\)/);
+assert.match(adapter, /globalName: 'BongGames57Autosave'/);
+assert.match(adapter, /source: 'games5-7-autosave'/);
+assert.equal(
+  /window\.location\.pathname\.match/.test(adapter),
+  false,
+  'file nhóm không được tự nhận dạng đường dẫn nữa'
+);
+assert.match(adapter, /game5: \{[\s\S]*?capture: captureGame5,/);
+assert.match(adapter, /game6: \{[\s\S]*?capture: captureGame6,/);
+assert.match(adapter, /game7: \{[\s\S]*?capture: captureGame7,/);
+assert.ok(serviceWorker.includes('./js/autosave-core.js'), 'khung chung phải được cache offline');
 
 console.log('Game 5-7 autosave checks passed.');

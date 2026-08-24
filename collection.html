@@ -11,8 +11,15 @@
   <link rel="apple-touch-icon" href="./apple-touch-icon.png">
   <script src="./shared-ui.js" defer></script>
   <script src="./js/reward-collection.js" defer></script>
-  <style>
-    body { margin: 0; min-height: 100vh; background: var(--bh-color-background, #fff7f0); color: var(--bh-color-text, #6b4e71); font-family: "Segoe UI", Arial, sans-serif; }
+  <!-- CSS dùng chung: nạp tĩnh để không phải chờ JavaScript.
+     Thuộc tính data-bh-* là mốc để shared-ui.js biết đã có mà không chèn lại. -->
+<link rel="stylesheet" href="./css/design-tokens.css" data-bh-design-tokens="true">
+<link rel="stylesheet" href="./css/themes.css" data-bh-themes="true">
+<link rel="stylesheet" href="./css/common.css" data-bh-common="true">
+<link rel="stylesheet" href="./css/components.css" data-bh-components="true">
+<link rel="stylesheet" href="./css/theme-picker.css" data-bh-theme-picker="true">
+<style>
+    body { margin: 0; background: var(--bh-color-background, #fff7f0); color: var(--bh-color-text, #6b4e71); font-family: "Segoe UI", Arial, sans-serif; }
     .bh-collection { width: min(920px, calc(100% - 32px)); margin: 0 auto; padding: 24px 0 56px; }
     .bh-collection__top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
     .bh-collection__back { min-height: 44px; display: inline-flex; align-items: center; padding: 0 16px; border-radius: 999px; background: #fff; color: inherit; text-decoration: none; font-weight: 800; box-shadow: 0 4px 14px rgba(107,78,113,.12); }

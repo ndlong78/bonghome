@@ -24,11 +24,9 @@ test('reward and autosave modules expose polite status regions for enhancement',
   const files = [
     'game1-autosave.js',
     'js/game1-rewards.js',
-    'js/games2-4-autosave.js',
+    'js/autosave-core.js',
     'js/games2-4-rewards.js',
-    'js/games5-7-autosave.js',
     'js/games5-7-rewards.js',
-    'js/games8-10-autosave.js',
     'js/games8-10-rewards.js'
   ];
 

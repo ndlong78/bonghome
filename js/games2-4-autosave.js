@@ -1,52 +1,15 @@
 (() => {
   'use strict';
 
-  function resolveGameId(pathname, routes) {
-    const path = typeof pathname === 'string' ? pathname : '';
-    const sharedGameId = routes?.getGameId?.(path);
-    if (Number.isInteger(sharedGameId) && sharedGameId >= 2 && sharedGameId <= 4) {
-      return `game${sharedGameId}`;
-    }
-    const match = path.match(/\/(game[234])(?:\.html)?\/?$/);
-    return match ? match[1] : null;
-  }
-
-  const gameId = resolveGameId(window.location?.pathname, window.BongRoutes);
+  const core = window.BongAutosaveCore;
+  const gameId = core?.resolveGameId(window.location?.pathname, window.BongRoutes, 2, 4);
   if (!gameId) return;
 
-  const SAVE_INTERVAL_MS = 2000;
-  let saveTimer = null;
-  let statusTimer = null;
-
-  function createSessionId() {
-    return `${gameId}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-  }
-
-  let sessionId = createSessionId();
-
   function resetRewardSession() {
-    sessionId = createSessionId();
     const summary = document.querySelector('.man-thang .bh-reward-summary');
     if (!summary) return;
     summary.replaceChildren();
     summary.hidden = true;
-  }
-
-  function showStatus(message) {
-    let status = document.getElementById('bhGameAutosaveStatus');
-    if (!status) {
-      status = document.createElement('div');
-      status.id = 'bhGameAutosaveStatus';
-      status.className = 'bh-game-autosave-status';
-      status.setAttribute('role', 'status');
-      status.setAttribute('aria-live', 'polite');
-      status.setAttribute('aria-atomic', 'true');
-      document.body.appendChild(status);
-    }
-    status.textContent = message;
-    status.hidden = false;
-    clearTimeout(statusTimer);
-    statusTimer = setTimeout(() => { status.hidden = true; }, 1800);
   }
 
   function startClock() {
@@ -58,7 +21,7 @@
     }, 1000);
   }
 
-  function captureGame2() {
+  function captureGame2(sessionId) {
     return {
       schemaVersion: 1,
       sessionId,
@@ -83,7 +46,6 @@
     luotGoiY = Number.isFinite(state.hintsLeft) ? Math.max(0, Math.min(2, state.hintsLeft)) : 2;
     giay = Number.isFinite(state.seconds) ? Math.max(0, state.seconds) : 0;
     daBatDau = Boolean(state.started);
-    sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
 
     veTranh(tranhA, []);
     veTranh(tranhB, ids);
@@ -100,7 +62,7 @@
     return true;
   }
 
-  function captureGame3() {
+  function captureGame3(sessionId) {
     return {
       schemaVersion: 1,
       sessionId,
@@ -126,7 +88,6 @@
     soSai = Number.isFinite(state.wrong) ? Math.max(0, state.wrong) : 0;
     giay = Number.isFinite(state.seconds) ? Math.max(0, state.seconds) : 0;
     daBatDau = Boolean(state.started);
-    sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
 
     colors.forEach((id) => {
       const shape = KHO_HINH.find((item) => item.id === id);
@@ -154,7 +115,7 @@
     return true;
   }
 
-  function captureGame4() {
+  function captureGame4(sessionId) {
     return {
       schemaVersion: 1,
       sessionId,
@@ -182,7 +143,6 @@
     soSai = Number.isFinite(state.wrong) ? Math.max(0, state.wrong) : 0;
     giay = Number.isFinite(state.seconds) ? Math.max(0, state.seconds) : 0;
     daBatDau = Boolean(state.started);
-    sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
 
     MAU.forEach((color) => {
       demTheoGio[color.id] = Number(state.basketCounts?.[color.id]) || 0;
@@ -209,72 +169,45 @@
   }
 
   const adapters = {
-    game2: { capture: captureGame2, restore: restoreGame2, difficulty: '5-differences', moves: () => soChamSai + daTimThay.length },
-    game3: { capture: captureGame3, restore: restoreGame3, difficulty: '6-shapes', moves: () => soSai + daGhep },
-    game4: { capture: captureGame4, restore: restoreGame4, difficulty: '12-objects', moves: () => soSai + daGom }
+    game2: {
+      capture: captureGame2,
+      restore: restoreGame2,
+      difficulty: () => '5-differences',
+      duration: () => giay,
+      moves: () => soChamSai + daTimThay.length,
+      canSave: () => true
+    },
+    game3: {
+      capture: captureGame3,
+      restore: restoreGame3,
+      difficulty: () => '6-shapes',
+      duration: () => giay,
+      moves: () => soSai + daGhep,
+      canSave: () => true
+    },
+    game4: {
+      capture: captureGame4,
+      restore: restoreGame4,
+      difficulty: () => '12-objects',
+      duration: () => giay,
+      moves: () => soSai + daGom,
+      canSave: () => true
+    }
   };
 
-  function init(modules) {
-    const progress = modules?.progress;
-    const adapter = adapters[gameId];
-    if (!progress || !adapter) return;
-
-    const saved = progress.loadGame(gameId);
-    if (saved?.state && adapter.restore(saved.state)) showStatus('↩️ Đã khôi phục ván đang chơi');
-
-    // Bỏ qua khi ván chơi không đổi so với lần lưu trước: trang mở sẵn mà bé chưa
-    // động vào thì không có gì để ghi, và ghi localStorage là thao tác đồng bộ.
-    let lastSavedState = null;
-
-    function save() {
-      if (manThang.classList.contains('hien')) return;
-      const state = adapter.capture();
-      const serialized = JSON.stringify(state);
-      if (serialized === lastSavedState) return;
-      progress.saveGame(gameId, {
-        status: 'in_progress',
-        difficulty: adapter.difficulty,
-        state,
-        startedAt: saved?.startedAt || new Date().toISOString()
-      });
-      lastSavedState = serialized;
-    }
-
-    document.querySelectorAll('#nutVanMoi, #nutChoiLai').forEach((button) => {
-      button.addEventListener('click', () => {
-        queueMicrotask(() => {
-          resetRewardSession();
-          clearInterval(saveTimer);
-          save();
-          saveTimer = setInterval(save, SAVE_INTERVAL_MS);
-        });
-      });
-    });
-
-    saveTimer = setInterval(save, SAVE_INTERVAL_MS);
-    window.addEventListener('pagehide', save);
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') save();
-    });
-
-    const observer = new MutationObserver(() => {
-      if (!manThang.classList.contains('hien')) return;
-      clearInterval(saveTimer);
-      const result = progress.completeGame(gameId, {
-        transactionId: `${gameId}-finish-${sessionId}`,
-        difficulty: adapter.difficulty,
-        durationSeconds: giay,
-        moves: adapter.moves(),
-        metadata: { source: 'games2-4-autosave' }
-      });
-      if (!result.duplicate) showStatus('✅ Đã lưu lượt hoàn thành');
-    });
-    observer.observe(manThang, { attributes: true, attributeFilter: ['class'] });
-
-    window.BongGamesAutosave = Object.freeze({ gameId, save, capture: adapter.capture });
-  }
-
   window.BongModulesReady
-    .then(init)
+    .then((modules) => core.start({
+      gameId,
+      source: 'games2-4-autosave',
+      globalName: 'BongGamesAutosave',
+      progress: modules?.progress,
+      adapter: Object.assign({
+        finishScreen: () => manThang,
+        isFinished: () => manThang.classList.contains('hien')
+      }, adapters[gameId]),
+      resetSelectors: ['#nutVanMoi', '#nutChoiLai'],
+      onSessionReset: resetRewardSession,
+      restartTimerOnReset: true
+    }))
     .catch((error) => console.error('[Bông Home] Autosave Game 2-4 không khởi động được', error));
 })();
