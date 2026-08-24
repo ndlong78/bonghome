@@ -258,14 +258,22 @@
     const saved = progress.loadGame(gameId);
     if (saved?.state && adapter.restore(saved.state)) showStatus('↩️ Đã khôi phục ván đang chơi');
 
+    // Bỏ qua khi ván chơi không đổi so với lần lưu trước: trang mở sẵn mà bé chưa
+    // động vào thì không có gì để ghi, và ghi localStorage là thao tác đồng bộ.
+    let lastSavedState = null;
+
     function save() {
       if (manThang.classList.contains('hien') || !adapter.canSave()) return;
+      const state = adapter.capture();
+      const serialized = JSON.stringify(state);
+      if (serialized === lastSavedState) return;
       progress.saveGame(gameId, {
         status: 'in_progress',
         difficulty: adapter.difficulty,
-        state: adapter.capture(),
+        state,
         startedAt: saved?.startedAt || new Date().toISOString()
       });
+      lastSavedState = serialized;
     }
 
     function resetSession() {

@@ -16,8 +16,7 @@
     completions: {}
   });
 
-  function readProgress() {
-    const value = storage.get(STORAGE_KEY, emptyProgress());
+  function normalizeProgress(value) {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return emptyProgress();
     return {
       schemaVersion: SCHEMA_VERSION,
@@ -26,10 +25,15 @@
     };
   }
 
+  function readProgress() {
+    return normalizeProgress(storage.get(STORAGE_KEY, null));
+  }
+
+  // Không trả về bản sao: cả ba nơi gọi đều bỏ qua giá trị trả về, mà sao chép
+  // ở đây là sao chép toàn bộ lịch sử hoàn thành — mỗi 2 giây một lần.
   function writeProgress(progress) {
     progress.schemaVersion = SCHEMA_VERSION;
     storage.set(STORAGE_KEY, progress);
-    return clone(progress);
   }
 
   function validateGameId(gameId) {
@@ -43,17 +47,23 @@
     if (!state || typeof state !== 'object' || Array.isArray(state)) {
       throw new TypeError('Game state must be an object');
     }
-    const progress = readProgress();
-    progress.games[gameId] = {
-      status: state.status || 'in_progress',
-      difficulty: state.difficulty || null,
-      theme: state.theme || null,
-      state: clone(state.state || {}),
-      startedAt: state.startedAt || progress.games[gameId]?.startedAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    writeProgress(progress);
-    return clone(progress.games[gameId]);
+    // Đường ghi nóng: autosave gọi hàm này mỗi 2 giây. Dùng storage.update để
+    // sửa tại chỗ, tránh sao chép toàn bộ lịch sử hoàn thành ra rồi lại vào.
+    let saved = null;
+    storage.update(STORAGE_KEY, (current) => {
+      const progress = normalizeProgress(current);
+      progress.games[gameId] = {
+        status: state.status || 'in_progress',
+        difficulty: state.difficulty || null,
+        theme: state.theme || null,
+        state: clone(state.state || {}),
+        startedAt: state.startedAt || progress.games[gameId]?.startedAt || new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      saved = progress.games[gameId];
+      return progress;
+    });
+    return clone(saved);
   }
 
   function loadGame(gameId) {
