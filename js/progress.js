@@ -42,6 +42,17 @@
     }
   }
 
+  function buildRecord(gameId, state, previous) {
+    return {
+      status: state.status || 'in_progress',
+      difficulty: state.difficulty || null,
+      theme: state.theme || null,
+      state: clone(state.state || {}),
+      startedAt: state.startedAt || previous?.startedAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+  }
+
   function saveGame(gameId, state) {
     validateGameId(gameId);
     if (!state || typeof state !== 'object' || Array.isArray(state)) {
@@ -49,17 +60,17 @@
     }
     // Đường ghi nóng: autosave gọi hàm này mỗi 2 giây. Dùng storage.update để
     // sửa tại chỗ, tránh sao chép toàn bộ lịch sử hoàn thành ra rồi lại vào.
+    // storage.update là đường nhanh; mọi kho chỉ có get/set vẫn dùng được.
+    if (typeof storage.update !== 'function') {
+      const progress = readProgress();
+      progress.games[gameId] = buildRecord(gameId, state, progress.games[gameId]);
+      writeProgress(progress);
+      return clone(progress.games[gameId]);
+    }
     let saved = null;
     storage.update(STORAGE_KEY, (current) => {
       const progress = normalizeProgress(current);
-      progress.games[gameId] = {
-        status: state.status || 'in_progress',
-        difficulty: state.difficulty || null,
-        theme: state.theme || null,
-        state: clone(state.state || {}),
-        startedAt: state.startedAt || progress.games[gameId]?.startedAt || new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
+      progress.games[gameId] = buildRecord(gameId, state, progress.games[gameId]);
       saved = progress.games[gameId];
       return progress;
     });

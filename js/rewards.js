@@ -19,22 +19,65 @@
     transactions: {}
   });
 
-  function normalize(input) {
-    const source = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
+  const plainObject = (value) => value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+
+  /**
+   * Chuẩn hóa và dùng lại chính các nhánh con của `source` thay vì sao chép.
+   * Chỉ gọi trên đường ghi, nơi đối tượng do kho sở hữu và sắp được ghi lại.
+   */
+  function normalizeInPlace(input) {
+    const source = plainObject(input);
     if (Number.isInteger(source.schemaVersion) && source.schemaVersion > SCHEMA_VERSION) {
       throw new Error(`Unsupported rewards schema: ${source.schemaVersion}`);
     }
     return {
       schemaVersion: SCHEMA_VERSION,
       stars: Number.isFinite(source.stars) ? Math.max(0, Math.floor(source.stars)) : 0,
-      stickers: source.stickers && typeof source.stickers === 'object' && !Array.isArray(source.stickers) ? clone(source.stickers) : {},
-      badges: source.badges && typeof source.badges === 'object' && !Array.isArray(source.badges) ? clone(source.badges) : {},
-      transactions: source.transactions && typeof source.transactions === 'object' && !Array.isArray(source.transactions) ? clone(source.transactions) : {}
+      stickers: plainObject(source.stickers),
+      badges: plainObject(source.badges),
+      transactions: plainObject(source.transactions)
     };
+  }
+
+  // Bản sao chép, dùng cho đường đọc để người gọi không sửa được kho.
+  function normalize(input) {
+    return clone(normalizeInPlace(input));
   }
 
   function read() {
     return normalize(storage.get(STORAGE_KEY, emptyRewards()));
+  }
+
+  function summaryFrom(rewards) {
+    return {
+      schemaVersion: SCHEMA_VERSION,
+      stars: rewards.stars,
+      stickerIds: Object.keys(rewards.stickers),
+      badgeIds: Object.keys(rewards.badges),
+      transactionCount: Object.keys(rewards.transactions).length
+    };
+  }
+
+  /**
+   * Sửa kho phần thưởng tại chỗ. Trước đây mỗi lần trao sao phải sao chép toàn
+   * bộ lịch sử giao dịch ra rồi lại vào, nên càng chơi lâu càng chậm.
+   */
+  function mutate(mutator) {
+    // storage.update là đường nhanh; mọi kho chỉ có get/set vẫn dùng được.
+    if (typeof storage.update !== 'function') {
+      const rewards = normalizeInPlace(read());
+      const changed = mutator(rewards);
+      if (changed) storage.set(STORAGE_KEY, rewards);
+      return { duplicate: !changed, summary: summaryFrom(rewards) };
+    }
+    let outcome = null;
+    storage.update(STORAGE_KEY, (current) => {
+      const rewards = normalizeInPlace(current);
+      const changed = mutator(rewards);
+      outcome = { duplicate: !changed, summary: summaryFrom(rewards) };
+      return changed ? rewards : undefined;
+    });
+    return outcome;
   }
 
   function write(value) {
@@ -58,31 +101,29 @@
     if (!Number.isInteger(amount) || amount < 1 || amount > 10) {
       throw new TypeError('Star amount must be an integer from 1 to 10');
     }
-    const rewards = read();
-    if (rewards.transactions[transactionId]) {
-      return { duplicate: true, summary: getSummary() };
-    }
-    rewards.stars += amount;
-    rewards.transactions[transactionId] = {
-      type: 'stars',
-      amount,
-      metadata: clone(metadata),
-      awardedAt: new Date().toISOString()
-    };
-    write(rewards);
-    return { duplicate: false, summary: getSummary() };
+    return mutate((rewards) => {
+      if (rewards.transactions[transactionId]) return false;
+      rewards.stars += amount;
+      rewards.transactions[transactionId] = {
+        type: 'stars',
+        amount,
+        metadata: clone(metadata),
+        awardedAt: new Date().toISOString()
+      };
+      return true;
+    });
   }
 
   function unlock(collection, id, metadata = {}) {
     validateId(id, 'rewardId');
-    const rewards = read();
-    if (rewards[collection][id]) return { duplicate: true, summary: getSummary() };
-    rewards[collection][id] = {
-      unlockedAt: new Date().toISOString(),
-      metadata: clone(metadata)
-    };
-    write(rewards);
-    return { duplicate: false, summary: getSummary() };
+    return mutate((rewards) => {
+      if (rewards[collection][id]) return false;
+      rewards[collection][id] = {
+        unlockedAt: new Date().toISOString(),
+        metadata: clone(metadata)
+      };
+      return true;
+    });
   }
 
   function unlockSticker(id, metadata) {
@@ -94,15 +135,9 @@
   }
 
   function getSummary() {
-    const rewards = read();
-    return {
-      schemaVersion: SCHEMA_VERSION,
-      stars: rewards.stars,
-      stickerIds: Object.keys(rewards.stickers),
-      badgeIds: Object.keys(rewards.badges),
-      transactionCount: Object.keys(rewards.transactions).length
-    };
+    return summaryFrom(read());
   }
+
 
   function gameIdFromMetadata(metadata) {
     const direct = metadata?.gameId;
