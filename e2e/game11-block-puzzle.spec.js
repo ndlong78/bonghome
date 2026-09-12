@@ -208,6 +208,52 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     expect(errors).toEqual([]);
   });
 
+  test('mobile giữ đủ 16 hàng bằng nhau và nút âm thanh không đè hàng điều khiển', async ({ page }) => {
+    const errors = collectRuntimeErrors(page);
+    await waitForGame(page);
+    await pauseGame(page);
+    await page.waitForFunction(() => Boolean(document.querySelector('.nut-am-thanh')));
+
+    const metrics = await page.evaluate(() => {
+      const cells = Array.from(document.querySelectorAll('.block-cell'));
+      const heights = Array.from({ length: 16 }, (_, row) => cells[row * 10].getBoundingClientRect().height);
+      const widths = Array.from({ length: 10 }, (_, col) => cells[col].getBoundingClientRect().width);
+      const sound = document.querySelector('.nut-am-thanh').getBoundingClientRect();
+      const controls = document.querySelector('.block-controls').getBoundingClientRect();
+      const status = document.querySelector('.game11-status').getBoundingClientRect();
+      const firstCellStyle = getComputedStyle(cells[0]);
+      return {
+        heights,
+        widths,
+        sound: { x: sound.x, y: sound.y, width: sound.width, height: sound.height, bottom: sound.bottom },
+        controls: { y: controls.y, bottom: controls.bottom },
+        status: { y: status.y, bottom: status.bottom },
+        transitionDuration: firstCellStyle.transitionDuration,
+        gridTemplateRows: getComputedStyle(document.getElementById('blockBoard')).gridTemplateRows
+      };
+    });
+
+    const minHeight = Math.min(...metrics.heights);
+    const maxHeight = Math.max(...metrics.heights);
+    const minWidth = Math.min(...metrics.widths);
+    const maxWidth = Math.max(...metrics.widths);
+    expect(metrics.heights).toHaveLength(16);
+    expect(maxHeight - minHeight).toBeLessThanOrEqual(1);
+    expect(maxWidth - minWidth).toBeLessThanOrEqual(1);
+    expect(minHeight).toBeGreaterThan(10);
+    expect(metrics.gridTemplateRows.split(/\s+/).filter(Boolean)).toHaveLength(16);
+    expect(metrics.transitionDuration).toBe('0s');
+
+    expect(metrics.sound.width).toBeGreaterThanOrEqual(44);
+    expect(metrics.sound.height).toBeGreaterThanOrEqual(44);
+    expect(metrics.sound.width).toBeLessThanOrEqual(48);
+    expect(metrics.sound.height).toBeLessThanOrEqual(48);
+    expect(metrics.sound.y).toBeGreaterThanOrEqual(metrics.controls.bottom - 1);
+    expect(metrics.sound.y).toBeGreaterThanOrEqual(metrics.status.y - 1);
+    expect(metrics.sound.bottom).toBeLessThanOrEqual(metrics.status.bottom + 1);
+    expect(errors).toEqual([]);
+  });
+
   test('trang chủ có bảng Game 11 và nội dung được cập nhật thành 11 lớp học', async ({ page }) => {
     const errors = collectRuntimeErrors(page);
     await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
