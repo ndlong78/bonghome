@@ -3,7 +3,7 @@ const { test, expect } = require('@playwright/test');
 const pages = [
   { path: '/index.html', heading: /Bông Home/i },
   { path: '/parents.html', heading: /Góc phụ huynh/i },
-  ...Array.from({ length: 10 }, (_, index) => ({
+  ...Array.from({ length: 11 }, (_, index) => ({
     path: `/game${index + 1}.html`,
     heading: /.+/
   }))

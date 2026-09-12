@@ -256,6 +256,12 @@
       .catch((error) => console.warn('[Bông Home] Không tải được giao diện hồ sơ', error));
   }
 
+  function loadHomeGame11Card() {
+    if (!isHome()) return;
+    loadSharedScript('./js/game11-home-card.js', 'data-bh-game11-home-card')
+      .catch((error) => console.warn('[Bông Home] Không tải được bảng Game 11', error));
+  }
+
   function addSoundButton() {
     if (document.getElementById('nutAmThanh')) return;
     const button = document.createElement('button');
@@ -327,6 +333,7 @@
       loadGames2To4Autosave();
       loadGames5To7Autosave();
       loadGames8To10Autosave();
+      loadHomeGame11Card();
       loadProfileUI();
     });
   });

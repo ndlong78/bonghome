@@ -6,7 +6,7 @@ export const DEFAULT_TIMEOUT_MS = 15_000;
 export const HTML_PATHS = Object.freeze([
   '/',
   '/index.html',
-  ...Array.from({ length: 10 }, (_, index) => `/game${index + 1}.html`),
+  ...Array.from({ length: 11 }, (_, index) => `/game${index + 1}.html`),
   '/parents.html',
   '/collection.html'
 ]);
@@ -15,7 +15,7 @@ const REDIRECT_PAGES = Object.freeze([
   'index',
   'parents',
   'collection',
-  ...Array.from({ length: 10 }, (_, index) => `game${index + 1}`)
+  ...Array.from({ length: 11 }, (_, index) => `game${index + 1}`)
 ]);
 
 export const REDIRECT_PATHS = Object.freeze(
