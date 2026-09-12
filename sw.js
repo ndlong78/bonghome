@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v65-parent-data-scope-and-routes";
+const PHIEN_BAN = "bonghome-v66-game11-block-puzzle";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
@@ -10,20 +10,20 @@ const TEN_CACHE = Object.freeze({
 const TEP_SHELL = [
   "./", "./index.html", "./parents.html", "./collection.html",
   "./shared-ui.js", "./pwa-ios.js", "./pwa-quality.js",
-  "./js/routes.js", "./js/storage.js", "./js/themes.js", "./js/theme-picker.js", "./js/progress.js", "./js/rewards.js", "./js/profile.js", "./js/profile-ui.js", "./js/statistics.js", "./js/game-catalog.js", "./js/parent-dashboard.js", "./js/parent-data-controls.js", "./js/daily-journey.js", "./js/reward-collection.js",
+  "./js/routes.js", "./js/storage.js", "./js/themes.js", "./js/theme-picker.js", "./js/progress.js", "./js/rewards.js", "./js/profile.js", "./js/profile-ui.js", "./js/statistics.js", "./js/game-catalog.js", "./js/parent-dashboard.js", "./js/parent-data-controls.js", "./js/daily-journey.js", "./js/reward-collection.js", "./js/game11-home-card.js",
   "./css/design-tokens.css", "./css/themes.css", "./css/theme-picker.css", "./css/common.css", "./css/components.css", "./css/daily-journey.css", "./css/profile.css", "./css/parent-dashboard.css",
   "./manifest.json", "./favicon.ico", "./icon-192.png", "./icon-512.png", "./icon-maskable-512.png", "./apple-touch-icon.png"
 ];
 
 const TEP_GAME = [
-  "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html",
+  "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html", "./game11.html",
   "./game1-difficulty.js", "./game1-autosave.js",
-  "./js/game1-rewards.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/game1-keyboard-accessibility.js", "./js/game2-keyboard-cursor.js", "./js/game3-keyboard-matching.js", "./js/game3-drag-stability.js", "./js/game4-keyboard-sorting.js", "./js/game5-touch-target.js", "./js/games2-4-rewards.js", "./js/games2-4-autosave.js", "./js/games5-7-rewards.js", "./js/games5-7-autosave.js", "./js/games8-10-rewards.js", "./js/games8-10-autosave.js",
-  "./css/game1-autosave.css", "./css/games-autosave.css"
+  "./js/game1-rewards.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/game1-keyboard-accessibility.js", "./js/game2-keyboard-cursor.js", "./js/game3-keyboard-matching.js", "./js/game3-drag-stability.js", "./js/game4-keyboard-sorting.js", "./js/game5-touch-target.js", "./js/games2-4-rewards.js", "./js/games2-4-autosave.js", "./js/games5-7-rewards.js", "./js/games5-7-autosave.js", "./js/games8-10-rewards.js", "./js/games8-10-autosave.js", "./js/game11-blocks.js",
+  "./css/game1-autosave.css", "./css/games-autosave.css", "./css/game11-blocks.css"
 ];
 
 const TEP_NOI_DUNG = [
-  "./content/games/index.json", "./content/games/game1.json", "./content/themes/animals/game1.json", "./content/themes/fruits/game1.json", "./content/themes/school/game1.json", "./content/themes/index.json", "./content/daily/index.json", "./content/rewards/catalog.json", "./content/profile/avatars.json"
+  "./content/games/index.json", "./content/games/game1.json", "./content/games/game11.json", "./content/themes/animals/game1.json", "./content/themes/fruits/game1.json", "./content/themes/school/game1.json", "./content/themes/index.json", "./content/daily/index.json", "./content/rewards/catalog.json", "./content/profile/avatars.json"
 ];
 
 const NHOM_PRECACHE = Object.freeze([
