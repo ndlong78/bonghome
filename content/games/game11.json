@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "boardRows": 16,
   "boardCols": 10,
-  "fallIntervalMs": 1000,
+  "fallIntervalMs": 1430,
   "initialShapeIds": ["tee4", "el4", "square2"],
   "colors": ["#6FA8FF", "#A889F4", "#FF9DB5", "#67CFA6", "#F6C85F", "#FFAA72"],
   "shapes": [
