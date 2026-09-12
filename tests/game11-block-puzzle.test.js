@@ -52,6 +52,16 @@ autoTest('Game 11 có khối rơi, bám chuột ngang, quay bằng click và đi
   assert.match(style, /--bh-touch-target/);
 });
 
+autoTest('Game 11 khóa viewport mobile để màn hình không bị trượt khi chơi', () => {
+  assert.match(style, /@media \(pointer:\s*coarse\)/);
+  assert.match(style, /\.game11-page\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?overflow:\s*hidden;/);
+  assert.match(style, /html\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?overscroll-behavior:\s*none;/);
+  assert.match(style, /\.game11-shell\s*\{[\s\S]*?box-sizing:\s*border-box;/);
+  assert.match(style, /\.block-board\s*\{[\s\S]*?box-sizing:\s*border-box;/);
+  assert.match(style, /@media \(pointer:\s*coarse\)[\s\S]*?\.block-board\s*\{[\s\S]*?touch-action:\s*none;/);
+  assert.match(style, /@supports \(height:\s*100svh\)/);
+});
+
 autoTest('Game 11 chỉ dọn hàng ngang và không thêm cơ chế gây áp lực', () => {
   assert.match(script, /completedRows/);
   assert.doesNotMatch(script, /completedCols|streak|countdown/i);
