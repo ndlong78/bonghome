@@ -9,7 +9,7 @@
     shapes: [],
     shapeMap: new Map(),
     colors: [],
-    fallIntervalMs: 1000,
+    fallIntervalMs: 1430,
     initialShapeIds: [],
     sequenceIndex: 0,
     pieceCount: 0,
@@ -367,7 +367,7 @@
     emptyBoard();
     spawnNextPiece();
     startTimer();
-    announce('Bàn mới đã sẵn sàng. Bé dùng các nút để đưa khối xuống nhé!');
+    announce('Bàn mới đã sẵn sàng. Bé chạm vào bàn để quay khối, hoặc dùng các nút điều khiển nhé!');
     els.board.focus({ preventScroll: true });
   }
 
@@ -385,12 +385,20 @@
     action();
   }
 
+  function onBoardClick(event) {
+    if (state.gameOver) return;
+    if (typeof event.button === 'number' && event.button !== 0) return;
+    rotateActive();
+    els.board.focus({ preventScroll: true });
+  }
+
   function bindEvents() {
     els.left.addEventListener('click', () => moveActive(-1));
     els.rotate.addEventListener('click', rotateActive);
     els.right.addEventListener('click', () => moveActive(1));
     els.drop.addEventListener('click', hardDrop);
     els.reset.addEventListener('click', resetGame);
+    els.board.addEventListener('click', onBoardClick);
     els.board.addEventListener('keydown', onBoardKey);
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stopTimer();
@@ -438,6 +446,7 @@
         getState: () => ({
           rows: state.rows,
           cols: state.cols,
+          fallIntervalMs: state.fallIntervalMs,
           score: state.score,
           lines: state.lines,
           usedCells: state.board.filter(Boolean).length,
