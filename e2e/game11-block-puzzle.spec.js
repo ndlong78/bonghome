@@ -26,7 +26,6 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     await expect(page.locator('.block-cell')).toHaveCount(160);
     await expect(page.locator('.block-control')).toHaveCount(4);
     await expect(page.locator('#blockNext')).toBeVisible();
-    await expect(page.locator('.block-board-hint')).toContainText('Rê chuột trái/phải');
 
     const initial = await page.evaluate(() => window.BongGame11.getState());
     expect(initial.rows).toBe(16);
@@ -157,6 +156,58 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     }
   });
 
+  test('mobile giữ nguyên viewport khi chạm và chơi, không làm màn hình trượt', async ({ page }) => {
+    const errors = collectRuntimeErrors(page);
+    await waitForGame(page);
+    await pauseGame(page);
+
+    const before = await page.evaluate(() => ({
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+      innerHeight: window.innerHeight,
+      clientHeight: document.documentElement.clientHeight,
+      scrollHeight: document.documentElement.scrollHeight,
+      bodyPosition: getComputedStyle(document.body).position,
+      bodyOverflow: getComputedStyle(document.body).overflow,
+      htmlOverflow: getComputedStyle(document.documentElement).overflow,
+      boardTouchAction: getComputedStyle(document.getElementById('blockBoard')).touchAction
+    }));
+
+    expect(before.scrollX).toBe(0);
+    expect(before.scrollY).toBe(0);
+    expect(before.bodyPosition).toBe('fixed');
+    expect(before.bodyOverflow).toBe('hidden');
+    expect(before.htmlOverflow).toBe('hidden');
+    expect(before.boardTouchAction).toBe('none');
+    expect(before.scrollHeight).toBeLessThanOrEqual(before.clientHeight + 1);
+
+    const viewportHeight = before.innerHeight;
+    for (const selector of ['.game11-topbar', '#blockBoard', '.block-controls', '.game11-status']) {
+      const box = await page.locator(selector).boundingBox();
+      expect(box, `${selector} phải nằm trong viewport`).not.toBeNull();
+      expect(box.y).toBeGreaterThanOrEqual(-1);
+      expect(box.y + box.height).toBeLessThanOrEqual(viewportHeight + 1);
+    }
+
+    await page.locator('#blockLeft').click();
+    await page.locator('#blockRotate').click();
+    await page.locator('#blockRight').click();
+    await page.locator('.block-cell[data-row="5"][data-col="5"]').click();
+    await page.evaluate(() => window.scrollTo(0, 200));
+    await page.waitForTimeout(50);
+
+    const after = await page.evaluate(() => ({
+      scrollX: window.scrollX,
+      scrollY: window.scrollY,
+      clientHeight: document.documentElement.clientHeight,
+      scrollHeight: document.documentElement.scrollHeight
+    }));
+    expect(after.scrollX).toBe(0);
+    expect(after.scrollY).toBe(0);
+    expect(after.scrollHeight).toBeLessThanOrEqual(after.clientHeight + 1);
+    expect(errors).toEqual([]);
+  });
+
   test('trang chủ có bảng Game 11 và nội dung được cập nhật thành 11 lớp học', async ({ page }) => {
     const errors = collectRuntimeErrors(page);
     await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
@@ -187,7 +238,7 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
       await page.evaluate(() => window.BongGame11.pause());
       await expect(page.locator('.block-cell')).toHaveCount(160);
       await expect(page.locator('.block-control')).toHaveCount(4);
-      await expect(page.locator('.block-board-hint')).toBeVisible();
+      await expect(page.locator('#blockBoard')).toBeVisible();
     } finally {
       await context.setOffline(false);
     }
