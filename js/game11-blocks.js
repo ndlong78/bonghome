@@ -3,53 +3,75 @@
 
   const CONTENT_URL = './content/games/game11.json';
   const state = {
-    size: 10,
+    rows: 16,
+    cols: 10,
     board: [],
     shapes: [],
     shapeMap: new Map(),
     colors: [],
-    tray: [],
+    fallIntervalMs: 1000,
+    initialShapeIds: [],
+    sequenceIndex: 0,
+    pieceCount: 0,
+    active: null,
+    next: null,
     score: 0,
-    selectedSlot: 0,
-    cursor: { row: 0, col: 0 },
-    preview: null,
-    drag: null,
-    initialShapeIds: []
+    lines: 0,
+    gameOver: false,
+    timer: null,
+    manualPaused: false
   };
 
   const els = {};
 
   function announce(message) {
-    if (!els.status) return;
-    els.status.textContent = message;
+    if (els.status) els.status.textContent = message;
+  }
+
+  function normalizeCells(cells) {
+    const minRow = Math.min(...cells.map(([row]) => row));
+    const minCol = Math.min(...cells.map(([, col]) => col));
+    return cells
+      .map(([row, col]) => [row - minRow, col - minCol])
+      .sort(([rowA, colA], [rowB, colB]) => rowA - rowB || colA - colB);
   }
 
   function getBounds(cells) {
-    return cells.reduce((acc, [row, col]) => ({
-      rows: Math.max(acc.rows, row + 1),
-      cols: Math.max(acc.cols, col + 1)
+    return cells.reduce((bounds, [row, col]) => ({
+      rows: Math.max(bounds.rows, row + 1),
+      cols: Math.max(bounds.cols, col + 1)
     }), { rows: 0, cols: 0 });
   }
 
   function normalizeContent(content) {
-    if (content?.schemaVersion !== 1 || !Array.isArray(content.shapes)) {
+    if (content?.schemaVersion !== 2 || !Array.isArray(content.shapes)) {
       throw new Error('Nội dung Game 11 không hợp lệ');
     }
-    const size = Number(content.boardSize);
-    if (!Number.isInteger(size) || size < 6 || size > 12) throw new Error('Kích thước bàn không hợp lệ');
+    const rows = Number(content.boardRows);
+    const cols = Number(content.boardCols);
+    const fallIntervalMs = Number(content.fallIntervalMs);
+    if (!Number.isInteger(rows) || rows < 12 || rows > 24) throw new Error('Số hàng không hợp lệ');
+    if (!Number.isInteger(cols) || cols < 8 || cols > 12) throw new Error('Số cột không hợp lệ');
+    if (!Number.isFinite(fallIntervalMs) || fallIntervalMs < 500 || fallIntervalMs > 2500) {
+      throw new Error('Tốc độ rơi không hợp lệ');
+    }
+
     const shapes = content.shapes
-      .filter((shape) => typeof shape?.id === 'string' && Array.isArray(shape.cells) && shape.cells.length)
+      .filter((shape) => typeof shape?.id === 'string' && Array.isArray(shape.cells) && shape.cells.length === 4)
       .map((shape) => ({
         id: shape.id,
-        cells: shape.cells.map(([row, col]) => [Number(row), Number(col)])
+        cells: normalizeCells(shape.cells.map(([row, col]) => [Number(row), Number(col)]))
       }))
       .filter((shape) => shape.cells.every(([row, col]) => Number.isInteger(row) && Number.isInteger(col) && row >= 0 && col >= 0));
-    if (shapes.length < 6) throw new Error('Chưa đủ hình khối');
+    if (shapes.length < 7) throw new Error('Chưa đủ hình khối');
+
     return {
-      size,
+      rows,
+      cols,
+      fallIntervalMs,
       shapes,
       colors: Array.isArray(content.colors) && content.colors.length ? content.colors.slice() : ['#6FA8FF'],
-      initialShapeIds: Array.isArray(content.initialShapeIds) ? content.initialShapeIds.slice(0, 3) : []
+      initialShapeIds: Array.isArray(content.initialShapeIds) ? content.initialShapeIds.slice() : []
     };
   }
 
@@ -59,76 +81,58 @@
     return normalizeContent(await response.json());
   }
 
-  function emptyBoard() {
-    state.board = Array.from({ length: state.size * state.size }, () => null);
-  }
-
   function boardIndex(row, col) {
-    return row * state.size + col;
+    return row * state.cols + col;
   }
 
-  function inBoard(row, col) {
-    return row >= 0 && col >= 0 && row < state.size && col < state.size;
-  }
-
-  function canPlace(shape, row, col) {
-    return shape.cells.every(([dr, dc]) => {
-      const targetRow = row + dr;
-      const targetCol = col + dc;
-      return inBoard(targetRow, targetCol) && state.board[boardIndex(targetRow, targetCol)] === null;
-    });
-  }
-
-  function hasPlacement(shape) {
-    const bounds = getBounds(shape.cells);
-    for (let row = 0; row <= state.size - bounds.rows; row += 1) {
-      for (let col = 0; col <= state.size - bounds.cols; col += 1) {
-        if (canPlace(shape, row, col)) return true;
-      }
-    }
-    return false;
+  function emptyBoard() {
+    state.board = Array.from({ length: state.rows * state.cols }, () => null);
   }
 
   function randomItem(items) {
     return items[Math.floor(Math.random() * items.length)];
   }
 
-  function makePiece(shape, color) {
-    return { shape, color, used: false };
+  function nextShape() {
+    const preferredId = state.initialShapeIds[state.sequenceIndex];
+    state.sequenceIndex += 1;
+    return state.shapeMap.get(preferredId) || randomItem(state.shapes);
   }
 
-  function makeTray(useInitial = false) {
-    let shapes;
-    if (useInitial && state.initialShapeIds.length === 3) {
-      shapes = state.initialShapeIds.map((id) => state.shapeMap.get(id)).filter(Boolean);
-    }
-    if (!shapes || shapes.length !== 3) {
-      shapes = Array.from({ length: 3 }, () => randomItem(state.shapes));
-    }
-    state.tray = shapes.map((shape, index) => makePiece(shape, state.colors[(state.score + index) % state.colors.length]));
-    state.selectedSlot = state.tray.findIndex((piece) => !piece.used);
-    if (state.selectedSlot < 0) state.selectedSlot = 0;
-    ensurePlayableTray();
+  function makePiece() {
+    const shape = nextShape();
+    const color = state.colors[state.pieceCount % state.colors.length];
+    state.pieceCount += 1;
+    return { id: shape.id, cells: shape.cells.map(([row, col]) => [row, col]), color, row: 0, col: 0 };
   }
 
-  function ensurePlayableTray() {
-    if (state.tray.some((piece) => !piece.used && hasPlacement(piece.shape))) return;
-    const fittingShapes = state.shapes.filter(hasPlacement);
-    if (!fittingShapes.length) return;
-    state.tray = state.tray.map((piece, index) => piece.used
-      ? piece
-      : makePiece(randomItem(fittingShapes), state.colors[(state.score + index + 2) % state.colors.length]));
-    state.selectedSlot = state.tray.findIndex((piece) => !piece.used && hasPlacement(piece.shape));
-    announce('Bàn hơi chật nên Bông được đổi sang những khối dễ đặt hơn nhé!');
+  function centerPiece(piece) {
+    const bounds = getBounds(piece.cells);
+    piece.row = 0;
+    piece.col = Math.floor((state.cols - bounds.cols) / 2);
+    return piece;
+  }
+
+  function canPlace(piece, row = piece.row, col = piece.col, cells = piece.cells) {
+    return cells.every(([dr, dc]) => {
+      const targetRow = row + dr;
+      const targetCol = col + dc;
+      return targetRow >= 0 && targetRow < state.rows
+        && targetCol >= 0 && targetCol < state.cols
+        && state.board[boardIndex(targetRow, targetCol)] === null;
+    });
   }
 
   function buildBoard() {
     els.board.innerHTML = '';
-    els.board.style.gridTemplateColumns = `repeat(${state.size}, 1fr)`;
-    els.board.setAttribute('aria-rowcount', String(state.size));
-    els.board.setAttribute('aria-colcount', String(state.size));
-    for (let row = 0; row < state.size; row += 1) {
-      for (let col = 0; col < state.size; col += 1) {
+    els.board.style.gridTemplateColumns = `repeat(${state.cols}, 1fr)`;
+    els.board.style.setProperty('--board-rows', String(state.rows));
+    els.board.style.setProperty('--board-cols', String(state.cols));
+    els.board.setAttribute('aria-rowcount', String(state.rows));
+    els.board.setAttribute('aria-colcount', String(state.cols));
+
+    for (let row = 0; row < state.rows; row += 1) {
+      for (let col = 0; col < state.cols; col += 1) {
         const cell = document.createElement('div');
         cell.className = 'block-cell';
         cell.dataset.row = String(row);
@@ -140,333 +144,311 @@
     }
   }
 
+  function landingRow(piece) {
+    let row = piece.row;
+    while (canPlace(piece, row + 1, piece.col)) row += 1;
+    return row;
+  }
+
   function renderBoard() {
-    const previewCells = new Map();
-    if (state.preview) {
-      const piece = state.tray[state.preview.slot];
-      if (piece && !piece.used) {
-        const valid = canPlace(piece.shape, state.preview.row, state.preview.col);
-        piece.shape.cells.forEach(([dr, dc]) => {
-          const row = state.preview.row + dr;
-          const col = state.preview.col + dc;
-          if (inBoard(row, col)) previewCells.set(`${row}:${col}`, valid ? 'ok' : 'bad');
-        });
-      }
+    const activeCells = new Map();
+    const ghostCells = new Set();
+
+    if (state.active && !state.gameOver) {
+      const ghostRow = landingRow(state.active);
+      state.active.cells.forEach(([dr, dc]) => {
+        activeCells.set(`${state.active.row + dr}:${state.active.col + dc}`, state.active.color);
+        if (ghostRow !== state.active.row) ghostCells.add(`${ghostRow + dr}:${state.active.col + dc}`);
+      });
     }
 
     els.board.querySelectorAll('.block-cell').forEach((cell) => {
       const row = Number(cell.dataset.row);
       const col = Number(cell.dataset.col);
-      const value = state.board[boardIndex(row, col)];
+      const key = `${row}:${col}`;
+      const fixedColor = state.board[boardIndex(row, col)];
+      const activeColor = activeCells.get(key);
       cell.className = 'block-cell';
       cell.style.removeProperty('--block-color');
-      cell.style.removeProperty('--preview-color');
-      if (value) {
+
+      if (fixedColor) {
         cell.classList.add('filled');
-        cell.style.setProperty('--block-color', value);
+        cell.style.setProperty('--block-color', fixedColor);
+      } else if (activeColor) {
+        cell.classList.add('filled', 'active');
+        cell.style.setProperty('--block-color', activeColor);
+      } else if (ghostCells.has(key)) {
+        cell.classList.add('ghost');
+        cell.style.setProperty('--block-color', state.active.color);
       }
-      const previewType = previewCells.get(`${row}:${col}`);
-      if (previewType === 'ok' && !value) {
-        cell.classList.add('preview-ok');
-        const piece = state.tray[state.preview.slot];
-        if (piece) cell.style.setProperty('--preview-color', piece.color);
-      } else if (previewType === 'bad' && !value) {
-        cell.classList.add('preview-bad');
-      }
-      if (row === state.cursor.row && col === state.cursor.col) cell.classList.add('cursor-cell');
     });
   }
 
   function pieceVisual(piece) {
-    const bounds = getBounds(piece.shape.cells);
-    const shape = document.createElement('span');
-    shape.className = 'piece-shape';
-    shape.style.gridTemplateColumns = `repeat(${bounds.cols}, 1fr)`;
-    shape.style.setProperty('--piece-color', piece.color);
-    const occupied = new Set(piece.shape.cells.map(([row, col]) => `${row}:${col}`));
+    const visual = document.createElement('span');
+    visual.className = 'piece-shape';
+    if (!piece) return visual;
+    const bounds = getBounds(piece.cells);
+    visual.style.gridTemplateColumns = `repeat(${bounds.cols}, 1fr)`;
+    visual.style.setProperty('--piece-color', piece.color);
+    const occupied = new Set(piece.cells.map(([row, col]) => `${row}:${col}`));
     for (let row = 0; row < bounds.rows; row += 1) {
       for (let col = 0; col < bounds.cols; col += 1) {
         const mini = document.createElement('span');
         mini.className = occupied.has(`${row}:${col}`) ? 'piece-mini-cell on' : 'piece-mini-cell';
-        shape.appendChild(mini);
+        visual.appendChild(mini);
       }
     }
-    return shape;
+    return visual;
   }
 
-  function renderTray() {
-    els.tray.innerHTML = '';
-    state.tray.forEach((piece, index) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'block-piece';
-      button.dataset.slot = String(index);
-      button.style.setProperty('--piece-color', piece.color);
-      button.setAttribute('aria-label', piece.used ? `Khối ${index + 1} đã dùng` : `Chọn khối ${index + 1}`);
-      button.setAttribute('aria-pressed', !piece.used && state.selectedSlot === index ? 'true' : 'false');
-      button.disabled = piece.used;
-      button.appendChild(pieceVisual(piece));
-      button.addEventListener('click', () => selectPiece(index));
-      button.addEventListener('pointerdown', (event) => startDrag(event, index));
-      els.tray.appendChild(button);
-    });
+  function renderNext() {
+    els.next.innerHTML = '';
+    if (state.next) els.next.appendChild(pieceVisual(state.next));
   }
 
   function updateScore() {
     els.score.textContent = String(state.score);
   }
 
-  function selectPiece(index) {
-    const piece = state.tray[index];
-    if (!piece || piece.used) return;
-    state.selectedSlot = index;
-    state.preview = { slot: index, row: state.cursor.row, col: state.cursor.col };
-    renderTray();
-    renderBoard();
-    announce(`Đã chọn khối ${index + 1}. Chạm vào bàn để đặt khối.`);
-  }
-
-  function completedLines() {
-    const rows = [];
-    const cols = [];
-    for (let row = 0; row < state.size; row += 1) {
-      if (Array.from({ length: state.size }, (_, col) => state.board[boardIndex(row, col)]).every(Boolean)) rows.push(row);
-    }
-    for (let col = 0; col < state.size; col += 1) {
-      if (Array.from({ length: state.size }, (_, row) => state.board[boardIndex(row, col)]).every(Boolean)) cols.push(col);
-    }
-    return { rows, cols };
-  }
-
-  function clearLines(lines) {
-    lines.rows.forEach((row) => {
-      for (let col = 0; col < state.size; col += 1) state.board[boardIndex(row, col)] = null;
+  function updateControls() {
+    [els.left, els.rotate, els.right, els.drop].forEach((button) => {
+      button.disabled = state.gameOver;
     });
-    lines.cols.forEach((col) => {
-      for (let row = 0; row < state.size; row += 1) state.board[boardIndex(row, col)] = null;
-    });
-  }
-
-  function placeSelected(row, col) {
-    const piece = state.tray[state.selectedSlot];
-    if (!piece || piece.used) {
-      announce('Hãy chọn một khối ở phía dưới trước nhé.');
-      return false;
-    }
-    if (!canPlace(piece.shape, row, col)) {
-      state.preview = { slot: state.selectedSlot, row, col };
-      renderBoard();
-      announce('Chỗ này chưa vừa. Bé thử một ô khác nhé!');
-      return false;
-    }
-
-    piece.shape.cells.forEach(([dr, dc]) => {
-      state.board[boardIndex(row + dr, col + dc)] = piece.color;
-    });
-    piece.used = true;
-    state.score += piece.shape.cells.length;
-    const lines = completedLines();
-    const cleared = lines.rows.length + lines.cols.length;
-    if (cleared) {
-      clearLines(lines);
-      state.score += cleared * 10;
-    }
-
-    state.preview = null;
-    if (state.tray.every((item) => item.used)) makeTray(false);
-    else {
-      const next = state.tray.findIndex((item) => !item.used && hasPlacement(item.shape));
-      state.selectedSlot = next >= 0 ? next : state.tray.findIndex((item) => !item.used);
-      ensurePlayableTray();
-    }
-    renderAll();
-    announce(cleared
-      ? `Tuyệt lắm! Bé vừa dọn được ${cleared} ${cleared === 1 ? 'hàng hoặc cột' : 'hàng và cột'}.`
-      : 'Đặt khối thành công! Bé chọn khối tiếp theo nhé.');
-    return true;
   }
 
   function renderAll() {
     updateScore();
-    renderTray();
+    renderNext();
     renderBoard();
+    updateControls();
   }
 
-  function cellFromPoint(clientX, clientY) {
-    const element = document.elementFromPoint(clientX, clientY);
-    const cell = element?.closest?.('.block-cell');
-    if (!cell || !els.board.contains(cell)) return null;
-    return { row: Number(cell.dataset.row), col: Number(cell.dataset.col), cell };
+  function spawnNextPiece() {
+    if (!state.next) state.next = makePiece();
+    state.active = centerPiece(state.next);
+    state.next = makePiece();
+
+    if (!canPlace(state.active)) {
+      state.gameOver = true;
+      stopTimer();
+      renderAll();
+      announce('Bàn đã đầy rồi. Bé bấm Chơi lại để bắt đầu một bàn mới nhé!');
+      return false;
+    }
+    renderAll();
+    return true;
   }
 
-  function setPreviewAtPoint(clientX, clientY, slot = state.selectedSlot) {
-    const target = cellFromPoint(clientX, clientY);
-    if (!target) {
-      state.preview = null;
+  function rotateCells(cells) {
+    const bounds = getBounds(cells);
+    return normalizeCells(cells.map(([row, col]) => [col, bounds.rows - 1 - row]));
+  }
+
+  function rotateActive() {
+    if (!state.active || state.gameOver) return false;
+    const rotated = rotateCells(state.active.cells);
+    for (const kick of [0, -1, 1, -2, 2]) {
+      if (canPlace(state.active, state.active.row, state.active.col + kick, rotated)) {
+        state.active.cells = rotated;
+        state.active.col += kick;
+        renderBoard();
+        announce('Đã quay khối.');
+        return true;
+      }
+    }
+    announce('Chỗ này chưa đủ rộng để quay khối.');
+    return false;
+  }
+
+  function moveActive(deltaCol) {
+    if (!state.active || state.gameOver) return false;
+    const nextCol = state.active.col + deltaCol;
+    if (!canPlace(state.active, state.active.row, nextCol)) return false;
+    state.active.col = nextCol;
+    renderBoard();
+    return true;
+  }
+
+  function completedRows() {
+    const rows = [];
+    for (let row = 0; row < state.rows; row += 1) {
+      const full = Array.from({ length: state.cols }, (_, col) => state.board[boardIndex(row, col)]).every(Boolean);
+      if (full) rows.push(row);
+    }
+    return rows;
+  }
+
+  function clearRows(rowsToClear) {
+    if (!rowsToClear.length) return;
+    const clearing = new Set(rowsToClear);
+    const keptRows = [];
+    for (let row = 0; row < state.rows; row += 1) {
+      if (!clearing.has(row)) {
+        keptRows.push(Array.from({ length: state.cols }, (_, col) => state.board[boardIndex(row, col)]));
+      }
+    }
+    while (keptRows.length < state.rows) keptRows.unshift(Array.from({ length: state.cols }, () => null));
+    state.board = keptRows.flat();
+  }
+
+  function lockActive() {
+    if (!state.active || state.gameOver) return;
+    state.active.cells.forEach(([dr, dc]) => {
+      state.board[boardIndex(state.active.row + dr, state.active.col + dc)] = state.active.color;
+    });
+    state.score += state.active.cells.length;
+
+    const clearedRows = completedRows();
+    if (clearedRows.length) {
+      clearRows(clearedRows);
+      state.lines += clearedRows.length;
+      state.score += clearedRows.length * 100;
+    }
+
+    const message = clearedRows.length
+      ? `Tuyệt lắm! Bé vừa dọn được ${clearedRows.length} hàng.`
+      : 'Khối đã nằm gọn rồi. Khối tiếp theo đang rơi xuống nhé!';
+
+    spawnNextPiece();
+    if (!state.gameOver) announce(message);
+  }
+
+  function stepDown() {
+    if (!state.active || state.gameOver || state.manualPaused) return false;
+    if (canPlace(state.active, state.active.row + 1, state.active.col)) {
+      state.active.row += 1;
       renderBoard();
-      return null;
+      return true;
     }
-    state.cursor = { row: target.row, col: target.col };
-    state.preview = { slot, row: target.row, col: target.col };
+    lockActive();
+    return false;
+  }
+
+  function hardDrop() {
+    if (!state.active || state.gameOver) return false;
+    state.active.row = landingRow(state.active);
     renderBoard();
-    return target;
+    lockActive();
+    return true;
   }
 
-  function makeGhost(piece) {
-    const ghost = pieceVisual(piece);
-    ghost.classList.add('block-drag-ghost');
-    document.body.appendChild(ghost);
-    return ghost;
+  function stopTimer() {
+    if (state.timer) window.clearInterval(state.timer);
+    state.timer = null;
   }
 
-  function startDrag(event, index) {
-    if (event.pointerType === 'mouse' && event.button !== 0) return;
-    const piece = state.tray[index];
-    if (!piece || piece.used) return;
-    selectPiece(index);
-    event.preventDefault();
-    const ghost = makeGhost(piece);
-    ghost.style.left = `${event.clientX}px`;
-    ghost.style.top = `${event.clientY}px`;
-    state.drag = { pointerId: event.pointerId, slot: index, ghost };
-    window.addEventListener('pointermove', onDragMove, { passive: false });
-    window.addEventListener('pointerup', onDragEnd, { once: true });
-    window.addEventListener('pointercancel', onDragCancel, { once: true });
+  function startTimer() {
+    stopTimer();
+    if (state.gameOver || state.manualPaused || document.hidden) return;
+    state.timer = window.setInterval(stepDown, state.fallIntervalMs);
   }
 
-  function onDragMove(event) {
-    if (!state.drag || event.pointerId !== state.drag.pointerId) return;
-    event.preventDefault();
-    state.drag.ghost.style.left = `${event.clientX}px`;
-    state.drag.ghost.style.top = `${event.clientY - 34}px`;
-    setPreviewAtPoint(event.clientX, event.clientY - 34, state.drag.slot);
+  function pauseGame() {
+    state.manualPaused = true;
+    stopTimer();
   }
 
-  function finishDrag() {
-    if (!state.drag) return;
-    state.drag.ghost.remove();
-    state.drag = null;
-    window.removeEventListener('pointermove', onDragMove);
-  }
-
-  function onDragEnd(event) {
-    if (!state.drag || event.pointerId !== state.drag.pointerId) return;
-    const target = cellFromPoint(event.clientX, event.clientY - 34) || cellFromPoint(event.clientX, event.clientY);
-    const slot = state.drag.slot;
-    finishDrag();
-    if (target) {
-      state.selectedSlot = slot;
-      placeSelected(target.row, target.col);
-    } else {
-      state.preview = null;
-      renderBoard();
-    }
-  }
-
-  function onDragCancel() {
-    finishDrag();
-    state.preview = null;
-    renderBoard();
-  }
-
-  function onBoardPointer(event) {
-    if (state.drag) return;
-    const cell = event.target.closest('.block-cell');
-    if (!cell) return;
-    const row = Number(cell.dataset.row);
-    const col = Number(cell.dataset.col);
-    state.cursor = { row, col };
-    state.preview = { slot: state.selectedSlot, row, col };
-    placeSelected(row, col);
-  }
-
-  function onBoardMove(event) {
-    if (event.pointerType === 'touch' || state.drag) return;
-    const cell = event.target.closest('.block-cell');
-    if (!cell) return;
-    const row = Number(cell.dataset.row);
-    const col = Number(cell.dataset.col);
-    if (state.preview?.row === row && state.preview?.col === col && state.preview?.slot === state.selectedSlot) return;
-    state.cursor = { row, col };
-    state.preview = { slot: state.selectedSlot, row, col };
-    renderBoard();
-  }
-
-  function onBoardKey(event) {
-    const moves = {
-      ArrowUp: [-1, 0],
-      ArrowDown: [1, 0],
-      ArrowLeft: [0, -1],
-      ArrowRight: [0, 1]
-    };
-    if (moves[event.key]) {
-      event.preventDefault();
-      const [dr, dc] = moves[event.key];
-      state.cursor.row = Math.max(0, Math.min(state.size - 1, state.cursor.row + dr));
-      state.cursor.col = Math.max(0, Math.min(state.size - 1, state.cursor.col + dc));
-      state.preview = { slot: state.selectedSlot, row: state.cursor.row, col: state.cursor.col };
-      renderBoard();
-      return;
-    }
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      placeSelected(state.cursor.row, state.cursor.col);
-    }
+  function resumeGame() {
+    state.manualPaused = false;
+    startTimer();
   }
 
   function resetGame() {
+    stopTimer();
     state.score = 0;
-    state.cursor = { row: 0, col: 0 };
-    state.preview = null;
+    state.lines = 0;
+    state.gameOver = false;
+    state.manualPaused = false;
+    state.sequenceIndex = 0;
+    state.pieceCount = 0;
+    state.active = null;
+    state.next = null;
     emptyBoard();
-    makeTray(true);
-    renderAll();
-    announce('Bàn mới đã sẵn sàng. Bé chọn một khối rồi chạm vào bàn nhé!');
+    spawnNextPiece();
+    startTimer();
+    announce('Bàn mới đã sẵn sàng. Bé dùng các nút để đưa khối xuống nhé!');
     els.board.focus({ preventScroll: true });
   }
 
+  function onBoardKey(event) {
+    const actions = {
+      ArrowLeft: () => moveActive(-1),
+      ArrowRight: () => moveActive(1),
+      ArrowUp: rotateActive,
+      ArrowDown: stepDown,
+      ' ': hardDrop
+    };
+    const action = actions[event.key];
+    if (!action) return;
+    event.preventDefault();
+    action();
+  }
+
   function bindEvents() {
-    els.board.addEventListener('click', onBoardPointer);
-    els.board.addEventListener('pointermove', onBoardMove);
-    els.board.addEventListener('mouseleave', () => {
-      if (state.drag) return;
-      state.preview = null;
-      renderBoard();
-    });
-    els.board.addEventListener('keydown', onBoardKey);
+    els.left.addEventListener('click', () => moveActive(-1));
+    els.rotate.addEventListener('click', rotateActive);
+    els.right.addEventListener('click', () => moveActive(1));
+    els.drop.addEventListener('click', hardDrop);
     els.reset.addEventListener('click', resetGame);
+    els.board.addEventListener('keydown', onBoardKey);
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stopTimer();
+      else startTimer();
+    });
   }
 
   async function init() {
     Object.assign(els, {
       board: document.getElementById('blockBoard'),
-      tray: document.getElementById('blockTray'),
+      next: document.getElementById('blockNext'),
       score: document.getElementById('blockScore'),
       status: document.getElementById('blockStatus'),
-      reset: document.getElementById('blockReset')
+      reset: document.getElementById('blockReset'),
+      left: document.getElementById('blockLeft'),
+      rotate: document.getElementById('blockRotate'),
+      right: document.getElementById('blockRight'),
+      drop: document.getElementById('blockDrop')
     });
     if (Object.values(els).some((value) => !value)) return;
 
     try {
       const content = await loadContent();
-      state.size = content.size;
+      state.rows = content.rows;
+      state.cols = content.cols;
+      state.fallIntervalMs = content.fallIntervalMs;
       state.shapes = content.shapes;
       state.shapeMap = new Map(state.shapes.map((shape) => [shape.id, shape]));
       state.colors = content.colors;
       state.initialShapeIds = content.initialShapeIds;
       emptyBoard();
       buildBoard();
-      makeTray(true);
       bindEvents();
-      renderAll();
-      announce('Chọn một khối rồi chạm vào ô muốn đặt. Đầy một hàng hoặc cột là khối sẽ được dọn đi.');
+      resetGame();
+
       window.BongGame11 = Object.freeze({
         reset: resetGame,
+        pause: pauseGame,
+        resume: resumeGame,
+        moveLeft: () => moveActive(-1),
+        moveRight: () => moveActive(1),
+        rotate: rotateActive,
+        stepDown,
+        hardDrop,
         getState: () => ({
+          rows: state.rows,
+          cols: state.cols,
           score: state.score,
+          lines: state.lines,
           usedCells: state.board.filter(Boolean).length,
-          selectedSlot: state.selectedSlot,
-          tray: state.tray.map((piece) => ({ id: piece.shape.id, used: piece.used }))
+          gameOver: state.gameOver,
+          active: state.active ? {
+            id: state.active.id,
+            row: state.active.row,
+            col: state.active.col,
+            cells: state.active.cells.map(([row, col]) => [row, col])
+          } : null,
+          nextId: state.next?.id || null
         })
       });
     } catch (error) {
