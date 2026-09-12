@@ -19,25 +19,43 @@ async function pauseGame(page) {
 }
 
 test.describe('Game 11 - Xếp Khối Thông Minh', () => {
-  test('hiển thị bàn 16x10 và khối tự rơi từ trên xuống', async ({ page }) => {
+  test('hiển thị bàn 16x10 và khối tự rơi chậm từ trên xuống', async ({ page }) => {
     const errors = collectRuntimeErrors(page);
     await waitForGame(page);
 
     await expect(page.locator('.block-cell')).toHaveCount(160);
     await expect(page.locator('.block-control')).toHaveCount(4);
     await expect(page.locator('#blockNext')).toBeVisible();
+    await expect(page.locator('.block-board-hint')).toContainText('Chạm hoặc click vào bàn để quay khối');
 
     const initial = await page.evaluate(() => window.BongGame11.getState());
     expect(initial.rows).toBe(16);
     expect(initial.cols).toBe(10);
+    expect(initial.fallIntervalMs).toBe(1430);
     expect(initial.active.row).toBe(0);
 
     await expect.poll(async () => {
       const state = await page.evaluate(() => window.BongGame11.getState());
       return state.active.row;
-    }, { timeout: 2500 }).toBeGreaterThan(initial.active.row);
+    }, { timeout: 3500 }).toBeGreaterThan(initial.active.row);
 
     await pauseGame(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('click trực tiếp lên bàn sẽ quay khối đang rơi', async ({ page }) => {
+    const errors = collectRuntimeErrors(page);
+    await waitForGame(page);
+    await pauseGame(page);
+
+    const before = await page.evaluate(() => window.BongGame11.getState());
+    expect(before.active.id).toBe('tee4');
+
+    await page.locator('.block-cell[data-row="5"][data-col="5"]').click();
+
+    const after = await page.evaluate(() => window.BongGame11.getState());
+    expect(after.active.cells).not.toEqual(before.active.cells);
+    await expect(page.locator('#blockBoard')).toBeFocused();
     expect(errors).toEqual([]);
   });
 
@@ -140,6 +158,7 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
       await page.evaluate(() => window.BongGame11.pause());
       await expect(page.locator('.block-cell')).toHaveCount(160);
       await expect(page.locator('.block-control')).toHaveCount(4);
+      await expect(page.locator('.block-board-hint')).toBeVisible();
     } finally {
       await context.setOffline(false);
     }

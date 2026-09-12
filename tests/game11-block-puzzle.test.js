@@ -16,29 +16,33 @@ autoTest('nội dung Game 11 có schemaVersion và tetromino tách khỏi logic'
   assert.equal(content.schemaVersion, 2);
   assert.equal(content.boardRows, 16);
   assert.equal(content.boardCols, 10);
-  assert.ok(content.fallIntervalMs >= 500);
+  assert.equal(content.fallIntervalMs, 1430);
   assert.equal(content.shapes.length, 7);
   assert.ok(content.shapes.every((shape) => typeof shape.id === 'string' && Array.isArray(shape.cells) && shape.cells.length === 4));
   assert.match(script, /content\/games\/game11\.json/);
   assert.doesNotMatch(script, /localStorage\.(?:setItem|removeItem)/);
 });
 
-autoTest('Game 11 có khối rơi, quay, trái phải, thả và điều khiển bàn phím', () => {
+autoTest('Game 11 có khối rơi, quay bằng click, trái phải, thả và điều khiển bàn phím', () => {
   assert.match(html, /css\/design-tokens\.css/);
   assert.match(html, /id="blockLeft"/);
   assert.match(html, /id="blockRotate"/);
   assert.match(html, /id="blockRight"/);
   assert.match(html, /id="blockDrop"/);
+  assert.match(html, /Chạm hoặc click vào bàn để quay khối/);
   assert.match(html, /role="grid"/);
   assert.match(html, /tabindex="0"/);
   assert.match(script, /setInterval\(stepDown/);
   assert.match(script, /rotateActive/);
+  assert.match(script, /onBoardClick/);
+  assert.match(script, /addEventListener\('click', onBoardClick\)/);
   assert.match(script, /moveActive/);
   assert.match(script, /hardDrop/);
   assert.match(script, /ArrowLeft/);
   assert.match(script, /ArrowRight/);
   assert.match(script, /ArrowUp/);
   assert.match(script, /ArrowDown/);
+  assert.match(style, /cursor:\s*pointer/);
   assert.match(style, /prefers-reduced-motion:\s*reduce/);
   assert.match(style, /--bh-touch-target/);
 });
