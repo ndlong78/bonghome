@@ -62,6 +62,16 @@ autoTest('Game 11 khóa viewport mobile để màn hình không bị trượt kh
   assert.match(style, /@supports \(height:\s*100svh\)/);
 });
 
+autoTest('Game 11 giữ 16 hàng bằng nhau và tránh artefact đồ họa trên Safari mobile', () => {
+  assert.match(style, /grid-template-rows:\s*repeat\(var\(--board-rows,\s*16\),\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(style, /grid-auto-rows:\s*0/);
+  assert.match(style, /contain:\s*paint/);
+  assert.match(style, /\.block-cell\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*100%;/);
+  assert.match(style, /@media \(pointer:\s*coarse\)[\s\S]*?\.block-cell\s*\{[\s\S]*?transition:\s*none;/);
+  assert.match(style, /\.game11-page \.nut-am-thanh\s*\{/);
+  assert.match(style, /html\[data-sound="off"\] \.game11-page \.nut-am-thanh::before/);
+});
+
 autoTest('Game 11 chỉ dọn hàng ngang và không thêm cơ chế gây áp lực', () => {
   assert.match(script, /completedRows/);
   assert.doesNotMatch(script, /completedCols|streak|countdown/i);

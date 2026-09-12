@@ -122,13 +122,17 @@
   --board-gap: 2px;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
+  grid-template-columns: repeat(var(--board-cols, 10), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--board-rows, 16), minmax(0, 1fr));
+  grid-auto-rows: 0;
   gap: var(--board-gap);
   width: 100%;
   aspect-ratio: var(--board-cols, 10) / var(--board-rows, 16);
   padding: 7px;
   border: 4px solid #d8b88f;
   border-radius: 20px;
+  overflow: hidden;
+  contain: paint;
   background: #d8b88f;
   box-shadow: 0 8px 0 rgba(111, 78, 61, 0.08), 0 16px 30px rgba(111, 78, 61, 0.14);
   touch-action: manipulation;
@@ -153,6 +157,9 @@
 }
 
 .block-cell {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
   min-width: 0;
   min-height: 0;
   border-radius: 4px;
@@ -364,6 +371,10 @@
     touch-action: none;
   }
 
+  .block-cell {
+    transition: none;
+  }
+
   .block-controls {
     width: min(96vw, 520px);
     gap: 6px;
@@ -383,15 +394,40 @@
   .game11-status {
     box-sizing: border-box;
     width: min(96vw, 520px);
-    height: 34px;
-    min-height: 34px;
+    height: 44px;
+    min-height: 44px;
     margin: 6px auto 0;
-    padding: 7px 10px;
+    padding: 7px 58px 7px 10px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     font-size: 12px;
-    line-height: 20px;
+    line-height: 30px;
+  }
+
+  .game11-page .nut-am-thanh {
+    box-sizing: border-box;
+    right: max(8px, env(safe-area-inset-right));
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: var(--bh-touch-target, 44px);
+    min-width: var(--bh-touch-target, 44px);
+    height: var(--bh-touch-target, 44px);
+    min-height: var(--bh-touch-target, 44px);
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    line-height: 1;
+  }
+
+  .game11-page .nut-am-thanh::before {
+    content: "🔊";
+    font-size: 20px;
+  }
+
+  html[data-sound="off"] .game11-page .nut-am-thanh::before {
+    content: "🔇";
   }
 
   @supports (height: 100svh) {
