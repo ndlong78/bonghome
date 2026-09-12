@@ -14,36 +14,78 @@ async function waitForGame(page) {
   await page.waitForFunction(() => Boolean(window.BongGame11));
 }
 
+async function pauseGame(page) {
+  await page.evaluate(() => window.BongGame11.pause());
+}
+
 test.describe('Game 11 - Xếp Khối Thông Minh', () => {
-  test('hiển thị bàn 10x10, ba khối và đặt được khối bằng chạm/click', async ({ page }) => {
+  test('hiển thị bàn 16x10 và khối tự rơi từ trên xuống', async ({ page }) => {
     const errors = collectRuntimeErrors(page);
     await waitForGame(page);
 
-    await expect(page.locator('.block-cell')).toHaveCount(100);
-    await expect(page.locator('.block-piece')).toHaveCount(3);
-    await expect(page.locator('#blockStatus')).toBeVisible();
+    await expect(page.locator('.block-cell')).toHaveCount(160);
+    await expect(page.locator('.block-control')).toHaveCount(4);
+    await expect(page.locator('#blockNext')).toBeVisible();
 
-    const firstPiece = page.locator('.block-piece').first();
-    await firstPiece.click();
-    await page.locator('.block-cell[data-row="0"][data-col="0"]').click();
+    const initial = await page.evaluate(() => window.BongGame11.getState());
+    expect(initial.rows).toBe(16);
+    expect(initial.cols).toBe(10);
+    expect(initial.active.row).toBe(0);
 
-    const state = await page.evaluate(() => window.BongGame11.getState());
-    expect(state.score).toBe(4);
-    expect(state.usedCells).toBe(4);
-    expect(state.tray[0].used).toBe(true);
+    await expect.poll(async () => {
+      const state = await page.evaluate(() => window.BongGame11.getState());
+      return state.active.row;
+    }, { timeout: 2500 }).toBeGreaterThan(initial.active.row);
+
+    await pauseGame(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('nút trái, quay, phải và thả điều khiển được khối', async ({ page }) => {
+    const errors = collectRuntimeErrors(page);
+    await waitForGame(page);
+    await pauseGame(page);
+
+    const initial = await page.evaluate(() => window.BongGame11.getState());
+    expect(initial.active.id).toBe('tee4');
+
+    await page.locator('#blockLeft').click();
+    const afterLeft = await page.evaluate(() => window.BongGame11.getState());
+    expect(afterLeft.active.col).toBe(initial.active.col - 1);
+
+    await page.locator('#blockRotate').click();
+    const afterRotate = await page.evaluate(() => window.BongGame11.getState());
+    expect(afterRotate.active.cells).not.toEqual(afterLeft.active.cells);
+
+    await page.locator('#blockRight').click();
+    const afterRight = await page.evaluate(() => window.BongGame11.getState());
+    expect(afterRight.active.col).toBe(afterRotate.active.col + 1);
+
+    await page.locator('#blockDrop').click();
+    const afterDrop = await page.evaluate(() => window.BongGame11.getState());
+    expect(afterDrop.usedCells).toBe(4);
+    expect(afterDrop.score).toBe(4);
+    expect(afterDrop.active.id).toBe('el4');
     expect(errors).toEqual([]);
   });
 
   test('có thể chơi bằng bàn phím và focus rõ ràng', async ({ page }) => {
     const errors = collectRuntimeErrors(page);
     await waitForGame(page);
+    await pauseGame(page);
 
-    await page.locator('.block-piece').first().click();
     const board = page.locator('#blockBoard');
     await board.focus();
     await expect(board).toBeFocused();
-    await page.keyboard.press('Enter');
 
+    const initial = await page.evaluate(() => window.BongGame11.getState());
+    await page.keyboard.press('ArrowRight');
+    await page.keyboard.press('ArrowUp');
+    const moved = await page.evaluate(() => window.BongGame11.getState());
+    expect(moved.active.col).toBeGreaterThanOrEqual(initial.active.col);
+    expect(moved.active.cells).not.toEqual(initial.active.cells);
+
+    await page.keyboard.press('Space');
     const state = await page.evaluate(() => window.BongGame11.getState());
     expect(state.usedCells).toBe(4);
     expect(state.score).toBe(4);
@@ -52,8 +94,9 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
 
   test('các nút điều khiển chính đủ lớn để chạm trên mobile', async ({ page }) => {
     await waitForGame(page);
+    await pauseGame(page);
 
-    const selectors = ['.game11-home', '#blockReset', '.block-piece:not([disabled])'];
+    const selectors = ['.game11-home', '#blockReset', '.block-control'];
     for (const selector of selectors) {
       const boxes = await page.locator(selector).evaluateAll((elements) => elements.map((element) => {
         const rect = element.getBoundingClientRect();
@@ -94,8 +137,9 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     try {
       await page.reload({ waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => Boolean(window.BongGame11));
-      await expect(page.locator('.block-cell')).toHaveCount(100);
-      await expect(page.locator('.block-piece')).toHaveCount(3);
+      await page.evaluate(() => window.BongGame11.pause());
+      await expect(page.locator('.block-cell')).toHaveCount(160);
+      await expect(page.locator('.block-control')).toHaveCount(4);
     } finally {
       await context.setOffline(false);
     }
