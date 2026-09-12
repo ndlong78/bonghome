@@ -262,6 +262,10 @@
   color: #806987;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .block-board { cursor: ew-resize; }
+}
+
 @media (max-width: 420px) {
   .game11-shell { padding-inline: 8px; }
   .game11-topbar { grid-template-columns: 48px 1fr 48px; }

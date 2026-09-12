@@ -26,7 +26,7 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     await expect(page.locator('.block-cell')).toHaveCount(160);
     await expect(page.locator('.block-control')).toHaveCount(4);
     await expect(page.locator('#blockNext')).toBeVisible();
-    await expect(page.locator('.block-board-hint')).toContainText('Chạm hoặc click vào bàn để quay khối');
+    await expect(page.locator('.block-board-hint')).toContainText('Rê chuột trái/phải');
 
     const initial = await page.evaluate(() => window.BongGame11.getState());
     expect(initial.rows).toBe(16);
@@ -40,6 +40,35 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     }, { timeout: 3500 }).toBeGreaterThan(initial.active.row);
 
     await pauseGame(page);
+    expect(errors).toEqual([]);
+  });
+
+  test('rê chuột trái phải thì khối active đi theo con trỏ', async ({ page }) => {
+    const errors = collectRuntimeErrors(page);
+    await waitForGame(page);
+    await pauseGame(page);
+
+    const board = page.locator('#blockBoard');
+    const box = await board.boundingBox();
+    expect(box).not.toBeNull();
+
+    const initial = await page.evaluate(() => window.BongGame11.getState());
+    expect(initial.active.id).toBe('tee4');
+
+    await page.mouse.move(box.x + box.width * 0.08, box.y + box.height * 0.18);
+    await expect.poll(async () => {
+      const state = await page.evaluate(() => window.BongGame11.getState());
+      return state.active.col;
+    }).toBeLessThan(initial.active.col);
+
+    const leftState = await page.evaluate(() => window.BongGame11.getState());
+
+    await page.mouse.move(box.x + box.width * 0.92, box.y + box.height * 0.18);
+    await expect.poll(async () => {
+      const state = await page.evaluate(() => window.BongGame11.getState());
+      return state.active.col;
+    }).toBeGreaterThan(leftState.active.col);
+
     expect(errors).toEqual([]);
   });
 

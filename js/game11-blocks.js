@@ -270,6 +270,47 @@
     return true;
   }
 
+  function moveActiveToCol(targetCol) {
+    if (!state.active || state.gameOver) return false;
+    const bounds = getBounds(state.active.cells);
+    const clampedTarget = Math.max(0, Math.min(state.cols - bounds.cols, targetCol));
+    const direction = Math.sign(clampedTarget - state.active.col);
+    let moved = false;
+
+    while (direction && state.active.col !== clampedTarget) {
+      const nextCol = state.active.col + direction;
+      if (!canPlace(state.active, state.active.row, nextCol)) break;
+      state.active.col = nextCol;
+      moved = true;
+    }
+
+    if (moved) renderBoard();
+    return moved;
+  }
+
+  function pointerTargetCol(event) {
+    if (!state.active) return 0;
+    const targetCell = event.target.closest?.('.block-cell');
+    let hoveredCol;
+
+    if (targetCell && els.board.contains(targetCell)) {
+      hoveredCol = Number(targetCell.dataset.col);
+    } else {
+      const rect = els.board.getBoundingClientRect();
+      const x = Math.max(0, Math.min(rect.width - 1, event.clientX - rect.left));
+      hoveredCol = Math.floor((x / rect.width) * state.cols);
+    }
+
+    const bounds = getBounds(state.active.cells);
+    const centeredCol = Math.round(hoveredCol - (bounds.cols - 1) / 2);
+    return Math.max(0, Math.min(state.cols - bounds.cols, centeredCol));
+  }
+
+  function onBoardPointerMove(event) {
+    if (event.pointerType === 'touch' || !state.active || state.gameOver) return;
+    moveActiveToCol(pointerTargetCol(event));
+  }
+
   function completedRows() {
     const rows = [];
     for (let row = 0; row < state.rows; row += 1) {
@@ -367,7 +408,7 @@
     emptyBoard();
     spawnNextPiece();
     startTimer();
-    announce('Bàn mới đã sẵn sàng. Bé chạm vào bàn để quay khối, hoặc dùng các nút điều khiển nhé!');
+    announce('Bàn mới đã sẵn sàng. Rê chuột trái hoặc phải để đưa khối theo con trỏ, click để quay nhé!');
     els.board.focus({ preventScroll: true });
   }
 
@@ -398,6 +439,7 @@
     els.right.addEventListener('click', () => moveActive(1));
     els.drop.addEventListener('click', hardDrop);
     els.reset.addEventListener('click', resetGame);
+    els.board.addEventListener('pointermove', onBoardPointerMove);
     els.board.addEventListener('click', onBoardClick);
     els.board.addEventListener('keydown', onBoardKey);
     document.addEventListener('visibilitychange', () => {
