@@ -27,7 +27,7 @@
       <button class="game11-reset" id="blockReset" type="button" aria-label="Chơi lại từ đầu">↻ Chơi lại</button>
     </div>
 
-    <p class="game11-intro">Khối sẽ rơi chậm từ trên xuống. Bé xoay khối, đưa sang trái hoặc phải rồi thả xuống. Khi đầy một hàng ngang, hàng đó sẽ được dọn đi.</p>
+    <p class="game11-intro">Khối sẽ rơi thật chậm từ trên xuống. Bé có thể chạm hoặc click trực tiếp lên bàn để quay khối, rồi đưa sang trái hoặc phải và thả xuống. Khi đầy một hàng ngang, hàng đó sẽ được dọn đi.</p>
 
     <div class="game11-info-row">
       <div class="game11-score-card" aria-label="Điểm vui hiện tại">
@@ -45,8 +45,9 @@
         id="blockBoard"
         role="grid"
         tabindex="0"
-        aria-label="Bàn xếp khối 16 hàng 10 cột. Mũi tên trái phải để di chuyển, mũi tên lên để quay, mũi tên xuống để hạ một ô, phím cách để thả nhanh."
+        aria-label="Bàn xếp khối 16 hàng 10 cột. Chạm hoặc click lên bàn để quay khối. Mũi tên trái phải để di chuyển, mũi tên lên để quay, mũi tên xuống để hạ một ô, phím cách để thả nhanh."
       ></div>
+      <p class="block-board-hint">👆 Chạm hoặc click vào bàn để quay khối</p>
     </section>
 
     <div class="block-controls" role="group" aria-label="Điều khiển khối">
@@ -57,7 +58,7 @@
     </div>
 
     <div class="game11-status" id="blockStatus" role="status" aria-live="polite"></div>
-    <p class="game11-tip">Không cần vội nhé — khối rơi chậm, không có đồng hồ đếm ngược và không làm mất chuỗi ngày.</p>
+    <p class="game11-tip">Không cần vội nhé — khối rơi chậm hơn, không có đồng hồ đếm ngược và không làm mất chuỗi ngày.</p>
   </main>
 </body>
 </html>
