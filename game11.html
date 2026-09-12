@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Xếp Khối Thông Minh – Bông Home's</title>
-  <meta name="description" content="Xếp Khối Thông Minh – trò chơi sắp xếp hình khối nhẹ nhàng cho bé trên Bông Home's.">
+  <meta name="description" content="Xếp Khối Thông Minh – trò chơi khối rơi nhẹ nhàng cho bé trên Bông Home's.">
   <link rel="canonical" href="https://bong.no.id.vn/game11.html">
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#FFF7F0">
@@ -27,10 +27,16 @@
       <button class="game11-reset" id="blockReset" type="button" aria-label="Chơi lại từ đầu">↻ Chơi lại</button>
     </div>
 
-    <p class="game11-intro">Chọn hoặc kéo một khối vào bàn. Khi đầy cả một hàng hoặc một cột, các ô đó sẽ được dọn đi để bé có thêm chỗ chơi.</p>
+    <p class="game11-intro">Khối sẽ rơi chậm từ trên xuống. Bé xoay khối, đưa sang trái hoặc phải rồi thả xuống. Khi đầy một hàng ngang, hàng đó sẽ được dọn đi.</p>
 
-    <div class="game11-score-card" aria-label="Điểm vui hiện tại">
-      ⭐ Điểm vui: <span id="blockScore">0</span>
+    <div class="game11-info-row">
+      <div class="game11-score-card" aria-label="Điểm vui hiện tại">
+        ⭐ Điểm vui: <span id="blockScore">0</span>
+      </div>
+      <div class="game11-next-card" aria-label="Khối tiếp theo">
+        <span>Tiếp theo</span>
+        <div class="block-next" id="blockNext" aria-hidden="true"></div>
+      </div>
     </div>
 
     <section class="block-board-wrap" aria-label="Bàn xếp khối">
@@ -39,15 +45,19 @@
         id="blockBoard"
         role="grid"
         tabindex="0"
-        aria-label="Bàn xếp khối 10 hàng 10 cột. Dùng phím mũi tên để di chuyển, Enter hoặc phím cách để đặt khối."
+        aria-label="Bàn xếp khối 16 hàng 10 cột. Mũi tên trái phải để di chuyển, mũi tên lên để quay, mũi tên xuống để hạ một ô, phím cách để thả nhanh."
       ></div>
     </section>
 
-    <h2 class="block-tray-title">Chọn một khối</h2>
-    <div class="block-tray" id="blockTray" role="group" aria-label="Ba khối đang có"></div>
+    <div class="block-controls" role="group" aria-label="Điều khiển khối">
+      <button class="block-control" id="blockLeft" type="button" aria-label="Di chuyển sang trái">←<span>Trái</span></button>
+      <button class="block-control" id="blockRotate" type="button" aria-label="Quay khối">↻<span>Quay</span></button>
+      <button class="block-control" id="blockRight" type="button" aria-label="Di chuyển sang phải">→<span>Phải</span></button>
+      <button class="block-control block-control-drop" id="blockDrop" type="button" aria-label="Thả khối xuống">⬇<span>Thả</span></button>
+    </div>
 
     <div class="game11-status" id="blockStatus" role="status" aria-live="polite"></div>
-    <p class="game11-tip">Không cần vội nhé — trò chơi không có đồng hồ đếm ngược và không làm mất chuỗi ngày.</p>
+    <p class="game11-tip">Không cần vội nhé — khối rơi chậm, không có đồng hồ đếm ngược và không làm mất chuỗi ngày.</p>
   </main>
 </body>
 </html>
