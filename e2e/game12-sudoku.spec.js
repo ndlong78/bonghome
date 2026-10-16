@@ -62,6 +62,69 @@ test.describe('Game 12 - Sudoku Vui Vẻ', () => {
     await expect(page.locator('#sudokuHints')).toHaveText('1');
   });
 
+  test('ghi chú bút chì trên bàn 9×9: ghi, hiển thị, tự xóa khi điền ô liên quan và giữ sau reload', async ({ page }) => {
+    const errors = collectRuntimeErrors(page);
+    await openGame(page);
+    await page.evaluate(() => window.BongGame12.newGame('cay', 2026));
+
+    const notesButton = page.locator('#sudokuNotes');
+    await expect(notesButton).toBeVisible();
+    await expect(page.locator('#sudokuNotesTip')).toBeVisible();
+
+    const state = await page.evaluate(() => window.BongGame12.getState());
+    const empties = state.givens.map((value, index) => (value ? -1 : index)).filter((index) => index >= 0);
+    const target = empties[0];
+    const row = Math.floor(target / 9);
+    const peer = empties.find((index) => index !== target && Math.floor(index / 9) === row);
+    const noteValue = state.solution[peer];
+
+    await notesButton.click();
+    await expect(notesButton).toHaveAttribute('aria-pressed', 'true');
+    await page.locator(`#sudokuCell${target}`).click();
+    await page.locator(`.sudoku-key[data-value="${noteValue}"]`).click();
+    const other = noteValue === 9 ? 1 : noteValue + 1;
+    await page.keyboard.press(String(other));
+
+    const targetCell = page.locator(`#sudokuCell${target}`);
+    await expect(targetCell).toHaveClass(/has-notes/);
+    await expect(targetCell.locator('.sudoku-notes span')).toHaveCount(9);
+    await expect(targetCell).toHaveAttribute('aria-label', /ghi chú/);
+    let current = await page.evaluate(() => window.BongGame12.getState());
+    expect(current.values[target]).toBe(0);
+    expect(current.notes[target]).toBe((1 << (noteValue - 1)) | (1 << (other - 1)));
+
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(window.BongGame12));
+    current = await page.evaluate(() => window.BongGame12.getState());
+    expect(current.levelId).toBe('cay');
+    expect(current.notesMode).toBe(false);
+    expect(current.notes[target]).toBe((1 << (noteValue - 1)) | (1 << (other - 1)));
+
+    await page.locator(`#sudokuCell${peer}`).click();
+    await page.keyboard.press(String(noteValue));
+    current = await page.evaluate(() => window.BongGame12.getState());
+    expect(current.values[peer]).toBe(noteValue);
+    expect(current.notes[target]).toBe(1 << (other - 1));
+
+    await page.locator(`#sudokuCell${target}`).click();
+    await page.keyboard.press('n');
+    await expect(notesButton).toHaveAttribute('aria-pressed', 'true');
+    await page.locator('#sudokuErase').click();
+    current = await page.evaluate(() => window.BongGame12.getState());
+    expect(current.notes[target]).toBe(0);
+    await expect(targetCell).not.toHaveClass(/has-notes/);
+    expect(errors).toEqual([]);
+  });
+
+  test('bàn 4×4 không hiện nút ghi chú', async ({ page }) => {
+    await openGame(page);
+    await page.locator('.sudoku-level[data-level="mam"]').click();
+    await expect(page.locator('#sudokuNotes')).toBeHidden();
+    await expect(page.locator('#sudokuNotesTip')).toBeHidden();
+    await page.keyboard.press('n');
+    expect((await page.evaluate(() => window.BongGame12.getState())).notesMode).toBe(false);
+  });
+
   test('giữ tiến độ khi tải lại trang', async ({ page }) => {
     await openGame(page);
     await page.evaluate(() => window.BongGame12.newGame('choi', 12345));

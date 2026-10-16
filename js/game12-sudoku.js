@@ -165,7 +165,7 @@
     levels: [
       { id: 'mam', label: '🌱 Mầm', size: 4, boxRows: 2, boxCols: 2, givens: 8, symbols: ['🍎', '🍌', '🍇', '🍓'], symbolNames: ['Táo', 'Chuối', 'Nho', 'Dâu'] },
       { id: 'choi', label: '🌿 Chồi', size: 6, boxRows: 2, boxCols: 3, givens: 18, symbols: ['1', '2', '3', '4', '5', '6'] },
-      { id: 'cay', label: '🌳 Cây', size: 9, boxRows: 3, boxCols: 3, givens: 38, symbols: ['1', '2', '3', '4', '5', '6', '7', '8', '9'] }
+      { id: 'cay', label: '🌳 Cây', size: 9, boxRows: 3, boxCols: 3, givens: 38, notes: true, symbols: ['1', '2', '3', '4', '5', '6', '7', '8', '9'] }
     ]
   };
 
@@ -176,6 +176,8 @@
     givens: [],
     solution: [],
     values: [],
+    notes: [],
+    notesMode: false,
     selected: -1,
     hints: 0,
     solved: false,
@@ -243,6 +245,7 @@
       givens: state.givens,
       solution: state.solution,
       values: state.values,
+      notes: state.notes,
       hints: state.hints
     };
     try { root.localStorage.setItem(SAVE_KEY, JSON.stringify(state.saved)); }
@@ -255,7 +258,46 @@
       && list.every((value) => Number.isInteger(value) && value >= 0 && value <= level.size);
     if (!entry || !okArray(entry.givens) || !okArray(entry.solution) || !okArray(entry.values)) return false;
     if (!entry.solution.every(Boolean)) return false;
+    if (entry.notes !== undefined && !isValidNotes(entry.notes, level)) return false;
     return entry.givens.every((value, index) => !value || (value === entry.solution[index] && entry.values[index] === value));
+  }
+
+  function isValidNotes(notes, level) {
+    const max = (1 << level.size) - 1;
+    return Array.isArray(notes) && notes.length === level.size * level.size
+      && notes.every((mask) => Number.isInteger(mask) && mask >= 0 && mask <= max);
+  }
+
+  function notesEnabled() {
+    return state.level?.notes === true;
+  }
+
+  function noteValues(mask) {
+    const values = [];
+    for (let value = 1; value <= state.level.size; value += 1) if (mask & (1 << (value - 1))) values.push(value);
+    return values;
+  }
+
+  function clearPeerNotes(index, value) {
+    const bit = 1 << (value - 1);
+    for (const peer of state.layout.peers[index]) state.notes[peer] &= ~bit;
+  }
+
+  function setNotesMode(enabled, { rerender = true } = {}) {
+    state.notesMode = Boolean(enabled) && notesEnabled();
+    els.notesButton.classList.toggle('active', state.notesMode);
+    els.notesButton.setAttribute('aria-pressed', state.notesMode ? 'true' : 'false');
+    els.notesButton.setAttribute('aria-label', state.notesMode ? 'Tắt ghi chú bút chì' : 'Bật ghi chú bút chì');
+    els.pad.classList.toggle('notes-mode', state.notesMode);
+    if (rerender) render();
+  }
+
+  function toggleNotesMode() {
+    if (!notesEnabled()) return;
+    setNotesMode(!state.notesMode);
+    announce(state.notesMode
+      ? '✏️ Đang ghi chú: chạm số để viết số nhỏ vào ô, chạm lại để xóa.'
+      : 'Đã tắt ghi chú, chạm số để điền thật.');
   }
 
   function normalizeContent(content) {
@@ -279,6 +321,7 @@
       state.givens = savedEntry.givens.slice();
       state.solution = savedEntry.solution.slice();
       state.values = savedEntry.values.slice();
+      state.notes = Array.isArray(savedEntry.notes) ? savedEntry.notes.slice() : new Array(level.size * level.size).fill(0);
       state.hints = Number.isInteger(savedEntry.hints) ? savedEntry.hints : 0;
     } else {
       const puzzleSeed = Number.isFinite(seed) ? seed : (Date.now() ^ Math.floor(Math.random() * 0xffffffff));
@@ -286,12 +329,16 @@
       state.givens = puzzle.slice();
       state.solution = solution;
       state.values = puzzle.slice();
+      state.notes = new Array(level.size * level.size).fill(0);
       state.hints = 0;
     }
 
     state.solved = false;
     state.selected = state.values.findIndex((value) => !value);
     hideWin();
+    els.notesButton.hidden = !notesEnabled();
+    els.notesTip.hidden = !notesEnabled();
+    setNotesMode(false, { rerender: false });
     buildLevels();
     buildBoard();
     buildPad();
@@ -383,7 +430,21 @@
         row === selRow || col === selCol
         || (Math.floor(row / boxRows) === Math.floor(selRow / boxRows) && Math.floor(col / boxCols) === Math.floor(selCol / boxCols))
       );
-      cell.textContent = symbolOf(value);
+      const notes = !value && notesEnabled() ? noteValues(state.notes[index]) : [];
+      if (notes.length) {
+        const grid = document.createElement('span');
+        grid.className = 'sudoku-notes';
+        grid.setAttribute('aria-hidden', 'true');
+        for (let note = 1; note <= size; note += 1) {
+          const mark = document.createElement('span');
+          mark.textContent = notes.includes(note) ? symbolOf(note) : '';
+          grid.appendChild(mark);
+        }
+        cell.replaceChildren(grid);
+      } else {
+        cell.textContent = symbolOf(value);
+      }
+      cell.classList.toggle('has-notes', notes.length > 0);
       cell.classList.toggle('given', given);
       cell.classList.toggle('filled', Boolean(value) && !given);
       cell.classList.toggle('selected', index === selected);
@@ -392,7 +453,8 @@
       cell.classList.toggle('conflict', conflicts.has(index));
       cell.setAttribute('aria-selected', index === selected ? 'true' : 'false');
       cell.setAttribute('aria-readonly', given ? 'true' : 'false');
-      cell.setAttribute('aria-label', `Hàng ${row + 1}, cột ${col + 1}: ${spokenSymbol(value)}${given ? ', có sẵn' : ''}${conflicts.has(index) ? ', đang bị trùng' : ''}`);
+      const notesLabel = notes.length ? `, ghi chú ${notes.map(spokenSymbol).join(', ')}` : '';
+      cell.setAttribute('aria-label', `Hàng ${row + 1}, cột ${col + 1}: ${spokenSymbol(value)}${notesLabel}${given ? ', có sẵn' : ''}${conflicts.has(index) ? ', đang bị trùng' : ''}`);
     });
 
     if (selected >= 0) els.board.setAttribute('aria-activedescendant', `sudokuCell${selected}`);
@@ -406,7 +468,9 @@
       button.classList.toggle('done', remaining === 0);
       button.classList.toggle('current', value === selectedValue);
       button.querySelector('.sudoku-key-count').textContent = remaining ? String(remaining) : '✓';
-      button.setAttribute('aria-label', `Điền ${spokenSymbol(value)}, còn ${remaining} chỗ`);
+      button.setAttribute('aria-label', state.notesMode
+        ? `Ghi chú ${spokenSymbol(value)}`
+        : `Điền ${spokenSymbol(value)}, còn ${remaining} chỗ`);
     });
 
     els.left.textContent = String(counts[0]);
@@ -435,7 +499,15 @@
       render();
       return;
     }
+    if (state.notesMode) {
+      toggleNote(index, value);
+      return;
+    }
     state.values[index] = state.values[index] === value ? 0 : value;
+    if (state.values[index]) {
+      state.notes[index] = 0;
+      clearPeerNotes(index, value);
+    }
     const conflicts = findConflicts(state.values, state.layout);
     if (state.values[index] && conflicts.has(index)) {
       announce(`${spokenSymbol(value)} bị trùng trong hàng, cột hoặc ô vuông rồi. Bé thử hình khác nhé!`);
@@ -447,13 +519,24 @@
     afterChange();
   }
 
+  function toggleNote(index, value) {
+    if (state.values[index]) {
+      announce('Ô này đã có số rồi. Xóa số trước khi ghi chú nhé.');
+      return;
+    }
+    state.notes[index] ^= 1 << (value - 1);
+    render();
+    persist();
+  }
+
   function eraseSelected() {
     if (state.solved || state.selected < 0) return;
     if (state.givens[state.selected]) {
       announce('Ô có sẵn thì không xóa được nhé.');
       return;
     }
-    state.values[state.selected] = 0;
+    if (state.values[state.selected]) state.values[state.selected] = 0;
+    else state.notes[state.selected] = 0;
     afterChange();
   }
 
@@ -464,6 +547,8 @@
     if (index === -1) index = state.values.findIndex((_, i) => needsHelp(i));
     if (index === -1) return;
     state.values[index] = state.solution[index];
+    state.notes[index] = 0;
+    clearPeerNotes(index, state.solution[index]);
     state.selected = index;
     state.hints += 1;
     announce(`Gợi ý: ô này là ${spokenSymbol(state.solution[index])}.`);
@@ -486,6 +571,7 @@
 
   function restartPuzzle() {
     state.values = state.givens.slice();
+    state.notes = new Array(state.values.length).fill(0);
     state.hints = 0;
     state.solved = false;
     state.selected = state.values.findIndex((value) => !value);
@@ -551,6 +637,11 @@
       placeValue(digit);
       return;
     }
+    if (event.key === 'n' || event.key === 'N') {
+      event.preventDefault();
+      toggleNotesMode();
+      return;
+    }
     if (event.key === 'Backspace' || event.key === 'Delete' || event.key === '0') {
       event.preventDefault();
       eraseSelected();
@@ -580,6 +671,9 @@
         givens: state.givens.slice(),
         solution: state.solution.slice(),
         values: state.values.slice(),
+        notes: state.notes.slice(),
+        notesMode: state.notesMode,
+        notesEnabled: notesEnabled(),
         selected: state.selected,
         hints: state.hints,
         solved: state.solved
@@ -588,7 +682,8 @@
       select,
       place: placeValue,
       erase: eraseSelected,
-      hint: giveHint
+      hint: giveHint,
+      toggleNotes: toggleNotesMode
     });
   }
 
@@ -603,12 +698,15 @@
       win: document.getElementById('sudokuWin'),
       winStars: document.getElementById('sudokuWinStars'),
       winText: document.getElementById('sudokuWinText'),
-      winNext: document.getElementById('sudokuWinNext')
+      winNext: document.getElementById('sudokuWinNext'),
+      notesButton: document.getElementById('sudokuNotes'),
+      notesTip: document.getElementById('sudokuNotesTip')
     });
     if (!els.board) return;
 
     els.board.addEventListener('click', onBoardPointer);
     els.board.addEventListener('keydown', onKeyDown);
+    els.notesButton.addEventListener('click', toggleNotesMode);
     document.getElementById('sudokuErase').addEventListener('click', eraseSelected);
     document.getElementById('sudokuHint').addEventListener('click', giveHint);
     document.getElementById('sudokuCheck').addEventListener('click', checkBoard);
@@ -626,7 +724,7 @@
     });
     document.addEventListener('keydown', (event) => {
       if (event.target === els.board || event.target.closest?.('input, textarea, select, a, [role="dialog"]')) return;
-      if (/^[1-9]$/.test(event.key) || event.key === 'Backspace' || event.key === 'Delete') onKeyDown(event);
+      if (/^[1-9nN]$/.test(event.key) || event.key === 'Backspace' || event.key === 'Delete') onKeyDown(event);
     });
 
     fetch(CONTENT_URL)
