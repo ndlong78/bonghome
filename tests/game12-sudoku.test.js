@@ -9,6 +9,7 @@ const engine = require('../js/game12-sudoku.js');
 const content = JSON.parse(read('content/games/game12.json'));
 const html = read('game12.html');
 const style = read('css/game12-sudoku.css');
+const script = read('js/game12-sudoku.js');
 const sw = read('sw.js');
 const redirects = read('_redirects');
 const sharedUi = read('shared-ui.js');
@@ -62,6 +63,19 @@ autoTest('Game 12 có bàn grid, bảng chọn hình, công cụ và không gây
   assert.match(style, /--bh-touch-target/);
   assert.match(style, /prefers-reduced-motion:\s*reduce/);
   assert.match(style, /\.sudoku-row\s*\{\s*display:\s*contents;/);
+});
+
+autoTest('Game 12 có ghi chú bút chì cho bàn 9×9, cấu hình qua content', () => {
+  const notesLevels = content.levels.filter((level) => level.notes === true).map((level) => level.id);
+  assert.deepEqual(notesLevels, ['cay'], 'chỉ bàn 9×9 bật ghi chú');
+  assert.match(html, /id="sudokuNotes"[^>]*aria-pressed="false"[^>]*hidden/);
+  assert.match(html, /id="sudokuNotesTip"[^>]*hidden/);
+  assert.match(script, /clearPeerNotes/);
+  assert.match(script, /toggleNotesMode/);
+  assert.match(script, /isValidNotes/);
+  assert.match(script, /event\.key === 'n'/);
+  assert.match(style, /\.sudoku-notes\s*\{/);
+  assert.match(style, /\.sudoku-tool\[hidden\]\s*\{\s*display:\s*none;/);
 });
 
 autoTest('PWA precache, route và thẻ trang chủ có Game 12', () => {

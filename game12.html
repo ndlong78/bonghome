@@ -43,6 +43,7 @@
     <div class="sudoku-pad" id="sudokuPad" role="group" aria-label="Chọn hình để điền"></div>
 
     <div class="sudoku-tools" role="group" aria-label="Công cụ">
+      <button class="sudoku-tool sudoku-tool-notes" id="sudokuNotes" type="button" aria-pressed="false" aria-label="Bật ghi chú bút chì" hidden>✏️<span>Ghi chú</span></button>
       <button class="sudoku-tool" id="sudokuErase" type="button" aria-label="Xóa ô đang chọn">🧽<span>Xóa</span></button>
       <button class="sudoku-tool" id="sudokuHint" type="button" aria-label="Gợi ý cho ô đang chọn">💡<span>Gợi ý</span></button>
       <button class="sudoku-tool" id="sudokuCheck" type="button" aria-label="Kiểm tra bài">🔍<span>Kiểm tra</span></button>
@@ -51,6 +52,7 @@
 
     <div class="game12-status" id="sudokuStatus" role="status" aria-live="polite"></div>
     <p class="game12-tip">Không có đồng hồ đếm ngược — bé cứ suy nghĩ thong thả. Ô tô màu hồng là ô đang bị trùng hình.</p>
+    <p class="game12-tip" id="sudokuNotesTip" hidden>✏️ Bàn 9×9: bật <b>Ghi chú</b> (hoặc phím N) để viết số nhỏ đang phân vân vào ô; điền số thật thì ghi chú cùng hàng, cột, khối tự xóa.</p>
   </main>
 
   <div class="sudoku-win" id="sudokuWin" hidden>

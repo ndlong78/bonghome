@@ -238,7 +238,8 @@
 
 .sudoku-tools {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: 8px;
   width: min(92vw, 480px);
   margin: 12px auto 0;
@@ -263,6 +264,41 @@
 }
 
 .sudoku-tool span { font-size: 12px; line-height: 1; }
+.sudoku-tool[hidden] { display: none; }
+
+.sudoku-tool-notes.active {
+  background: #e8ddff;
+  color: #5b3b66;
+  box-shadow: inset 0 0 0 3px #a889f4, var(--bh-shadow-button, 0 5px 0 rgba(0, 0, 0, 0.12));
+}
+
+.sudoku-pad.notes-mode .sudoku-key {
+  background: #f6f1ff;
+  color: #7a5fb0;
+  font-size: 20px;
+  box-shadow: inset 0 0 0 2px #c9b6f5, var(--bh-shadow-button, 0 5px 0 rgba(0, 0, 0, 0.12));
+}
+
+.sudoku-notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  padding: 1px;
+  box-sizing: border-box;
+  color: #8a6fbf;
+  font-size: calc(min(92vw, 480px) / 9 * 0.27);
+  font-weight: 800;
+  line-height: 1;
+}
+
+.sudoku-notes span {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+}
 
 .game12-status {
   min-height: 46px;
