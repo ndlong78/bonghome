@@ -254,7 +254,7 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     expect(errors).toEqual([]);
   });
 
-  test('trang chủ có bảng Game 11 và nội dung được cập nhật thành 11 lớp học', async ({ page }) => {
+  test('trang chủ có bảng Game 11 và nội dung được cập nhật số lớp học', async ({ page }) => {
     const errors = collectRuntimeErrors(page);
     await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
 
@@ -262,7 +262,7 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     await expect(card).toBeVisible();
     await expect(card).toHaveAttribute('href', 'game11.html');
     await expect(card).toContainText('Xếp Khối Thông Minh');
-    await expect(page.locator('.phu-de')).toContainText('11 lớp học');
+    await expect(page.locator('.phu-de')).toContainText('12 lớp học');
     expect(errors).toEqual([]);
   });
 
