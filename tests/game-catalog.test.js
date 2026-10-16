@@ -24,12 +24,13 @@ const expectedTitles = [
 ];
 
 assert.equal(catalog.schemaVersion, 1);
-assert.equal(catalog.games.length, 10);
-assert.deepEqual(catalog.games.map((game) => game.id), expectedTitles.map((_, index) => `game${index + 1}`));
-assert.deepEqual(catalog.games.map((game) => game.title), expectedTitles);
+const expectedIds = [...expectedTitles.map((_, index) => `game${index + 1}`), 'game12'];
+assert.equal(catalog.games.length, 11);
+assert.deepEqual(catalog.games.map((game) => game.id), expectedIds);
+assert.deepEqual(catalog.games.map((game) => game.title), [...expectedTitles, 'Sudoku Vui Vẻ']);
 assert.deepEqual(
   catalog.games.filter((game) => game.rewardsEnabled).map((game) => game.id),
-  expectedTitles.map((_, index) => `game${index + 1}`)
+  expectedIds
 );
 assert.ok(loader.includes("fetchJson('./content/games/index.json')"));
 assert.ok(loader.includes("fetchJson('./content/rewards/catalog.json')"));

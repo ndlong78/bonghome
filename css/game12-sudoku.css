@@ -348,6 +348,16 @@
 .sudoku-win-card p { margin: 0 0 16px; font-weight: 700; line-height: 1.4; }
 .sudoku-win-stars { font-size: 40px; letter-spacing: 4px; }
 
+.sudoku-win-rewards {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: var(--bh-radius-md, 18px);
+  background: var(--bh-color-warning-bg, #fff8e7);
+}
+
+.sudoku-win-rewards[hidden] { display: none; }
+.sudoku-win-rewards p { margin: 4px 0; font-weight: 800; }
+
 .sudoku-win-next {
   min-height: 52px;
   padding: 10px 22px;
