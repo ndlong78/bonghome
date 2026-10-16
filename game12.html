@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Sudoku Vui Vẻ – Bông Home's</title>
+  <meta name="description" content="Sudoku Vui Vẻ – điền hình và số sao cho mỗi hàng, mỗi cột, mỗi ô vuông không trùng nhau. Có bàn 4×4, 6×6 và 9×9.">
+  <link rel="canonical" href="https://bong.no.id.vn/game12.html">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#FFF7F0">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Bông Home's">
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/game12-sudoku.css">
+  <script src="./shared-ui.js" defer></script>
+  <script src="./js/game12-sudoku.js" defer></script>
+</head>
+<body class="game12-page">
+  <main class="game12-shell">
+    <div class="game12-topbar">
+      <a class="game12-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
+      <h1 class="game12-heading">🔢 Sudoku Vui Vẻ</h1>
+      <button class="game12-new" id="sudokuNew" type="button" aria-label="Tạo đề mới">✨ Đề mới</button>
+    </div>
+
+    <p class="game12-intro">Điền vào ô trống sao cho mỗi <b>hàng</b>, mỗi <b>cột</b> và mỗi <b>ô vuông đậm</b> đều có đủ các hình, không hình nào lặp lại. Chạm một ô rồi chọn hình ở bên dưới nhé!</p>
+
+    <div class="sudoku-levels" id="sudokuLevels" role="group" aria-label="Chọn cỡ bàn"></div>
+
+    <div class="game12-info-row">
+      <div class="game12-chip" aria-label="Số ô còn trống">🧩 Còn trống: <span id="sudokuLeft">0</span></div>
+      <div class="game12-chip" aria-label="Số lần dùng gợi ý">💡 Gợi ý: <span id="sudokuHints">0</span></div>
+    </div>
+
+    <section class="sudoku-board-wrap" aria-label="Bàn Sudoku">
+      <div class="sudoku-board" id="sudokuBoard" role="grid" tabindex="0" aria-label="Bàn Sudoku. Dùng phím mũi tên để chọn ô, gõ số để điền, phím Xóa để xóa."></div>
+    </section>
+
+    <div class="sudoku-pad" id="sudokuPad" role="group" aria-label="Chọn hình để điền"></div>
+
+    <div class="sudoku-tools" role="group" aria-label="Công cụ">
+      <button class="sudoku-tool" id="sudokuErase" type="button" aria-label="Xóa ô đang chọn">🧽<span>Xóa</span></button>
+      <button class="sudoku-tool" id="sudokuHint" type="button" aria-label="Gợi ý cho ô đang chọn">💡<span>Gợi ý</span></button>
+      <button class="sudoku-tool" id="sudokuCheck" type="button" aria-label="Kiểm tra bài">🔍<span>Kiểm tra</span></button>
+      <button class="sudoku-tool" id="sudokuRestart" type="button" aria-label="Làm lại đề này">↺<span>Làm lại</span></button>
+    </div>
+
+    <div class="game12-status" id="sudokuStatus" role="status" aria-live="polite"></div>
+    <p class="game12-tip">Không có đồng hồ đếm ngược — bé cứ suy nghĩ thong thả. Ô tô màu hồng là ô đang bị trùng hình.</p>
+  </main>
+
+  <div class="sudoku-win" id="sudokuWin" hidden>
+    <div class="sudoku-win-card" role="dialog" aria-modal="true" aria-labelledby="sudokuWinTitle">
+      <div class="sudoku-win-stars" id="sudokuWinStars" aria-hidden="true">⭐⭐⭐</div>
+      <h2 id="sudokuWinTitle">Bé giỏi quá!</h2>
+      <p id="sudokuWinText">Bé đã hoàn thành bàn Sudoku.</p>
+      <button class="sudoku-win-next" id="sudokuWinNext" type="button">✨ Chơi đề mới</button>
+    </div>
+  </div>
+</body>
+</html>

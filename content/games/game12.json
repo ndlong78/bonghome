@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "defaultLevelId": "mam",
+  "levels": [
+    {
+      "id": "mam",
+      "label": "🌱 Mầm",
+      "description": "Bàn 4×4 với hình trái cây",
+      "size": 4,
+      "boxRows": 2,
+      "boxCols": 2,
+      "givens": 8,
+      "symbols": ["🍎", "🍌", "🍇", "🍓"],
+      "symbolNames": ["Táo", "Chuối", "Nho", "Dâu"]
+    },
+    {
+      "id": "choi",
+      "label": "🌿 Chồi",
+      "description": "Bàn 6×6 với số 1 đến 6",
+      "size": 6,
+      "boxRows": 2,
+      "boxCols": 3,
+      "givens": 18,
+      "symbols": ["1", "2", "3", "4", "5", "6"]
+    },
+    {
+      "id": "cay",
+      "label": "🌳 Cây",
+      "description": "Bàn 9×9 cổ điển cho cả nhà",
+      "size": 9,
+      "boxRows": 3,
+      "boxCols": 3,
+      "givens": 38,
+      "symbols": ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    }
+  ]
+}

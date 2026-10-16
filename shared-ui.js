@@ -259,7 +259,9 @@
   function loadHomeGame11Card() {
     if (!isHome()) return;
     loadSharedScript('./js/game11-home-card.js', 'data-bh-game11-home-card')
-      .catch((error) => console.warn('[Bông Home] Không tải được bảng Game 11', error));
+      .catch((error) => console.warn('[Bông Home] Không tải được bảng Game 11', error))
+      .then(() => loadSharedScript('./js/game12-home-card.js', 'data-bh-game12-home-card'))
+      .catch((error) => console.warn('[Bông Home] Không tải được bảng Game 12', error));
   }
 
   function addSoundButton() {
