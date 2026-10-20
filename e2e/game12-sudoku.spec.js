@@ -37,6 +37,58 @@ test.describe('Game 12 - Sudoku Vui Vẻ', () => {
     expect(errors).toEqual([]);
   });
 
+  test('thắng ván ghi sao + sticker, hiện trong Góc phụ huynh và Bộ sưu tập', async ({ page }) => {
+    const errors = collectRuntimeErrors(page);
+    await page.addInitScript(() => {
+      if (!sessionStorage.getItem('bh-test-cleared')) {
+        localStorage.clear();
+        sessionStorage.setItem('bh-test-cleared', '1');
+      }
+    });
+    await openGame(page);
+    await page.waitForFunction(() => window.BongGame12RewardsReady);
+    await page.evaluate(() => window.BongGame12.newGame('cay', 77));
+
+    const { givens, solution } = await page.evaluate(() => window.BongGame12.getState());
+    const empties = givens.map((value, index) => (value ? -1 : index)).filter((index) => index >= 0);
+    await page.evaluate(([index, value]) => { window.BongGame12.select(index); window.BongGame12.place(value); }, [empties[0], solution[empties[0]]]);
+    await expect.poll(() => page.evaluate(() => window.BongProgress.getSummary().inProgress)).toBe(1);
+
+    await page.evaluate((cells) => {
+      cells.forEach(([index, value]) => { window.BongGame12.select(index); window.BongGame12.place(value); });
+    }, empties.slice(1).map((index) => [index, solution[index]]));
+
+    await expect(page.locator('#sudokuWin')).toBeVisible();
+    const rewardsBox = page.locator('#sudokuWinRewards');
+    await expect(rewardsBox).toBeVisible();
+    await expect(rewardsBox).toContainText('⭐ Bé nhận 3 sao');
+    await expect(rewardsBox).toContainText('Cú mèo thông thái');
+    await expect(rewardsBox).toContainText('Bậc thầy Sudoku');
+
+    const summary = await page.evaluate(() => ({
+      progress: window.BongProgress.getSummary(),
+      rewards: window.BongRewards.getSummary()
+    }));
+    expect(summary.progress.byGame.game12).toBe(1);
+    expect(summary.progress.inProgress).toBe(0);
+    expect(summary.rewards.stars).toBe(3);
+    expect(summary.rewards.stickerIds).toContain('wise-owl');
+    expect(summary.rewards.badgeIds).toContain('sudoku-master');
+
+    await page.goto('/parents.html', { waitUntil: 'domcontentloaded' });
+    const row = page.locator('.bh-parent-game-row', { hasText: 'Sudoku Vui Vẻ' });
+    await expect(row).toBeVisible();
+    await expect(row).toContainText('1 lượt hoàn thành');
+    await expect(row).toContainText('⭐ 3 sao');
+    await expect(row).toContainText('🦉 Cú mèo thông thái');
+    await expect(row).toContainText('🎓 Bậc thầy Sudoku');
+
+    await page.goto('/collection.html', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByText('Cú mèo thông thái')).toBeVisible();
+    await expect(page.getByText('Bậc thầy Sudoku')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
   test('báo ô trùng, gợi ý và bàn phím hoạt động trên bàn 9×9', async ({ page }) => {
     await openGame(page);
     await page.locator('.sudoku-level[data-level="cay"]').click();

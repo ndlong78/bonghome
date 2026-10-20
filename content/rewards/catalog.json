@@ -10,13 +10,15 @@
     { "id": "bright-idea", "name": "Bóng đèn thông minh", "icon": "💡" },
     { "id": "explorer-compass", "name": "La bàn khám phá", "icon": "🧭" },
     { "id": "story-book", "name": "Cuốn sách kể chuyện", "icon": "📖" },
-    { "id": "happy-note", "name": "Nốt nhạc vui", "icon": "🎵" }
+    { "id": "happy-note", "name": "Nốt nhạc vui", "icon": "🎵" },
+    { "id": "wise-owl", "name": "Cú mèo thông thái", "icon": "🦉" }
   ],
   "badges": [
     { "id": "first-finish", "name": "Lần đầu hoàn thành", "icon": "🎈" },
     { "id": "curious-learner", "name": "Bé ham khám phá", "icon": "🔎" },
     { "id": "memory-friend", "name": "Bạn của trí nhớ", "icon": "🧠" },
     { "id": "thinking-kid", "name": "Bé tư duy", "icon": "🧠" },
-    { "id": "conqueror-kid", "name": "Bé chinh phục", "icon": "🏆" }
+    { "id": "conqueror-kid", "name": "Bé chinh phục", "icon": "🏆" },
+    { "id": "sudoku-master", "name": "Bậc thầy Sudoku", "icon": "🎓" }
   ]
 }

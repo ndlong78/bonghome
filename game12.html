@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="./css/design-tokens.css">
   <link rel="stylesheet" href="./css/game12-sudoku.css">
   <script src="./shared-ui.js" defer></script>
+  <script src="./js/game12-rewards.js" defer></script>
   <script src="./js/game12-sudoku.js" defer></script>
 </head>
 <body class="game12-page">
@@ -60,6 +61,7 @@
       <div class="sudoku-win-stars" id="sudokuWinStars" aria-hidden="true">⭐⭐⭐</div>
       <h2 id="sudokuWinTitle">Bé giỏi quá!</h2>
       <p id="sudokuWinText">Bé đã hoàn thành bàn Sudoku.</p>
+      <div class="sudoku-win-rewards" id="sudokuWinRewards" role="status" aria-live="polite" aria-atomic="true" hidden></div>
       <button class="sudoku-win-next" id="sudokuWinNext" type="button">✨ Chơi đề mới</button>
     </div>
   </div>

@@ -180,6 +180,8 @@
     notesMode: false,
     selected: -1,
     hints: 0,
+    moves: 0,
+    startedAt: 0,
     solved: false,
     saved: {}
   };
@@ -246,10 +248,29 @@
       solution: state.solution,
       values: state.values,
       notes: state.notes,
-      hints: state.hints
+      hints: state.hints,
+      moves: state.moves,
+      startedAt: state.startedAt
     };
     try { root.localStorage.setItem(SAVE_KEY, JSON.stringify(state.saved)); }
     catch (error) { /* Storage bị chặn: vẫn chơi được trong phiên hiện tại. */ }
+    if (!state.solved && state.moves > 0) {
+      withRewards((api) => api.trackProgress({
+        levelId: state.level.id,
+        left: state.values.filter((value) => !value).length
+      }));
+    }
+  }
+
+  function withRewards(action) {
+    const ready = root.BongGame12RewardsReady;
+    if (!ready || typeof ready.then !== 'function') return Promise.resolve(null);
+    return ready
+      .then((api) => (api ? action(api) : null))
+      .catch((error) => {
+        console.warn('[Bông Home] Không ghi được tiến độ/phần thưởng Game 12', error);
+        return null;
+      });
   }
 
   function isValidSave(entry, level) {
@@ -323,6 +344,8 @@
       state.values = savedEntry.values.slice();
       state.notes = Array.isArray(savedEntry.notes) ? savedEntry.notes.slice() : new Array(level.size * level.size).fill(0);
       state.hints = Number.isInteger(savedEntry.hints) ? savedEntry.hints : 0;
+      state.moves = Number.isInteger(savedEntry.moves) && savedEntry.moves >= 0 ? savedEntry.moves : 0;
+      state.startedAt = Number.isFinite(savedEntry.startedAt) && savedEntry.startedAt > 0 ? savedEntry.startedAt : Date.now();
     } else {
       const puzzleSeed = Number.isFinite(seed) ? seed : (Date.now() ^ Math.floor(Math.random() * 0xffffffff));
       const { puzzle, solution } = generatePuzzle(level, puzzleSeed);
@@ -331,6 +354,8 @@
       state.values = puzzle.slice();
       state.notes = new Array(level.size * level.size).fill(0);
       state.hints = 0;
+      state.moves = 0;
+      state.startedAt = Date.now();
     }
 
     state.solved = false;
@@ -504,6 +529,7 @@
       return;
     }
     state.values[index] = state.values[index] === value ? 0 : value;
+    state.moves += 1;
     if (state.values[index]) {
       state.notes[index] = 0;
       clearPeerNotes(index, value);
@@ -573,6 +599,8 @@
     state.values = state.givens.slice();
     state.notes = new Array(state.values.length).fill(0);
     state.hints = 0;
+    state.moves = 0;
+    state.startedAt = Date.now();
     state.solved = false;
     state.selected = state.values.findIndex((value) => !value);
     hideWin();
@@ -608,6 +636,35 @@
     announce('Hoàn thành! Bé giỏi quá!');
     playTone([523, 659, 784, 1047], 0.14);
     root.setTimeout(() => els.winNext.focus(), 30);
+    awardCompletion(stars);
+  }
+
+  function awardCompletion(stars) {
+    if (els.winRewards) {
+      els.winRewards.replaceChildren();
+      els.winRewards.hidden = true;
+    }
+    const levelId = state.level.id;
+    const result = {
+      levelId,
+      givens: state.givens.slice(),
+      stars,
+      hints: state.hints,
+      moves: state.moves,
+      durationSeconds: state.startedAt ? Math.max(0, Math.round((Date.now() - state.startedAt) / 1000)) : null
+    };
+    return withRewards((api) => {
+      const detail = api.complete(result);
+      if (!detail || detail.duplicate || !els.winRewards || state.level.id !== levelId) return detail;
+      els.winRewards.replaceChildren(...api.rewardLines(detail).map((text, index) => {
+        const line = document.createElement('p');
+        line.className = index === 0 ? 'sudoku-reward-stars' : 'sudoku-reward-unlock';
+        line.textContent = text;
+        return line;
+      }));
+      els.winRewards.hidden = false;
+      return detail;
+    });
   }
 
   function hideWin() {
@@ -676,6 +733,7 @@
         notesEnabled: notesEnabled(),
         selected: state.selected,
         hints: state.hints,
+        moves: state.moves,
         solved: state.solved
       }),
       newGame: (levelId, seed) => startLevel(levelId || state.level.id, { seed, fresh: true }),
@@ -700,7 +758,8 @@
       winText: document.getElementById('sudokuWinText'),
       winNext: document.getElementById('sudokuWinNext'),
       notesButton: document.getElementById('sudokuNotes'),
-      notesTip: document.getElementById('sudokuNotesTip')
+      notesTip: document.getElementById('sudokuNotesTip'),
+      winRewards: document.getElementById('sudokuWinRewards')
     });
     if (!els.board) return;
 
