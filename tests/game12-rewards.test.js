@@ -50,7 +50,7 @@ autoTest('catalog có Game 12, sticker Cú mèo và huy hiệu Bậc thầy Sudo
 autoTest('progress và rewards nhận game12 nhưng vẫn từ chối id ngoài phạm vi', () => {
   const { progress, rewards } = setup();
   assert.doesNotThrow(() => progress.saveGame('game12', { state: {} }));
-  assert.throws(() => progress.saveGame('game13', { state: {} }), /gameId/);
+  assert.throws(() => progress.saveGame('game14', { state: {} }), /gameId/);
   rewards.unlockSticker('wise-owl', { source: 'game12-completion' });
   assert.deepEqual(rewards.getByGameSummary().game12.stickerIds, ['wise-owl']);
 });

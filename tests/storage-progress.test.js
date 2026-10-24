@@ -70,7 +70,7 @@ function adapter(initial = {}) {
   progress.saveGame('game2', { state: { found: [1] } });
   assert.equal(progress.clearGame('game2'), true);
   assert.equal(progress.clearGame('game2'), false);
-  assert.throws(() => progress.saveGame('game13', { state: {} }), /gameId/);
+  assert.throws(() => progress.saveGame('game14', { state: {} }), /gameId/);
 }
 
 console.log('Storage and progress tests passed.');

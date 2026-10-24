@@ -9,7 +9,7 @@
 
   const STORAGE_KEY = 'rewards';
   const SCHEMA_VERSION = 1;
-  const GAME_ID_PATTERN = /^game(?:1[0-2]|[1-9])$/;
+  const GAME_ID_PATTERN = /^game(?:1[0-3]|[1-9])$/;
   const clone = (value) => value == null ? value : JSON.parse(JSON.stringify(value));
   const emptyRewards = () => ({
     schemaVersion: SCHEMA_VERSION,
@@ -108,7 +108,7 @@
     const direct = metadata?.gameId;
     if (GAME_ID_PATTERN.test(direct || '')) return direct;
     const source = metadata?.source;
-    const match = typeof source === 'string' ? source.match(/^(game(?:1[0-2]|[1-9]))-completion$/) : null;
+    const match = typeof source === 'string' ? source.match(/^(game(?:1[0-3]|[1-9]))-completion$/) : null;
     return match ? match[1] : null;
   }
 

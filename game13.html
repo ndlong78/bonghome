@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Cờ Ca-rô Tí Hon – Bông Home's</title>
+  <meta name="description" content="Cờ Ca-rô Tí Hon – xếp ba hình thẳng hàng trên bàn 3×3. Chơi với Gấu Bông (Dễ, Vừa, Khó) hoặc chơi cùng bạn.">
+  <link rel="canonical" href="https://bong.no.id.vn/game13.html">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#FFF7F0">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Bông Home's">
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/game13-tictactoe.css">
+  <script src="./shared-ui.js" defer></script>
+  <script src="./js/game13-rewards.js" defer></script>
+  <script src="./js/game13-tictactoe.js" defer></script>
+</head>
+<body class="game13-page">
+  <main class="game13-shell">
+    <div class="game13-topbar">
+      <a class="game13-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
+      <h1 class="game13-heading">⭕ Cờ Ca-rô Tí Hon</h1>
+      <button class="game13-new" id="tttNew" type="button" aria-label="Bắt đầu ván mới">✨ Ván mới</button>
+    </div>
+
+    <p class="game13-intro">Bé và bạn thay phiên đặt hình vào bàn 3×3. Ai xếp được <b>ba hình thẳng hàng</b> — hàng ngang, hàng dọc hoặc đường chéo — là thắng!</p>
+
+    <div class="ttt-modes" id="tttModes" role="group" aria-label="Chọn người chơi cùng"></div>
+    <div class="ttt-levels" id="tttLevels" role="group" aria-label="Chọn độ khó của Gấu Bông"></div>
+
+    <div class="game13-info-row">
+      <div class="game13-chip game13-turn" aria-label="Lượt hiện tại">👉 Lượt: <span id="tttTurn">🌸 Bé</span></div>
+    </div>
+    <div class="ttt-score" aria-label="Tỉ số">
+      <div class="ttt-score-item ttt-score-player"><span id="tttScorePlayerLabel">🌸 Bé</span><b id="tttScorePlayer">0</b></div>
+      <div class="ttt-score-item ttt-score-draw"><span>🤝 Hòa</span><b id="tttScoreDraw">0</b></div>
+      <div class="ttt-score-item ttt-score-bot"><span id="tttScoreBotLabel">🐻 Gấu</span><b id="tttScoreBot">0</b></div>
+    </div>
+
+    <section class="ttt-board-wrap" aria-label="Bàn cờ">
+      <div class="ttt-board" id="tttBoard" role="group" aria-label="Bàn cờ 3×3. Dùng phím mũi tên để chọn ô, Enter để đặt hình, hoặc gõ số 1 đến 9."></div>
+    </section>
+
+    <div class="game13-status" id="tttStatus" role="status" aria-live="polite"></div>
+    <p class="game13-tip">Mẹo nhỏ: ô ở <b>giữa</b> và bốn <b>góc</b> nằm trên nhiều đường thẳng nhất. Nhớ chặn khi bạn sắp có ba hình nhé! Không có đồng hồ đếm ngược — bé cứ thong thả.</p>
+  </main>
+
+  <div class="ttt-win" id="tttWin" hidden>
+    <div class="ttt-win-card" role="dialog" aria-modal="true" aria-labelledby="tttWinTitle">
+      <div class="ttt-win-stars" id="tttWinStars" aria-hidden="true">⭐⭐⭐</div>
+      <h2 id="tttWinTitle">Bé thắng rồi!</h2>
+      <p id="tttWinText">Bé xếp được ba hình thẳng hàng.</p>
+      <div class="ttt-win-rewards" id="tttWinRewards" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+      <button class="ttt-win-next" id="tttWinNext" type="button">✨ Chơi ván mới</button>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "defaultLevelId": "de",
+  "defaultMode": "bot",
+  "marks": {
+    "player": { "symbol": "🌸", "name": "Hoa của bé" },
+    "bot": { "symbol": "🐻", "name": "Gấu Bông" }
+  },
+  "levels": [
+    {
+      "id": "de",
+      "label": "🌱 Dễ",
+      "description": "Gấu Bông còn hay đi nhầm",
+      "mistakeRate": 0.6,
+      "drawStars": 2
+    },
+    {
+      "id": "vua",
+      "label": "🌿 Vừa",
+      "description": "Gấu Bông biết chặn đường",
+      "mistakeRate": 0.2,
+      "blocks": true,
+      "drawStars": 2
+    },
+    {
+      "id": "kho",
+      "label": "🌳 Khó",
+      "description": "Gấu Bông không bao giờ đi nhầm — hòa là giỏi lắm rồi!",
+      "mistakeRate": 0,
+      "drawStars": 3
+    }
+  ]
+}

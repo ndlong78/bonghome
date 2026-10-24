@@ -261,7 +261,9 @@
     loadSharedScript('./js/game11-home-card.js', 'data-bh-game11-home-card')
       .catch((error) => console.warn('[Bông Home] Không tải được bảng Game 11', error))
       .then(() => loadSharedScript('./js/game12-home-card.js', 'data-bh-game12-home-card'))
-      .catch((error) => console.warn('[Bông Home] Không tải được bảng Game 12', error));
+      .catch((error) => console.warn('[Bông Home] Không tải được bảng Game 12', error))
+      .then(() => loadSharedScript('./js/game13-home-card.js', 'data-bh-game13-home-card'))
+      .catch((error) => console.warn('[Bông Home] Không tải được bảng Game 13', error));
   }
 
   function addSoundButton() {
