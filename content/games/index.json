@@ -11,6 +11,7 @@
     { "id": "game8", "title": "Mê Cung Về Nhà", "rewardsEnabled": true },
     { "id": "game9", "title": "Nghe Truyện Tìm Từ", "rewardsEnabled": true },
     { "id": "game10", "title": "Gõ Phím Theo Nhịp", "rewardsEnabled": true },
-    { "id": "game12", "title": "Sudoku Vui Vẻ", "rewardsEnabled": true }
+    { "id": "game12", "title": "Sudoku Vui Vẻ", "rewardsEnabled": true },
+    { "id": "game13", "title": "Cờ Ca-rô Tí Hon", "rewardsEnabled": true }
   ]
 }

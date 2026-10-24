@@ -195,7 +195,7 @@ test.describe('Game 12 - Sudoku Vui Vẻ', () => {
     expect(restored.values[empty]).toBe(state.solution[empty]);
   });
 
-  test('trang chủ có bảng Game 12 nằm sau Game 11 và ghi 12 lớp học', async ({ page }) => {
+  test('trang chủ có bảng Game 12 nằm sau Game 11 và trang chủ ghi số lớp học', async ({ page }) => {
     const errors = collectRuntimeErrors(page);
     await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
 
@@ -204,7 +204,7 @@ test.describe('Game 12 - Sudoku Vui Vẻ', () => {
     await expect(card).toHaveAttribute('href', 'game12.html');
     await expect(card).toContainText('Sudoku Vui Vẻ');
     await expect(page.locator('[data-game11-card] + [data-game12-card]')).toHaveCount(1);
-    await expect(page.locator('.phu-de')).toContainText('12 lớp học');
+    await expect(page.locator('.phu-de')).toContainText('13 lớp học');
     expect(errors).toEqual([]);
   });
 

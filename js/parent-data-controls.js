@@ -21,8 +21,8 @@
    * `bonghome:data`. Chúng vẫn là dữ liệu chơi của bé, phải bị xóa cùng lịch sử.
    */
   const RECORD_KEY_PATTERN = /^kyluc_/;
-  // Ván Sudoku đang chơi dở (Game 12) cũng nằm ngoài `bonghome:data`.
-  const RAW_PROGRESS_KEYS = Object.freeze(['bonghome_game12_sudoku']);
+  // Ván Sudoku (Game 12) và ván Ca-rô (Game 13) đang chơi dở cũng nằm ngoài `bonghome:data`.
+  const RAW_PROGRESS_KEYS = Object.freeze(['bonghome_game12_sudoku', 'bonghome_game13_tictactoe']);
   const isRecordKey = (key) => RECORD_KEY_PATTERN.test(key) || RAW_PROGRESS_KEYS.includes(key);
 
   const SCOPES = Object.freeze({

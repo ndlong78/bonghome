@@ -43,7 +43,7 @@ test('catalog validation accepts checked-in reward and avatar catalogs', () => {
   const api = createRewardCollection({});
   assert.equal(api.normalizeCatalog(rewardCatalog), rewardCatalog);
   assert.equal(api.normalizeAvatarCatalog(avatarCatalog), avatarCatalog);
-  assert.equal(rewardCatalog.stickers.length, 11);
+  assert.equal(rewardCatalog.stickers.length, 12);
   assert.ok(rewardCatalog.stickers.some((item) => item.id === 'wise-owl'));
   assert.ok(rewardCatalog.badges.some((item) => item.id === 'sudoku-master'));
   assert.ok(rewardCatalog.badges.length >= 5);

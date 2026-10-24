@@ -11,7 +11,8 @@
     { "id": "explorer-compass", "name": "La bàn khám phá", "icon": "🧭" },
     { "id": "story-book", "name": "Cuốn sách kể chuyện", "icon": "📖" },
     { "id": "happy-note", "name": "Nốt nhạc vui", "icon": "🎵" },
-    { "id": "wise-owl", "name": "Cú mèo thông thái", "icon": "🦉" }
+    { "id": "wise-owl", "name": "Cú mèo thông thái", "icon": "🦉" },
+    { "id": "clever-fox", "name": "Cáo tinh nhanh", "icon": "🦊" }
   ],
   "badges": [
     { "id": "first-finish", "name": "Lần đầu hoàn thành", "icon": "🎈" },
@@ -19,6 +20,7 @@
     { "id": "memory-friend", "name": "Bạn của trí nhớ", "icon": "🧠" },
     { "id": "thinking-kid", "name": "Bé tư duy", "icon": "🧠" },
     { "id": "conqueror-kid", "name": "Bé chinh phục", "icon": "🏆" },
-    { "id": "sudoku-master", "name": "Bậc thầy Sudoku", "icon": "🎓" }
+    { "id": "sudoku-master", "name": "Bậc thầy Sudoku", "icon": "🎓" },
+    { "id": "tictactoe-master", "name": "Kỳ thủ Ca-rô nhí", "icon": "🏅" }
   ]
 }
