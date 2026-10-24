@@ -30,7 +30,7 @@ assert.match(adapter, /progress\.saveGame\(gameId/);
 assert.match(adapter, /progress\.loadGame\(gameId\)/);
 assert.match(adapter, /progress\.completeGame\(gameId/);
 assert.match(adapter, /transactionId: `\$\{gameId\}-finish-\$\{sessionId\}`/);
-assert.match(adapter, /durationSeconds: giay/);
+assert.match(adapter, /durationSeconds: seconds\(\)/);
 assert.match(adapter, /MutationObserver/);
 assert.match(adapter, /pagehide/);
 assert.match(adapter, /visibilitychange/);
@@ -38,9 +38,6 @@ assert.match(adapter, /SAVE_INTERVAL_MS = 2000/);
 
 assert.match(adapter, /shapeIndex:/);
 assert.match(adapter, /position: viTri/);
-assert.match(adapter, /round: vong/);
-assert.match(adapter, /cells:/);
-assert.match(adapter, /selectedIndex:/);
 assert.match(adapter, /question: cau/);
 assert.match(adapter, /sequence:/);
 assert.match(adapter, /choices:/);
@@ -54,10 +51,15 @@ assert.match(sharedUi, /isGames2To4\(\) \|\| isGames5To7\(\)/);
 
 assert.match(game5, /let hinhHienTai=null, viTri=0, soSai=0, giay=0/);
 assert.match(game5, /function thangCuoc\(\)/);
-assert.match(game6, /let vong=0, daChon=null, khoa=false, soSai=0, giay=0/);
-assert.match(game6, /function dungVong\(\)/);
 assert.match(game7, /let cau=0, dungNgay=0, khoa=false, giay=0/);
 assert.match(game7, /function raCau\(\)/);
+
+// Game 6 đã tách engine: không còn script inline, adapter lưu ván qua window.BongGame6.
+assert.doesNotMatch(game6, /<script>/, 'game6.html không còn script inline');
+assert.ok(game6.indexOf('./js/game6-engine.js') > 0 && game6.indexOf('./js/game6-engine.js') < game6.indexOf('./js/game6-ui.js'));
+assert.match(adapter, /window\.BongGame6\.serialize\(sessionId\)/);
+assert.match(adapter, /window\.BongGame6\.restore\(state\)/);
+assert.ok(serviceWorker.includes('./js/game6-engine.js') && serviceWorker.includes('./js/game6-ui.js'), 'Game 6 phải có offline');
 
 assert.ok(serviceWorker.includes('./js/games5-7-autosave.js'), 'adapter must be cached offline');
 assert.ok(serviceWorker.includes('./css/games-autosave.css'), 'shared autosave CSS must stay cached');

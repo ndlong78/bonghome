@@ -6,22 +6,19 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const game6 = fs.readFileSync(path.join(root, 'game6.html'), 'utf8');
+const game6Engine = require('../js/game6-engine.js');
 const game7 = fs.readFileSync(path.join(root, 'game7.html'), 'utf8');
 
 const MIN_TARGET_PX = 44;
 const PHONE_WIDTH_PX = 390;
 
-function game6CellSize(viewportWidth, columns) {
-  return Math.min(96, Math.floor(Math.min(viewportWidth - 40, 720) / columns) - 10);
-}
-
-test('Game 6 keeps the densest six-column round above 44px on iPhone width', () => {
-  assert.match(game6, /const CAC_VONG\s*=\s*\[[\s\S]*?\{\s*o\s*:\s*30\s*,\s*cot\s*:\s*6\s*\}/);
-  assert.match(game6, /const rong\s*=\s*Math\.min\(96,\s*Math\.floor\(Math\.min\(innerWidth-40,\s*720\)\/c\.cot\)-10\)/);
-  assert.match(game6, /o\.style\.height\s*=\s*rong\+"px"/);
-  const minimumCell = game6CellSize(PHONE_WIDTH_PX, 6);
-  assert.ok(minimumCell >= MIN_TARGET_PX, `Ô Game 6 nhỏ nhất ${minimumCell}px, cần tối thiểu ${MIN_TARGET_PX}px`);
+test('Game 6 keeps every round above 44px on iPhone width', () => {
+  // Dùng đúng hàm cỡ ô và cấu hình vòng mà giao diện Game 6 dùng (js/game6-engine.js).
+  assert.deepEqual(game6Engine.ROUNDS.at(-1), { cells: 30, columns: 6 });
+  for (const round of game6Engine.ROUNDS) {
+    const size = game6Engine.cellSize(PHONE_WIDTH_PX, round.columns);
+    assert.ok(size >= MIN_TARGET_PX, `Ô Game 6 (${round.columns} cột) chỉ ${size}px, cần tối thiểu ${MIN_TARGET_PX}px`);
+  }
 });
 
 test('Game 7 keeps choices responsive and touch-friendly', () => {

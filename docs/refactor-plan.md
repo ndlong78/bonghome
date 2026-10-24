@@ -36,6 +36,19 @@ Một PR chỉ được merge khi đạt đủ các điều kiện sau:
 - [ ] Khóa `localStorage` không đổi, hoặc có chuyển đổi kèm test (`tests/storage-keys.test.js`).
 - [ ] Đổi `PHIEN_BAN`, và E2E trên iPhone/iPad (tương phản, vùng chạm, focus, live region) vẫn xanh.
 
+## Tiến độ
+
+| Game | Trạng thái | Ghi chú |
+|---|---|---|
+| 6 | ✅ Đã tách | `js/game6-engine.js` + `js/game6-ui.js`; `game6.html` không còn script inline; `tests/game6-engine.test.js`, `e2e/game6-gameplay.spec.js` |
+| 7, 5, 3, 4, 8, 10, 9, 2, 1 | Chưa làm | theo thứ tự ở trên |
+
+Ghi chú khi làm Game 6, áp dụng cho các game sau:
+- Giữ đúng định dạng bản lưu cũ (`serialize()` trả về cùng các trường). Unit test và E2E có một bản lưu dạng cũ để chắc ván đang chơi dở vẫn mở được.
+- Giữ nguyên id và class trong DOM. Các E2E sẵn có về tương phản, vùng chạm, thứ tự Tab, live region và offline nhờ vậy là lưới an toàn miễn phí.
+- Adapter dùng chung (`games5-7-autosave.js`) chỉ gọi API `window.BongGameN`. Phần dùng chung lấy hộp thoại thắng theo id, không dùng biến toàn cục.
+- Vẽ SVG bằng `createElementNS`, không dùng `innerHTML`.
+
 ## Quy tắc cho test, áp dụng ngay
 
 - **Test mới** kiểm tra hành vi: gọi hàm hoặc module thật, hoặc chạy E2E. Không thêm `assert.match(source, /…/)` cho logic.
