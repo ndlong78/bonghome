@@ -159,15 +159,16 @@ async function cacheFirstPrecache(request) {
   return response;
 }
 
-async function staleWhileRevalidate(event) {
+function staleWhileRevalidate(event) {
   const { request } = event;
-  const cached = await caches.match(request);
   const network = fetch(request).then(async (response) => {
     await luuRuntime(request, response);
     return response;
   }).catch(() => null);
+  // Gọi waitUntil đồng bộ trong lúc dispatch sự kiện; cache được đọc song song với mạng.
   event.waitUntil(network);
-  return cached || (await network) || new Response("", { status: 503, statusText: "Không có mạng" });
+  return (async () => (await caches.match(request)) || (await network)
+    || new Response("", { status: 503, statusText: "Không có mạng" }))();
 }
 
 self.addEventListener("fetch", (event) => {
