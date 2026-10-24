@@ -28,7 +28,7 @@ module.exports = defineConfig({
     },
     {
       name: 'iPhone 13',
-      testIgnore: /desktop-smoke\.spec\.js/,
+      testIgnore: [/desktop-smoke\.spec\.js/, /version-upgrade\.spec\.js/],
       use: {
         viewport: { width: 390, height: 844 },
         deviceScaleFactor: 3,
@@ -38,7 +38,18 @@ module.exports = defineConfig({
     },
     {
       name: 'iPad Mini',
-      testIgnore: /desktop-smoke\.spec\.js/,
+      testIgnore: [/desktop-smoke\.spec\.js/, /version-upgrade\.spec\.js/],
+      use: {
+        viewport: { width: 768, height: 1024 },
+        deviceScaleFactor: 2,
+        isMobile: true,
+        hasTouch: true
+      }
+    },
+    {
+      // Nâng cấp từ bản phát hành trước: chạy một lần trên iPad, dùng máy chủ riêng trong spec.
+      name: 'iPad Upgrade',
+      testMatch: /version-upgrade\.spec\.js/,
       use: {
         viewport: { width: 768, height: 1024 },
         deviceScaleFactor: 2,
