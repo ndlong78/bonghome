@@ -122,7 +122,9 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Run mobile E2E tests
-        run: npm run test:e2e
+        run: |
+          echo "git before E2E: shallow=$(git rev-parse --is-shallow-repository) commits=$(git rev-list --count HEAD) git-dir=$(git rev-parse --absolute-git-dir)"
+          npm run test:e2e
 
       - name: Upload Playwright report
         if: failure()

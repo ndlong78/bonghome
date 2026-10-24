@@ -116,10 +116,21 @@ test.describe('Nâng cấp phiên bản trên thiết bị đã có dữ liệu 
   test.beforeAll(async () => {
     previous = findPreviousRelease(currentVersion);
     if (!previous) {
-      let shallow = 'unknown';
-      try { shallow = git('rev-parse', '--is-shallow-repository'); } catch (error) { /* Không phải repo git. */ }
+      const probe = (...args) => { try { return git(...args); } catch (error) { return `ERR ${error.message.split('\n')[0]}`; } };
+      const shallow = probe('rev-parse', '--is-shallow-repository');
+      const diagnostics = {
+        cwd: process.cwd(),
+        root: ROOT,
+        gitDir: probe('rev-parse', '--absolute-git-dir'),
+        toplevel: probe('rev-parse', '--show-toplevel'),
+        head: probe('log', '-3', '--format=%h %p %s', 'HEAD'),
+        commitCount: probe('rev-list', '--count', 'HEAD'),
+        versionCommits: probe('log', '-G', 'const PHIEN_BAN', '--format=%h', '-3', 'HEAD', '--', 'sw.js'),
+        gitEnv: Object.keys(process.env).filter((key) => key.startsWith('GIT_')).join(',') || 'none'
+      };
       throw new Error(
         `Không tìm thấy bản phát hành trước ${currentVersion} trong lịch sử git (shallow=${shallow}). `
+        + `Chẩn đoán: ${JSON.stringify(diagnostics)}. `
         + 'Clone nông thì commit ở ranh giới không có commit cha: CI cần checkout fetch-depth: 0 '
         + 'và bước "Ensure full git history"; máy cục bộ chạy "git fetch --unshallow".'
       );
