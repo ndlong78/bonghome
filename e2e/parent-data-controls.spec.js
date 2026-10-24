@@ -35,7 +35,16 @@ async function openSeededParentPage(page) {
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'animals');
 }
 
+/** Trả lời cổng phụ huynh bằng chính câu hỏi đang hiện trong hộp thoại. */
+async function answerParentGate(page) {
+  const question = await page.locator('#parentGateQuestion').textContent();
+  const [left, right] = question.split('×').map((part) => Number(part.trim()));
+  await page.locator('#parentGateAnswer').fill(String(left * right));
+  await expect(page.locator('#parentDataConfirm')).toBeEnabled();
+}
+
 async function confirmAndWaitForReload(page) {
+  await answerParentGate(page);
   await Promise.all([
     page.waitForEvent('framenavigated', (frame) => frame === page.mainFrame()),
     page.locator('#parentDataConfirm').click()
@@ -90,4 +99,44 @@ test('xóa toàn bộ dữ liệu của bé nhưng giữ lựa chọn chủ đ�
   await expect(page.locator('#parentName')).toHaveText('Bông');
   await expect(page.locator('#completedCount')).toHaveText('0');
   await expect(page.locator('#starCount')).toHaveText('0');
+});
+
+test('cổng phụ huynh: nút xóa khóa đến khi trả lời đúng phép nhân', async ({ page }) => {
+  await openSeededParentPage(page);
+  await page.locator('[data-parent-delete="child"]').click();
+  const confirm = page.locator('#parentDataConfirm');
+  await expect(page.locator('#parentGateQuestion')).toHaveText(/^[6-9] × [6-9]$/);
+  await expect(confirm).toBeDisabled();
+
+  const question = await page.locator('#parentGateQuestion').textContent();
+  const [left, right] = question.split('×').map((part) => Number(part.trim()));
+  await page.locator('#parentGateAnswer').fill(String(left * right + 1));
+  await expect(confirm).toBeDisabled();
+  await expect(page.locator('#parentGateAnswer')).toHaveAttribute('aria-invalid', 'true');
+  await page.locator('#parentGateAnswer').press('Enter');
+  await confirm.click({ force: true }).catch(() => {});
+  await expect(page.locator('#parentDataDialog')).toBeVisible();
+
+  let document = await page.evaluate(() => JSON.parse(localStorage.getItem('bonghome:data')));
+  expect(document.data.rewards.stars).toBe(5);
+
+  // Hủy rồi mở lại: câu trả lời cũ bị xóa, nút lại khóa.
+  await page.locator('#parentDataCancel').click();
+  await page.locator('[data-parent-delete="child"]').click();
+  await expect(page.locator('#parentGateAnswer')).toHaveValue('');
+  await expect(confirm).toBeDisabled();
+
+  // Trả lời đúng rồi nhấn Enter cũng xác nhận được.
+  const nextQuestion = await page.locator('#parentGateQuestion').textContent();
+  const [a, b] = nextQuestion.split('×').map((part) => Number(part.trim()));
+  await page.locator('#parentGateAnswer').fill(String(a * b));
+  await Promise.all([
+    page.waitForEvent('framenavigated', (frame) => frame === page.mainFrame()),
+    page.locator('#parentGateAnswer').press('Enter')
+  ]);
+  await page.waitForLoadState('domcontentloaded');
+  await waitForParentDashboardReady(page);
+  document = await page.evaluate(() => JSON.parse(localStorage.getItem('bonghome:data')));
+  expect(document.data.rewards).toEqual(expect.objectContaining({ schemaVersion: 1, stars: 0 }));
+  expect(document.data.profile.displayName).toBe('Bông');
 });
