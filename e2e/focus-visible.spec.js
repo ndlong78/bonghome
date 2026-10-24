@@ -19,41 +19,45 @@ const sharedControls = [
   '.bh-collection__back'
 ].join(',');
 
-const tabbableSelector = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])'
-].join(',');
+/** Giới hạn cứng để vòng Tab không chạy mãi nếu trang có bẫy focus. */
+const MAX_TAB_PRESSES = 200;
 
+/**
+ * Nhấn Tab cho đến khi focus tới một điều khiển chung, hoặc quay vòng về phần tử đầu tiên.
+ * Không đếm trước số phần tử nhận Tab: trang chủ còn chèn thêm thẻ game, chọn chủ đề, hồ sơ
+ * sau khi tải, nên con số đếm sớm thiếu và nút âm thanh (cuối thứ tự Tab) bị bỏ lỡ.
+ */
 async function tabToSharedControl(page) {
-  const maxAttempts = await page.evaluate((selector) => {
-    const isVisible = (element) => {
-      const style = getComputedStyle(element);
-      const rect = element.getBoundingClientRect();
-      return style.visibility !== 'hidden' && style.display !== 'none' && rect.width > 0 && rect.height > 0;
-    };
-    return [...document.querySelectorAll(selector)].filter(isVisible).length + 1;
-  }, tabbableSelector);
-
-  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+  await page.evaluate(() => document.querySelectorAll('[data-focus-probe-first]').forEach((element) => element.removeAttribute('data-focus-probe-first')));
+  for (let attempt = 0; attempt < MAX_TAB_PRESSES; attempt += 1) {
     await page.keyboard.press('Tab');
-    const matches = await page.evaluate((selector) => {
+    const state = await page.evaluate((selector) => {
       const active = document.activeElement;
-      return active instanceof Element && active.matches(selector);
+      if (!(active instanceof Element) || active === document.body) return 'none';
+      if (active.matches(selector)) return 'match';
+      if (active.hasAttribute('data-focus-probe-first')) return 'wrapped';
+      if (!document.querySelector('[data-focus-probe-first]')) active.setAttribute('data-focus-probe-first', '');
+      return 'continue';
     }, sharedControls);
-    if (matches) return true;
+    if (state === 'match') return true;
+    if (state === 'wrapped') return false;
   }
   return false;
+}
+
+/** Chờ trang dựng xong các phần chèn sau khi tải (module dùng chung, thẻ game, chọn chủ đề). */
+async function waitForSettledPage(page) {
+  await page.waitForLoadState('load');
+  await page.waitForFunction(() => document.querySelector('.nut-am-thanh'));
+  await page.evaluate(() => window.BongModulesReady);
+  await page.waitForLoadState('networkidle');
 }
 
 test.describe('Focus bàn phím nhìn thấy rõ trên iPhone và iPad', () => {
   for (const path of pages) {
     test(`${path} có focus ring khi dùng phím Tab`, async ({ page }) => {
       await page.goto(path, { waitUntil: 'domcontentloaded' });
-      await page.waitForFunction(() => document.querySelector('.nut-am-thanh'));
+      await waitForSettledPage(page);
 
       expect(await page.locator(sharedControls).count(), `${path} cần có điều khiển chung`).toBeGreaterThan(0);
       expect(await tabToSharedControl(page), `${path} cần đưa focus bằng Tab tới điều khiển chung`).toBe(true);
