@@ -1,4 +1,5 @@
-import { pathToFileURL } from 'node:url';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export const DEFAULT_BASE_URL = 'https://bong.no.id.vn';
 export const DEFAULT_TIMEOUT_MS = 15_000;
@@ -101,7 +102,28 @@ async function checkManifest(fetchImpl, baseUrl, timeoutMs) {
   return { pathname, status: response.status, type: 'manifest' };
 }
 
-async function checkServiceWorker(fetchImpl, baseUrl, timeoutMs) {
+const VERSION_PATTERN = /const PHIEN_BAN\s*=\s*["']([^"'\n]+)["']/;
+const LOCAL_SERVICE_WORKER = new URL('../sw.js', import.meta.url);
+
+/** Đọc PHIEN_BAN từ mã nguồn Service Worker; trả về null nếu không tìm thấy. */
+export function extractServiceWorkerVersion(source) {
+  return VERSION_PATTERN.exec(String(source || ''))?.[1] || null;
+}
+
+/**
+ * Chuẩn hóa phiên bản mong đợi: rỗng/"skip" = không so sánh, "local" = lấy từ sw.js
+ * trong bản checkout hiện tại (workflow chạy trên đúng commit vừa deploy).
+ */
+export function resolveExpectedVersion(value, readLocal = () => readFileSync(fileURLToPath(LOCAL_SERVICE_WORKER), 'utf8')) {
+  const text = String(value ?? '').trim();
+  if (!text || text.toLowerCase() === 'skip') return null;
+  if (text.toLowerCase() !== 'local') return text;
+  const version = extractServiceWorkerVersion(readLocal());
+  if (!version) throw new Error('sw.js in the checkout does not declare PHIEN_BAN');
+  return version;
+}
+
+async function checkServiceWorker(fetchImpl, baseUrl, timeoutMs, expectedVersion) {
   const pathname = '/sw.js';
   const response = await fetchWithTimeout(fetchImpl, requestUrl(baseUrl, pathname), { redirect: 'error' }, timeoutMs);
   if (response.status !== 200) throw new Error(`${pathname}: expected HTTP 200, received ${response.status}`);
@@ -110,7 +132,14 @@ async function checkServiceWorker(fetchImpl, baseUrl, timeoutMs) {
   if (!body.includes('const PHIEN_BAN =') || !body.includes('addEventListener')) {
     throw new Error(`${pathname}: service worker markers are missing`);
   }
-  return { pathname, status: response.status, type: 'service-worker' };
+  const version = extractServiceWorkerVersion(body);
+  if (!version) throw new Error(`${pathname}: PHIEN_BAN value could not be read`);
+  if (expectedVersion && version !== expectedVersion) {
+    throw new Error(
+      `${pathname}: expected version ${expectedVersion}, received ${version} (deployment not finished or stale cache)`
+    );
+  }
+  return { pathname, status: response.status, type: 'service-worker', version, expectedVersion: expectedVersion || null };
 }
 
 async function checkRedirect(fetchImpl, baseUrl, route, timeoutMs) {
@@ -144,9 +173,11 @@ export async function runDeploymentSmoke(value = DEFAULT_BASE_URL, options = {})
   const fetchImpl = options.fetchImpl || globalThis.fetch;
   const logger = options.logger || console;
   const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
+  const expectedVersion = resolveExpectedVersion(options.expectedVersion);
   if (typeof fetchImpl !== 'function') throw new TypeError('A fetch implementation is required');
 
   logger.log(`Checking Bông Home deployment: ${baseUrl.origin}`);
+  if (expectedVersion) logger.log(`Expected service worker version: ${expectedVersion}`);
   const results = [];
   for (const pathname of HTML_PATHS) {
     results.push(await checkHtml(fetchImpl, baseUrl, pathname, timeoutMs));
@@ -155,8 +186,11 @@ export async function runDeploymentSmoke(value = DEFAULT_BASE_URL, options = {})
 
   results.push(await checkManifest(fetchImpl, baseUrl, timeoutMs));
   logger.log('✓ /manifest.json — valid PWA manifest');
-  results.push(await checkServiceWorker(fetchImpl, baseUrl, timeoutMs));
-  logger.log('✓ /sw.js — service worker markers found');
+  const serviceWorker = await checkServiceWorker(fetchImpl, baseUrl, timeoutMs, expectedVersion);
+  results.push(serviceWorker);
+  logger.log(expectedVersion
+    ? `✓ /sw.js — version ${serviceWorker.version} matches`
+    : `✓ /sw.js — version ${serviceWorker.version} (not compared)`);
 
   for (const route of REDIRECT_PATHS) {
     const redirect = await checkRedirect(fetchImpl, baseUrl, route, timeoutMs);
@@ -170,7 +204,9 @@ export async function runDeploymentSmoke(value = DEFAULT_BASE_URL, options = {})
 
 const isMain = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
 if (isMain) {
-  runDeploymentSmoke(process.argv[2] || process.env.DEPLOYMENT_URL || DEFAULT_BASE_URL)
+  runDeploymentSmoke(process.argv[2] || process.env.DEPLOYMENT_URL || DEFAULT_BASE_URL, {
+    expectedVersion: process.argv[3] ?? process.env.EXPECTED_SW_VERSION
+  })
     .catch((error) => {
       console.error(`Deployment smoke failed: ${error.message}`);
       process.exitCode = 1;
