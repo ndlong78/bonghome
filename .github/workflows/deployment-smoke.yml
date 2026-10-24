@@ -8,6 +8,11 @@ on:
         required: true
         default: https://bong.no.id.vn
         type: string
+      expected_version:
+        description: 'PHIEN_BAN mong đợi của sw.js ("local" = lấy từ sw.js của ref đang chạy, "skip" = chỉ ghi log)'
+        required: false
+        default: local
+        type: string
 
 permissions:
   contents: read
@@ -34,4 +39,5 @@ jobs:
       - name: Run deployment smoke test
         env:
           DEPLOYMENT_URL: ${{ inputs.base_url }}
+          EXPECTED_SW_VERSION: ${{ inputs.expected_version }}
         run: node scripts/verify-deployment.mjs "$DEPLOYMENT_URL"
