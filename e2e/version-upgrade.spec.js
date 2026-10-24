@@ -116,9 +116,12 @@ test.describe('Nâng cấp phiên bản trên thiết bị đã có dữ liệu 
   test.beforeAll(async () => {
     previous = findPreviousRelease(currentVersion);
     if (!previous) {
+      let shallow = 'unknown';
+      try { shallow = git('rev-parse', '--is-shallow-repository'); } catch (error) { /* Không phải repo git. */ }
       throw new Error(
-        `Không tìm thấy bản phát hành trước ${currentVersion} trong lịch sử git. `
-        + 'CI cần checkout với fetch-depth: 0; máy cục bộ chạy "git fetch --unshallow".'
+        `Không tìm thấy bản phát hành trước ${currentVersion} trong lịch sử git (shallow=${shallow}). `
+        + 'Clone nông thì commit ở ranh giới không có commit cha: CI cần checkout fetch-depth: 0 '
+        + 'và bước "Ensure full git history"; máy cục bộ chạy "git fetch --unshallow".'
       );
     }
     previousDir = exportTree(previous.ref);

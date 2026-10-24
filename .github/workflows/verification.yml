@@ -97,6 +97,17 @@ jobs:
           # e2e/version-upgrade.spec.js dựng bản phát hành trước từ lịch sử git.
           fetch-depth: 0
 
+      - name: Ensure full git history
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "shallow before: $(git rev-parse --is-shallow-repository)"
+          if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
+            git fetch --unshallow --no-tags origin
+          fi
+          echo "shallow after: $(git rev-parse --is-shallow-repository)"
+          git log -G 'const PHIEN_BAN' --format='%h %s' -2 -- sw.js
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
