@@ -24,6 +24,9 @@
   // Ván Sudoku (Game 12) và ván Ca-rô (Game 13) đang chơi dở cũng nằm ngoài `bonghome:data`.
   const RAW_PROGRESS_KEYS = Object.freeze(['bonghome_game12_sudoku', 'bonghome_game13_tictactoe']);
   const isRecordKey = (key) => RECORD_KEY_PATTERN.test(key) || RAW_PROGRESS_KEYS.includes(key);
+  // Bản sao lưu dữ liệu hỏng (`bonghome:data:corrupt:*`) chứa dữ liệu của bé nên phải đi cùng lệnh xóa toàn bộ.
+  const BACKUP_KEY_PREFIX = storage.BACKUP_KEY_PREFIX || 'bonghome:data:corrupt:';
+  const isChildDataKey = (key) => isRecordKey(key) || key.startsWith(BACKUP_KEY_PREFIX);
 
   const SCOPES = Object.freeze({
     activity: Object.freeze({
@@ -37,7 +40,7 @@
       title: 'Xóa toàn bộ dữ liệu của bé?',
       description: 'Hồ sơ, tiến độ, lịch sử chơi, kỷ lục cá nhân, sao, sticker và huy hiệu sẽ bị xóa khỏi thiết bị này. Thao tác này không thể hoàn tác.',
       keys: Object.freeze(['progress', 'rewards', 'profile']),
-      rawKeyFilter: isRecordKey,
+      rawKeyFilter: isChildDataKey,
       success: 'Đã xóa toàn bộ dữ liệu của bé trên thiết bị này.'
     })
   });
@@ -105,5 +108,5 @@
     return Object.freeze({ clearScope, scopes: SCOPES });
   }
 
-  return Object.freeze({ SCOPES, RECORD_KEY_PATTERN, isRecordKey, clearScope, init, isParentPage });
+  return Object.freeze({ SCOPES, RECORD_KEY_PATTERN, isRecordKey, isChildDataKey, clearScope, init, isParentPage });
 });

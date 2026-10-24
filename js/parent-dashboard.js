@@ -88,6 +88,38 @@
     return Number.isNaN(date.getTime()) ? 'Chưa có' : new Intl.DateTimeFormat('vi-VN', { dateStyle: 'medium' }).format(date);
   }
 
+  /** Các cảnh báo về bộ nhớ thiết bị mà phụ huynh cần biết (trả về mảng câu). */
+  function describeStorageHealth(health) {
+    if (!health) return [];
+    const messages = [];
+    if (health.recoveryMode === 'write-failed' || health.pendingWrite) {
+      messages.push('⚠️ Thiết bị đang từ chối lưu dữ liệu (có thể do đầy bộ nhớ). Tiến độ mới chỉ được giữ tới khi đóng ứng dụng — hãy giải phóng dung lượng rồi mở lại.');
+    } else if (health.recoveryMode === 'storage-unavailable') {
+      messages.push('⚠️ Trình duyệt đang chặn bộ nhớ (ví dụ chế độ riêng tư). Tiến độ sẽ không được lưu sau khi đóng ứng dụng.');
+    } else if (health.recoveryMode === 'future-schema') {
+      messages.push('⚠️ Dữ liệu trên máy được tạo bởi phiên bản mới hơn. Ứng dụng đang chạy tạm và không ghi đè dữ liệu đó — hãy cập nhật ứng dụng.');
+    } else if (health.recoveryMode === 'corrupt-json-unsaved') {
+      messages.push('⚠️ Dữ liệu của bé bị hỏng và chưa sao lưu được. Ứng dụng đang chạy tạm, không ghi đè dữ liệu gốc.');
+    }
+    const backups = Array.isArray(health.backupKeys) ? health.backupKeys : [];
+    if (backups.length) {
+      messages.push(`🛟 Đã phát hiện dữ liệu bị hỏng và giữ ${backups.length} bản sao lưu trên thiết bị (khóa "${backups[backups.length - 1]}"). Bản sao này bị xóa cùng lệnh "Xóa toàn bộ dữ liệu của bé".`);
+    }
+    return messages;
+  }
+
+  function renderStorageHealth(container, health) {
+    if (!container) return;
+    const messages = describeStorageHealth(health);
+    container.textContent = '';
+    messages.forEach((message) => {
+      const line = document.createElement('p');
+      line.textContent = message;
+      container.appendChild(line);
+    });
+    container.hidden = !messages.length;
+  }
+
   async function render(modules) {
     const profile = modules.profile?.getProfile?.() || { displayName: 'Bông', avatarId: 'flower' };
     const progress = modules.progress?.getSummary?.() || { completed: 0, inProgress: 0, byGame: {}, games: {} };
@@ -110,6 +142,7 @@
     document.getElementById('averageDuration').textContent = formatDuration(statistics.averageDurationSeconds);
     document.getElementById('averageMoves').textContent = Number.isFinite(statistics.averageMoves) ? `${statistics.averageMoves} lượt` : 'Chưa có';
     renderGameSummary(document.getElementById('gameSummary'), progress.byGame, progress.games, catalog, rewardsByGame);
+    renderStorageHealth(document.getElementById('storageHealth'), modules.storage?.getHealth?.());
   }
 
   function start() {
@@ -132,6 +165,7 @@
     formatProgress,
     formatRewardSummary,
     formatDuration,
-    formatDate
+    formatDate,
+    describeStorageHealth
   });
 })();

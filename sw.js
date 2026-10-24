@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v75-game13-tictactoe";
+const PHIEN_BAN = "bonghome-v76-storage-resilience";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
@@ -85,17 +85,49 @@ self.addEventListener("activate", (event) => {
   })());
 });
 
-async function networkFirstNavigation(request) {
-  try {
-    const response = await fetch(request);
-    if (response?.ok) {
+/* Mạng chập chờn ("lie-fi") có thể treo rất lâu: quá thời gian này thì mở bản trong máy. */
+const NAVIGATION_TIMEOUT_MS = 3000;
+
+/* Khóa cache cho trang: bỏ query/hash để /game1.html?x=1 dùng chung một bản, cache không phình. */
+function navigationCacheKey(request) {
+  const url = new URL(request.url);
+  return `${url.origin}${url.pathname}`;
+}
+
+async function cachedNavigation(request) {
+  return (await caches.match(request, { ignoreSearch: true }))
+    || (await caches.match(navigationCacheKey(request)));
+}
+
+function waitFor(promise, timeoutMs) {
+  let timer;
+  const timeout = new Promise((resolve) => { timer = setTimeout(() => resolve(null), timeoutMs); });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+function networkFirstNavigation(event) {
+  const { request } = event;
+  const network = fetch(request).then(async (response) => {
+    if (response?.ok && response.type === "basic") {
       const cache = await caches.open(TEN_CACHE.runtime);
-      await cache.put(request, response.clone());
+      await cache.put(navigationCacheKey(request), response.clone());
     }
     return response;
-  } catch {
-    return (await caches.match(request)) || (await caches.match("./index.html"));
-  }
+  });
+  // Mạng về muộn vẫn được cập nhật vào cache cho lần mở sau.
+  event.waitUntil(network.catch(() => null));
+
+  return (async () => {
+    const fast = await waitFor(network.catch(() => null), NAVIGATION_TIMEOUT_MS);
+    // Máy chủ lỗi 5xx thì bản trong máy vẫn tốt hơn trang lỗi.
+    if (fast && fast.status < 500) return fast;
+    const cached = await cachedNavigation(request);
+    if (cached) return cached;
+    if (fast) return fast;
+    // Chưa có bản trong máy: chờ mạng thêm, hỏng hẳn thì về trang chủ đã lưu.
+    const late = await network.catch(() => null);
+    return late || (await caches.match("./index.html")) || Response.error();
+  })();
 }
 
 async function staleWhileRevalidate(request) {
@@ -113,7 +145,7 @@ async function staleWhileRevalidate(request) {
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   if (event.request.mode === "navigate") {
-    event.respondWith(networkFirstNavigation(event.request));
+    event.respondWith(networkFirstNavigation(event));
     return;
   }
   event.respondWith(staleWhileRevalidate(event.request));

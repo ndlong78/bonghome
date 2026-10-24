@@ -27,15 +27,22 @@
     const recent = validDates.filter(({ date }) => date.getTime() >= start && date.getTime() <= now.getTime());
     const durations = completions.map((item) => item.durationSeconds).filter(Number.isFinite);
     const moves = completions.map((item) => item.moves).filter(Number.isFinite);
+    // Lượt cũ đã được BongProgress thu gọn vẫn phải góp vào trung bình và tổng.
+    const archive = typeof progress.getArchive === 'function' ? progress.getArchive() || {} : {};
+    const average = (values, archivedTotal, archivedCount) => {
+      const sum = values.reduce((acc, value) => acc + value, 0) + (Number(archivedTotal) || 0);
+      const size = values.length + (Number(archivedCount) || 0);
+      return size ? Math.round(sum / size) : null;
+    };
     const latest = validDates.sort((a, b) => b.date - a.date)[0]?.date || null;
 
     return {
       schemaVersion: 1,
       last7DaysCompleted: recent.length,
       latestCompletedAt: latest ? latest.toISOString() : null,
-      averageDurationSeconds: durations.length ? Math.round(durations.reduce((sum, value) => sum + value, 0) / durations.length) : null,
-      averageMoves: moves.length ? Math.round(moves.reduce((sum, value) => sum + value, 0) / moves.length) : null,
-      totalCompleted: completions.length,
+      averageDurationSeconds: average(durations, archive.durationTotal, archive.durationCount),
+      averageMoves: average(moves, archive.movesTotal, archive.movesCount),
+      totalCompleted: completions.length + (Number(archive.completed) || 0),
       completions: clone(completions)
     };
   }
