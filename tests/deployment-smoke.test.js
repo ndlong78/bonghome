@@ -45,7 +45,11 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
     if (smoke.HTML_PATHS.includes(url.pathname)) {
       return new Response(html, {
         status: 200,
-        headers: { 'content-type': 'text/html; charset=utf-8' }
+        headers: {
+          'content-type': 'text/html; charset=utf-8',
+          'x-content-type-options': 'nosniff',
+          'content-security-policy': "default-src 'self'; frame-ancestors 'none'"
+        }
       });
     }
     return new Response('Not found', { status: 404 });
@@ -156,6 +160,21 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 
   assert.match(workflow, /expected_version:\n\s+description:[^\n]+\n\s+required: false\n\s+default: local/);
   assert.match(workflow, /EXPECTED_SW_VERSION: \$\{\{ inputs\.expected_version \}\}/);
+
+  // Trang HTML thiếu header bảo mật từ _headers thì smoke phải fail.
+  for (const [header, pattern] of [['x-content-type-options', /nosniff is missing/], ['content-security-policy', /Content-Security-Policy/]]) {
+    const missingHeaderFetch = async (input, options = {}) => {
+      const response = await fetchImpl(input, options);
+      if (new URL(input).pathname !== '/game3.html') return response;
+      const headers = new Headers(response.headers);
+      headers.delete(header);
+      return new Response(await response.text(), { status: response.status, headers });
+    };
+    await assert.rejects(
+      smoke.runDeploymentSmoke('https://example.test', { fetchImpl: missingHeaderFetch, logger: { log() {} }, timeoutMs: 100 }),
+      pattern
+    );
+  }
 
   console.log('Production deployment smoke checks passed.');
 })().catch((error) => {

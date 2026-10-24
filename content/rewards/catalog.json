@@ -12,7 +12,8 @@
     { "id": "story-book", "name": "Cuốn sách kể chuyện", "icon": "📖" },
     { "id": "happy-note", "name": "Nốt nhạc vui", "icon": "🎵" },
     { "id": "wise-owl", "name": "Cú mèo thông thái", "icon": "🦉" },
-    { "id": "clever-fox", "name": "Cáo tinh nhanh", "icon": "🦊" }
+    { "id": "clever-fox", "name": "Cáo tinh nhanh", "icon": "🦊" },
+    { "id": "block-builder", "name": "Thợ xây khối nhí", "icon": "🧱" }
   ],
   "badges": [
     { "id": "first-finish", "name": "Lần đầu hoàn thành", "icon": "🎈" },
@@ -21,6 +22,7 @@
     { "id": "thinking-kid", "name": "Bé tư duy", "icon": "🧠" },
     { "id": "conqueror-kid", "name": "Bé chinh phục", "icon": "🏆" },
     { "id": "sudoku-master", "name": "Bậc thầy Sudoku", "icon": "🎓" },
-    { "id": "tictactoe-master", "name": "Kỳ thủ Ca-rô nhí", "icon": "🏅" }
+    { "id": "tictactoe-master", "name": "Kỳ thủ Ca-rô nhí", "icon": "🏅" },
+    { "id": "block-master", "name": "Kiến trúc sư khối", "icon": "🏗️" }
   ]
 }

@@ -16,17 +16,18 @@
   const isParentPage = (pathname) => getRoutes().isParentPage(pathname);
 
   /**
-   * Kỷ lục cá nhân được 10 game ghi thẳng vào localStorage bằng khóa riêng
-   * ("kyluc_game6", "kyluc_game1_de", "kyluc_game8_3"...) nên nằm ngoài tài liệu
-   * `bonghome:data`. Chúng vẫn là dữ liệu chơi của bé, phải bị xóa cùng lịch sử.
+   * Kỷ lục (`kyluc_*`) và ván đang chơi dở (`bonghome_game<N>_*`) nằm ngoài tài liệu
+   * `bonghome:data` nhưng vẫn là dữ liệu chơi của bé; bản sao lưu dữ liệu hỏng thì chỉ
+   * đi cùng lệnh xóa toàn bộ. Quy ước khóa đặt một chỗ trong js/storage.js.
    */
   const RECORD_KEY_PATTERN = /^kyluc_/;
-  // Ván Sudoku (Game 12) và ván Ca-rô (Game 13) đang chơi dở cũng nằm ngoài `bonghome:data`.
-  const RAW_PROGRESS_KEYS = Object.freeze(['bonghome_game12_sudoku', 'bonghome_game13_tictactoe']);
-  const isRecordKey = (key) => RECORD_KEY_PATTERN.test(key) || RAW_PROGRESS_KEYS.includes(key);
-  // Bản sao lưu dữ liệu hỏng (`bonghome:data:corrupt:*`) chứa dữ liệu của bé nên phải đi cùng lệnh xóa toàn bộ.
   const BACKUP_KEY_PREFIX = storage.BACKUP_KEY_PREFIX || 'bonghome:data:corrupt:';
-  const isChildDataKey = (key) => isRecordKey(key) || key.startsWith(BACKUP_KEY_PREFIX);
+  const isRecordKey = typeof storage.isActivityRawKey === 'function'
+    ? storage.isActivityRawKey
+    : (key) => RECORD_KEY_PATTERN.test(key) || /^bonghome_game\d+_[a-z0-9_-]+$/.test(key);
+  const isChildDataKey = typeof storage.isChildDataRawKey === 'function'
+    ? storage.isChildDataRawKey
+    : (key) => isRecordKey(key) || key.startsWith(BACKUP_KEY_PREFIX);
 
   const SCOPES = Object.freeze({
     activity: Object.freeze({
@@ -55,6 +56,22 @@
     return removedKeys + removedRawKeys;
   }
 
+  /**
+   * Cổng phụ huynh: phép nhân hai số từ 6 đến 9 (36-81), đủ khó với bé 6 tuổi nhưng
+   * người lớn trả lời ngay. `rng` trả số trong [0, 1) như Math.random.
+   */
+  function createGateQuestion(rng = Math.random) {
+    const pick = () => 6 + Math.min(3, Math.floor(rng() * 4));
+    const left = pick();
+    const right = pick();
+    return Object.freeze({ text: `${left} × ${right}`, answer: left * right });
+  }
+
+  function isGateAnswer(input, question) {
+    const value = String(input ?? '').trim();
+    return /^\d{1,3}$/.test(value) && Number(value) === question?.answer;
+  }
+
   function init() {
     const document = root?.document;
     if (!document || !isParentPage(root.location?.pathname || '')) return null;
@@ -65,12 +82,25 @@
     const confirmButton = document.getElementById('parentDataConfirm');
     const cancelButton = document.getElementById('parentDataCancel');
     const status = document.getElementById('parentDataStatus');
-    if (!dialog || !title || !description || !confirmButton || !cancelButton) return null;
+    const gateQuestion = document.getElementById('parentGateQuestion');
+    const gateAnswer = document.getElementById('parentGateAnswer');
+    if (!dialog || !title || !description || !confirmButton || !cancelButton || !gateQuestion || !gateAnswer) return null;
 
     let pendingScope = null;
+    let question = null;
+
+    function updateGate() {
+      const unlocked = isGateAnswer(gateAnswer.value, question);
+      confirmButton.disabled = !unlocked;
+      gateAnswer.setAttribute('aria-invalid', String(gateAnswer.value.trim() !== '' && !unlocked));
+      return unlocked;
+    }
 
     function closeDialog() {
       pendingScope = null;
+      question = null;
+      gateAnswer.value = '';
+      confirmButton.disabled = true;
       if (dialog.open) dialog.close();
     }
 
@@ -82,6 +112,10 @@
         title.textContent = scope.title;
         description.textContent = scope.description;
         confirmButton.textContent = scope.title.replace('?', '');
+        question = createGateQuestion(root.Math?.random || Math.random);
+        gateQuestion.textContent = question.text;
+        gateAnswer.value = '';
+        updateGate();
         dialog.showModal();
         cancelButton.focus();
       });
@@ -96,9 +130,14 @@
       if (event.target === dialog) closeDialog();
     });
 
+    gateAnswer.addEventListener('input', updateGate);
+    gateAnswer.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && updateGate()) confirmButton.click();
+    });
+
     confirmButton.addEventListener('click', () => {
       const scope = SCOPES[pendingScope];
-      if (!scope) return;
+      if (!scope || !updateGate()) return;
       clearScope(pendingScope);
       if (status) status.textContent = scope.success;
       closeDialog();
@@ -108,5 +147,5 @@
     return Object.freeze({ clearScope, scopes: SCOPES });
   }
 
-  return Object.freeze({ SCOPES, RECORD_KEY_PATTERN, isRecordKey, isChildDataKey, clearScope, init, isParentPage });
+  return Object.freeze({ SCOPES, RECORD_KEY_PATTERN, isRecordKey, isChildDataKey, clearScope, createGateQuestion, isGateAnswer, init, isParentPage });
 });

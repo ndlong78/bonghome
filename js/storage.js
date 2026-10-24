@@ -8,6 +8,18 @@
 
   const STORAGE_KEY = 'bonghome:data';
   const BACKUP_KEY_PREFIX = `${STORAGE_KEY}:corrupt:`;
+  /*
+   * Quy ước khóa localStorage nằm ngoài tài liệu `bonghome:data`:
+   * - `kyluc_*`: kỷ lục cá nhân của các game cũ (dữ liệu chơi của bé);
+   * - `bonghome_game<N>_<tên>`: ván đang chơi dở mà game tự lưu (dữ liệu chơi của bé);
+   * - `bonghome:data:corrupt:*`: bản sao lưu tài liệu hỏng (dữ liệu của bé);
+   * - `bonghome_sound_enabled`: thiết lập của thiết bị, không phải dữ liệu của bé.
+   * tests/storage-keys.test.js chặn khóa mới không theo quy ước này.
+   */
+  const ACTIVITY_KEY_PATTERNS = Object.freeze([/^kyluc_/, /^bonghome_game\d+_[a-z0-9_-]+$/]);
+  const SETTING_KEYS = Object.freeze(['bonghome_sound_enabled']);
+  const isActivityRawKey = (key) => typeof key === 'string' && ACTIVITY_KEY_PATTERNS.some((pattern) => pattern.test(key));
+  const isChildDataRawKey = (key) => isActivityRawKey(key) || (typeof key === 'string' && key.startsWith(BACKUP_KEY_PREFIX));
   const MAX_BACKUPS = 3;
   const CURRENT_SCHEMA_VERSION = 1;
   const memory = new Map();
@@ -258,6 +270,9 @@
   return Object.freeze({
     STORAGE_KEY,
     BACKUP_KEY_PREFIX,
+    SETTING_KEYS,
+    isActivityRawKey,
+    isChildDataRawKey,
     schemaVersion: CURRENT_SCHEMA_VERSION,
     get,
     set,

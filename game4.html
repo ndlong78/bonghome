@@ -239,15 +239,15 @@ function vanMoi(){
   const dsDo=[];
   MAU.forEach(m=>{
     for(let i=0;i<3;i++){
-      const kieu = KIEU_DO[Math.floor(Math.random()*KIEU_DO.length)];
-      dsDo.push({ mau:m, hinh:kieu(m) });
+      const kieu = Math.floor(Math.random()*KIEU_DO.length);
+      dsDo.push({ mau:m, kieu, hinh:KIEU_DO[kieu](m) });
     }
   });
   dsDo.sort(()=>Math.random()-.5);
 
   dsDo.forEach(d=>{
     const e=document.createElement("div");
-    e.className="do-vat"; e.dataset.mau=d.mau.id;
+    e.className="do-vat"; e.dataset.mau=d.mau.id; e.dataset.kieu=d.kieu;
     e.setAttribute("aria-label","Đồ vật màu "+d.mau.ten);
     e.innerHTML=d.hinh;
     ganKeoTha(e);

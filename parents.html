@@ -82,9 +82,14 @@
     <div class="bh-parent-data-dialog-card">
       <h2 id="parentDataDialogTitle">Xác nhận xóa dữ liệu</h2>
       <p id="parentDataDialogDescription"></p>
+      <label class="bh-parent-gate" for="parentGateAnswer">
+        <span>Để chắc là ba mẹ thực hiện, hãy nhập kết quả của <strong id="parentGateQuestion">6 × 7</strong></span>
+        <input id="parentGateAnswer" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="3" autocomplete="off" aria-describedby="parentGateHelp">
+      </label>
+      <p id="parentGateHelp" class="bh-parent-gate-help">Nút xóa chỉ bật khi nhập đúng.</p>
       <div class="bh-parent-data-dialog-actions">
         <button type="button" id="parentDataCancel">Giữ lại dữ liệu</button>
-        <button type="button" id="parentDataConfirm" class="bh-parent-danger">Xóa dữ liệu</button>
+        <button type="button" id="parentDataConfirm" class="bh-parent-danger" disabled>Xóa dữ liệu</button>
       </div>
     </div>
   </dialog>

@@ -1,0 +1,58 @@
+# Lộ trình tái cấu trúc game 1–10 và chuyển test sang kiểm tra hành vi
+
+Đây là tài liệu kế hoạch, chưa thực hiện. Mục tiêu: đưa game 1–10 về cùng mô hình với game 11–13, và để test kiểm tra hành vi thay vì kiểm tra chuỗi trong mã nguồn. Hai việc đi cùng nhau, vì game đã tách engine thì mới test hành vi được trong Node.
+
+## Hiện trạng (đo ngày 2026-10-24)
+
+| Hạng mục | Số liệu |
+|---|---|
+| Unit test (`tests/*.test.js`) | 83 tệp. **72** tệp đọc mã nguồn bằng `readFileSync` rồi so regex hoặc `includes`. |
+| Game 1–10 | Mỗi game là một tệp HTML, script inline 200–390 dòng, trạng thái nằm trong biến toàn cục (`giay`, `daBatDau`, `dongHoChay`, `KIEU_DO`…). |
+| Lớp gắn thêm | `games2-4/5-7/8-10-autosave.js`, `*-rewards.js`, `game1-*.js` đọc và ghi thẳng vào các biến toàn cục đó. Đổi tên một biến trong game sẽ làm hỏng autosave mà không báo lỗi. |
+| Game 11–13 | Engine và giao diện tách riêng (`js/game12-sudoku.js` xuất `BongSudokuEngine`, game 13 xuất engine qua `module.exports`). Phần thưởng là module riêng có test hành vi (`tests/game11-rewards.test.js`, `tests/game13-rewards.test.js`). |
+
+Vì sao test kiểm chuỗi là vấn đề:
+- **Bỏ lọt lỗi thật:** test vẫn xanh khi logic sai. Ví dụ, lỗi ghi đè dữ liệu hỏng ở `storage.js` chỉ bị phát hiện sau khi viết test hành vi.
+- **Báo đỏ oan:** test đỏ khi refactor mà hành vi không đổi, nên refactor game 1–10 rất tốn công.
+
+## Mô hình đích cho mỗi game
+
+1. **`js/gameN-engine.js`:** logic thuần, không đụng DOM. Gồm tạo ván, xử lý nước đi, kiểm tra thắng, `serialize()` và `restore()` trạng thái. Xuất qua `module.exports` để test trong Node.
+2. **`js/gameN-ui.js`:** dựng DOM, nhận Pointer/Keyboard Events, gọi engine, phát âm thanh.
+3. **`js/gameN-rewards.js`:** theo mẫu `game11-rewards.js` và `game13-rewards.js`, gồm `complete()`, `trackProgress()` và `abandon()`.
+4. **`gameN.html`:** chỉ còn markup và các thẻ `<script src>`, không còn script inline.
+5. **Autosave:** gọi `engine.serialize()` và `engine.restore()`, không đọc biến toàn cục nữa. Định dạng bản lưu có `schemaVersion`; bản lưu cũ được chuyển đổi trong `restore()`, như cách Game 4 đã chuyển từ `html` sang `shape`.
+
+Khi cả 10 game không còn script inline, có thể bỏ `'unsafe-inline'` khỏi `script-src` trong `_headers`. `e2e/security-headers.spec.js` sẽ xác nhận việc này.
+
+## Thứ tự và tiêu chí xong cho mỗi bước
+
+Mỗi game là **một PR riêng**, không gộp nhiều game vào một PR. Thứ tự từ game đơn giản đến game phức tạp: **6 → 7 → 5 → 3 → 4 → 8 → 10 → 9 → 2 → 1**. Game 1 nhiều lớp gắn thêm nhất (độ khó, chủ đề, trợ năng bàn phím), nên để cuối.
+
+Một PR chỉ được merge khi đạt đủ các điều kiện sau:
+- [ ] Engine có unit test hành vi: tạo ván, nước đi đúng và sai, thắng, `serialize()`/`restore()`, chuyển đổi bản lưu cũ.
+- [ ] `e2e/version-upgrade.spec.js` xanh, tức là dữ liệu và ván đang chơi dở của bản trước vẫn mở được.
+- [ ] Các test kiểm chuỗi của game đó được thay bằng test hành vi, không chỉ thêm test mới bên cạnh.
+- [ ] Khóa `localStorage` không đổi, hoặc có chuyển đổi kèm test (`tests/storage-keys.test.js`).
+- [ ] Đổi `PHIEN_BAN`, và E2E trên iPhone/iPad (tương phản, vùng chạm, focus, live region) vẫn xanh.
+
+## Quy tắc cho test, áp dụng ngay
+
+- **Test mới** kiểm tra hành vi: gọi hàm hoặc module thật, hoặc chạy E2E. Không thêm `assert.match(source, /…/)` cho logic.
+- **Khi sửa một tệp**, chuyển các test kiểm chuỗi của tệp đó sang test hành vi trong cùng PR.
+- **Test kiểm chuỗi vẫn hợp lý** cho các "hợp đồng cấu hình" không chạy được trong Node:
+  - danh sách precache trong `sw.js`;
+  - định dạng `PHIEN_BAN`;
+  - nội dung `_headers`, `_redirects`, `.assetsignore`;
+  - thứ tự `<script>` trong HTML.
+- **Theo dõi tiến độ** bằng số tệp `tests/*.test.js` còn so regex trên mã nguồn logic. Hiện là 72; mục tiêu là chỉ còn các test hợp đồng cấu hình.
+
+## Đã làm trong PR rà soát (#4–#15)
+
+Các chỗ sửa đều có test hành vi:
+- `tests/storage-keys.test.js`
+- `tests/parent-gate.test.js`
+- `tests/game11-rewards.test.js`
+- `tests/service-worker-navigation.test.js`, mở rộng thêm các nhánh cache
+- `e2e/game4-autosave-restore.spec.js`, `e2e/game11-rewards.spec.js`, `e2e/security-headers.spec.js`
+- `tests/routes.test.js`, nay đối chiếu với các tệp `gameN.html` có thật thay vì một con số viết cứng

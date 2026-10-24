@@ -160,7 +160,7 @@
       sessionId,
       objects: [...sanDo.querySelectorAll('.do-vat')].map((item) => ({
         color: item.dataset.mau,
-        html: item.innerHTML,
+        shape: game4ShapeIndex(item.dataset.mau, item.dataset.kieu, item.innerHTML),
         done: item.classList.contains('xong')
       })),
       basketCounts: { ...demTheoGio },
@@ -171,9 +171,35 @@
     };
   }
 
+  /**
+   * HTML do trình duyệt chuẩn hóa, để so được chuỗi SVG lưu từ innerHTML với mẫu gốc.
+   * Phân tích trong <template> (nội dung trơ): <div> tách rời vẫn tải ảnh và chạy onerror.
+   */
+  function normalizeHtml(html) {
+    const holder = document.createElement('template');
+    holder.innerHTML = html;
+    return holder.innerHTML;
+  }
+
+  /**
+   * Chỉ số kiểu đồ vật trong KIEU_DO. Ưu tiên data-kieu; bản lưu cũ (chỉ có HTML) thì
+   * dò mẫu khớp. Không khớp mẫu nào trả về -1 để bản lưu bị bỏ, không chèn HTML lạ vào trang.
+   */
+  function game4ShapeIndex(colorId, datasetValue, html) {
+    const index = Number(datasetValue);
+    if (Number.isInteger(index) && index >= 0 && index < KIEU_DO.length) return index;
+    const color = MAU.find((item) => item.id === colorId);
+    if (!color || typeof html !== 'string') return -1;
+    const target = normalizeHtml(html);
+    return KIEU_DO.findIndex((draw) => normalizeHtml(draw(color)) === target);
+  }
+
   function restoreGame4(state) {
-    const objects = Array.isArray(state.objects) ? state.objects : [];
-    if (objects.length !== TONG_DO || objects.some((item) => !MAU.some((color) => color.id === item.color))) return false;
+    const objects = (Array.isArray(state.objects) ? state.objects : []).map((item) => ({
+      ...item,
+      shape: game4ShapeIndex(item?.color, item?.shape, item?.html)
+    }));
+    if (objects.length !== TONG_DO || objects.some((item) => !MAU.some((color) => color.id === item.color) || item.shape < 0)) return false;
 
     clearInterval(dongHoChay);
     sanDo.innerHTML = '';
@@ -194,10 +220,14 @@
       hangGio.appendChild(basket);
     });
     objects.forEach((saved) => {
+      const color = MAU.find((entry) => entry.id === saved.color);
       const item = document.createElement('div');
       item.className = `do-vat${saved.done ? ' xong' : ''}`;
       item.dataset.mau = saved.color;
-      item.innerHTML = saved.html;
+      item.dataset.kieu = String(saved.shape);
+      item.setAttribute('aria-label', `Đồ vật màu ${color.ten}`);
+      // Chỉ dựng lại từ mẫu có sẵn trong game, không dùng HTML đọc từ bộ nhớ.
+      item.innerHTML = KIEU_DO[saved.shape](color);
       ganKeoTha(item);
       sanDo.appendChild(item);
     });

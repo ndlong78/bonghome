@@ -15,7 +15,18 @@ assert.match(html, /<main class="bh-parent"/);
 assert.match(html, /id="completedCount"/);
 assert.match(html, /id="starCount"/);
 assert.match(html, /Dữ liệu hồ sơ, tiến độ và phần thưởng chỉ được lưu/);
-assert.doesNotMatch(html, /<form|<input|<textarea|<select/, 'Trang phụ huynh nền tảng phải chỉ đọc');
+assert.doesNotMatch(html, /<form|<textarea|<select/, 'Trang phụ huynh nền tảng phải chỉ đọc');
+// Ô nhập duy nhất là cổng phụ huynh trong hộp thoại xóa: chỉ để xác nhận, không lưu, không gửi đi.
+{
+  const inputs = html.match(/<input\b[^>]*>/g) || [];
+  assert.equal(inputs.length, 1, 'Chỉ cho phép ô trả lời của cổng phụ huynh');
+  assert.match(inputs[0], /id="parentGateAnswer"/);
+  assert.doesNotMatch(inputs[0], /\sname=/, 'Ô cổng phụ huynh không được có name (không phải dữ liệu thu thập)');
+  const dialogStart = html.indexOf('<dialog id="parentDataDialog"');
+  const dialogEnd = html.indexOf('</dialog>', dialogStart);
+  const inputAt = html.indexOf(inputs[0]);
+  assert.ok(dialogStart >= 0 && inputAt > dialogStart && inputAt < dialogEnd, 'Ô cổng phụ huynh phải nằm trong hộp thoại xóa');
+}
 assert.match(html, /\.\/shared-ui\.js/);
 assert.match(html, /\.\/js\/parent-dashboard\.js/);
 

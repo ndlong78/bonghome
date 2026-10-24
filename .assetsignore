@@ -18,3 +18,6 @@ playwright.config.js
 wrangler.jsonc
 README.md
 CNAME
+docs/
+.gitignore
+.assetsignore

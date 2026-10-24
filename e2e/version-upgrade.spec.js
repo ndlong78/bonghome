@@ -20,13 +20,18 @@ const versionAt = (ref) => {
   catch (error) { return null; }
 };
 
-/** Commit cha của commit đã đưa PHIEN_BAN hiện tại vào: đó là bản phát hành trước. */
+/**
+ * Bản phát hành trước = commit đầu tiên trên nhánh first-parent của HEAD có PHIEN_BAN khác.
+ * Trên CI, HEAD là commit merge và first-parent của nó là `main` (PR) hoặc `main` trước khi
+ * merge (push), nên đây đúng là bản đang chạy trên production, bất kể thứ tự commit trong PR.
+ */
 function findPreviousRelease(currentVersion) {
-  const commits = git('log', '-G', 'const PHIEN_BAN', '--format=%H', 'HEAD', '--', 'sw.js').split('\n').filter(Boolean);
+  let commits = [];
+  try { commits = git('rev-list', '--first-parent', '--max-count=500', 'HEAD').split('\n').filter(Boolean); }
+  catch (error) { return null; }
   for (const commit of commits) {
-    if (versionAt(commit) !== currentVersion) continue;
-    const previous = versionAt(`${commit}^`);
-    if (previous && previous !== currentVersion) return { ref: `${commit}^`, version: previous };
+    const version = versionAt(commit);
+    if (version && version !== currentVersion) return { ref: commit, version };
   }
   return null;
 }

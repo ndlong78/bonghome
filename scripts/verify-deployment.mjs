@@ -82,6 +82,13 @@ async function checkHtml(fetchImpl, baseUrl, pathname, timeoutMs) {
   if ((pathname === '/' || pathname === '/index.html') && !body.includes("Bông Home's")) {
     throw new Error(`${pathname}: Bông Home title marker is missing`);
   }
+  // Header bảo mật từ _headers phải có trên mọi trang HTML.
+  if ((response.headers.get('x-content-type-options') || '').toLowerCase() !== 'nosniff') {
+    throw new Error(`${pathname}: X-Content-Type-Options: nosniff is missing (_headers not applied?)`);
+  }
+  if (!/default-src 'self'/.test(response.headers.get('content-security-policy') || '')) {
+    throw new Error(`${pathname}: Content-Security-Policy with default-src 'self' is missing (_headers not applied?)`);
+  }
   return { pathname, status: response.status, type: 'html' };
 }
 
@@ -181,7 +188,7 @@ export async function runDeploymentSmoke(value = DEFAULT_BASE_URL, options = {})
   const results = [];
   for (const pathname of HTML_PATHS) {
     results.push(await checkHtml(fetchImpl, baseUrl, pathname, timeoutMs));
-    logger.log(`✓ ${pathname} — HTTP 200 HTML`);
+    logger.log(`✓ ${pathname} — HTTP 200 HTML, security headers`);
   }
 
   results.push(await checkManifest(fetchImpl, baseUrl, timeoutMs));

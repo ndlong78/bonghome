@@ -33,6 +33,17 @@ for (const page of ['index', 'parents', 'collection', ...Array.from({ length: 10
 }
 
 assert.match(assetsIgnore, /^wrangler\.jsonc$/m, 'Wrangler config must not be published as a browser asset');
+for (const devOnly of ['docs/', '.gitignore', 'tests/', 'e2e/', 'scripts/']) {
+  assert.ok(assetsIgnore.split('\n').includes(devOnly), `${devOnly} must not be published as a browser asset`);
+}
+assert.doesNotMatch(assetsIgnore, /^_headers$/m, '_headers must remain available to Cloudflare during deployment');
+assert.equal(wrangler.compatibility_flags, undefined, 'Static assets only: no Worker script needs nodejs_compat');
+
+const headers = read('_headers');
+assert.match(headers, /^\/\*$/m, '_headers must apply security headers to every path');
+assert.match(headers, /^  Content-Security-Policy: default-src 'self';.*frame-ancestors 'none'$/m);
+assert.match(headers, /^  X-Content-Type-Options: nosniff$/m);
+assert.match(headers, /^\/sw\.js\n  Cache-Control: no-cache$/m);
 assert.doesNotMatch(assetsIgnore, /^_redirects$/m, '_redirects must remain available to Cloudflare during deployment');
 
 console.log('Cloudflare HTML routing checks passed.');
