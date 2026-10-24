@@ -1,7 +1,6 @@
 {
   "name": "bonghome",
   "compatibility_date": "2026-07-27",
-  "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
   },

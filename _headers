@@ -1,0 +1,14 @@
+# Header bảo mật cho Cloudflare static assets (Workers). Tệp này không được phục vụ cho trình duyệt.
+# Game 1-10 và các trang chính còn <script>/<style> inline nên script-src/style-src cần 'unsafe-inline';
+# mọi tài nguyên khác chỉ được lấy từ chính origin, không gọi ra ngoài, không nhúng vào iframe.
+# e2e/security-headers.spec.js áp đúng các header này lên mọi trang và chặn mọi vi phạm CSP.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; media-src 'self' blob:; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  X-Frame-Options: DENY
+
+# Trình duyệt phải luôn hỏi lại máy chủ để phát hiện phiên bản Service Worker mới.
+/sw.js
+  Cache-Control: no-cache
