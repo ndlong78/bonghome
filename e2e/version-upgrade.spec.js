@@ -114,25 +114,32 @@ test.describe('Nâng cấp phiên bản trên thiết bị đã có dữ liệu 
   let origin = '';
 
   test.beforeAll(async () => {
+    const probe = (...args) => {
+      try { return execFileSync('git', args, { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim(); }
+      catch (error) { return `ERR ${String(error.stderr || error.message).trim().split('\n').pop()}`; }
+    };
     previous = findPreviousRelease(currentVersion);
+    let fetchResult = 'not needed';
     if (!previous) {
-      const probe = (...args) => { try { return git(...args); } catch (error) { return `ERR ${error.message.split('\n')[0]}`; } };
-      const shallow = probe('rev-parse', '--is-shallow-repository');
+      // Clone nông (CI checkout commit merge của PR): tự lấy đủ lịch sử của chính HEAD rồi tìm lại.
+      const shallowArgs = probe('rev-parse', '--is-shallow-repository') === 'true' ? ['--unshallow'] : [];
+      fetchResult = probe('fetch', '--no-tags', '--quiet', ...shallowArgs, 'origin', probe('rev-parse', 'HEAD')) || 'ok';
+      previous = findPreviousRelease(currentVersion);
+    }
+    if (!previous) {
       const diagnostics = {
-        cwd: process.cwd(),
-        root: ROOT,
+        shallow: probe('rev-parse', '--is-shallow-repository'),
+        fetchResult,
         gitDir: probe('rev-parse', '--absolute-git-dir'),
-        toplevel: probe('rev-parse', '--show-toplevel'),
         head: probe('log', '-3', '--format=%h %p %s', 'HEAD'),
         commitCount: probe('rev-list', '--count', 'HEAD'),
         versionCommits: probe('log', '-G', 'const PHIEN_BAN', '--format=%h', '-3', 'HEAD', '--', 'sw.js'),
         gitEnv: Object.keys(process.env).filter((key) => key.startsWith('GIT_')).join(',') || 'none'
       };
       throw new Error(
-        `Không tìm thấy bản phát hành trước ${currentVersion} trong lịch sử git (shallow=${shallow}). `
+        `Không tìm thấy bản phát hành trước ${currentVersion} trong lịch sử git. `
         + `Chẩn đoán: ${JSON.stringify(diagnostics)}. `
-        + 'Clone nông thì commit ở ranh giới không có commit cha: CI cần checkout fetch-depth: 0 '
-        + 'và bước "Ensure full git history"; máy cục bộ chạy "git fetch --unshallow".'
+        + 'Cần lịch sử git đầy đủ của HEAD (fetch-depth: 0 hoặc "git fetch --unshallow").'
       );
     }
     previousDir = exportTree(previous.ref);

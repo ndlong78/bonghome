@@ -94,22 +94,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          # e2e/version-upgrade.spec.js dựng bản phát hành trước từ lịch sử git.
+          # e2e/version-upgrade.spec.js dựng bản phát hành trước từ lịch sử git
+          # (spec tự fetch thêm nếu checkout commit merge của PR vẫn thiếu lịch sử).
           fetch-depth: 0
-
-      - name: Ensure full git history
-        shell: bash
-        run: |
-          set -euo pipefail
-          echo "shallow before: $(git rev-parse --is-shallow-repository)"
-          if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
-            # Với PR, HEAD là commit merge refs/pull/N/merge không thuộc nhánh nào:
-            # phải unshallow theo chính SHA của HEAD, refspec mặc định không đủ.
-            git fetch --unshallow --no-tags origin "$(git rev-parse HEAD)"
-          fi
-          echo "shallow after: $(git rev-parse --is-shallow-repository)"
-          test "$(git rev-parse --is-shallow-repository)" = "false"
-          git log -G 'const PHIEN_BAN' --format='%h %s' -2 HEAD -- sw.js
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -122,9 +109,7 @@ jobs:
           npx playwright install --with-deps chromium
 
       - name: Run mobile E2E tests
-        run: |
-          echo "git before E2E: shallow=$(git rev-parse --is-shallow-repository) commits=$(git rev-list --count HEAD) git-dir=$(git rev-parse --absolute-git-dir)"
-          npm run test:e2e
+        run: npm run test:e2e
 
       - name: Upload Playwright report
         if: failure()
