@@ -106,6 +106,16 @@
       return { storage: null, themes: null, progress: null, rewards: null, profile: null, error };
     });
 
+  // Ghi lại dữ liệu đang chờ (nếu lần ghi trước bị thiết bị từ chối) trước khi trang bị ẩn/đóng.
+  const flushStorage = () => {
+    try { window.BongStorage?.flush?.(); }
+    catch (error) { /* Không chặn việc đóng trang. */ }
+  };
+  window.addEventListener('pagehide', flushStorage);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushStorage();
+  });
+
   const STORAGE_KEY = 'bonghome_sound_enabled';
   const getEnabled = () => {
     try { return localStorage.getItem(STORAGE_KEY) !== 'false'; }

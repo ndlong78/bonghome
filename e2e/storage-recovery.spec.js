@@ -29,6 +29,9 @@ test.describe('Storage recovery và migration', () => {
 
     const recovered = await page.evaluate(() => ({
       raw: localStorage.getItem('bonghome:data'),
+      backups: Object.keys(localStorage)
+        .filter((key) => key.startsWith('bonghome:data:corrupt:'))
+        .map((key) => localStorage.getItem(key)),
       mode: window.BongStorage?.getRecoveryMode(),
       persistent: window.BongStorage?.isPersistent()
     }));
@@ -41,6 +44,9 @@ test.describe('Storage recovery và migration', () => {
     }));
     expect(recovered.mode).toBe('corrupt-json');
     expect(recovered.persistent).toBe(true);
+    expect(recovered.backups).toEqual(['{broken-json']);
+    await expect(page.locator('#storageHealth')).toBeVisible();
+    await expect(page.locator('#storageHealth')).toContainText('bản sao lưu');
     expect(errors).toEqual([]);
   });
 
@@ -74,6 +80,34 @@ test.describe('Storage recovery và migration', () => {
     expect(result.profile).toEqual(expect.objectContaining({ schemaVersion: 1, displayName: 'Bông' }));
     expect(result.rewards).toEqual(expect.objectContaining({ schemaVersion: 1, stars: 0 }));
     expect(result.progress).toEqual(expect.objectContaining({ schemaVersion: 1, completed: 0 }));
+    await expect(page.locator('#storageHealth')).toContainText('phiên bản mới hơn');
     expect(errors).toEqual([]);
+  });
+
+  test('thiết bị từ chối ghi thì Góc phụ huynh cảnh báo và dữ liệu vẫn dùng được trong phiên', async ({ page }) => {
+    const errors = collectRuntimeErrors(page);
+    await page.addInitScript(() => {
+      localStorage.setItem('bonghome:data', JSON.stringify({ schemaVersion: 1, data: { rewards: { schemaVersion: 1, stars: 7 } } }));
+      const original = Storage.prototype.setItem;
+      Storage.prototype.setItem = function setItem(key, value) {
+        if (key === 'bonghome:data') throw new DOMException('full', 'QuotaExceededError');
+        return original.call(this, key, value);
+      };
+    });
+
+    await page.goto('/parents.html', { waitUntil: 'domcontentloaded' });
+    await waitForParentDashboard(page);
+
+    const health = await page.evaluate(() => window.BongStorage?.getHealth());
+    expect(health).toEqual(expect.objectContaining({ recoveryMode: 'write-failed', pendingWrite: true, persistent: false }));
+    await expect(page.locator('#starCount')).toHaveText('7');
+    await expect(page.locator('#storageHealth')).toContainText('từ chối lưu');
+    expect(errors).toEqual([]);
+  });
+
+  test('bộ nhớ bình thường thì không hiện cảnh báo', async ({ page }) => {
+    await page.goto('/parents.html', { waitUntil: 'domcontentloaded' });
+    await waitForParentDashboard(page);
+    await expect(page.locator('#storageHealth')).toBeHidden();
   });
 });

@@ -7,10 +7,17 @@
   'use strict';
 
   const STORAGE_KEY = 'bonghome:data';
+  const BACKUP_KEY_PREFIX = `${STORAGE_KEY}:corrupt:`;
+  const MAX_BACKUPS = 3;
   const CURRENT_SCHEMA_VERSION = 1;
   const memory = new Map();
   let persistent = Boolean(storageAdapter);
   let recoveryMode = null;
+  // Bản mới nhất chưa ghi được xuống thiết bị (ví dụ hết quota). Đọc luôn ưu tiên
+  // bản này để không lùi dữ liệu, và mỗi lần ghi sau sẽ thử ghi xuống lại.
+  let pendingRaw = null;
+  let lastWriteError = null;
+  let backupKey = null;
 
   const clone = (value) => value == null ? value : JSON.parse(JSON.stringify(value));
   const emptyDocument = () => ({
@@ -27,6 +34,7 @@
   }
 
   function readRaw() {
+    if (pendingRaw !== null) return pendingRaw;
     if (persistent) {
       try { return storageAdapter.getItem(STORAGE_KEY); }
       catch (error) {
@@ -41,14 +49,55 @@
     if (persistent) {
       try {
         storageAdapter.setItem(STORAGE_KEY, value);
+        pendingRaw = null;
+        lastWriteError = null;
+        if (recoveryMode === 'write-failed') recoveryMode = null;
         return true;
       } catch (error) {
-        persistent = false;
-        recoveryMode = 'storage-unavailable';
+        // Không tắt hẳn bộ nhớ thiết bị: lỗi quota có thể chỉ thoáng qua.
+        pendingRaw = value;
+        lastWriteError = error?.name || error?.message || 'write-error';
+        recoveryMode = 'write-failed';
+        return false;
       }
     }
     memory.set(STORAGE_KEY, value);
     return false;
+  }
+
+  /** Thử ghi lại bản đang chờ (gọi khi trang bị ẩn hoặc đóng). */
+  function flush() {
+    if (pendingRaw === null) return true;
+    return writeRaw(pendingRaw);
+  }
+
+  function listBackupKeys() {
+    return listRawKeys().filter((key) => key.startsWith(BACKUP_KEY_PREFIX)).sort();
+  }
+
+  /**
+   * Giữ nguyên chuỗi hỏng trước khi ghi đè để phụ huynh còn đường khôi phục.
+   * Trả về false khi không sao lưu được — khi đó tuyệt đối không ghi đè bản gốc.
+   */
+  function backupCorruptRaw(raw) {
+    if (!persistent) return false;
+    try {
+      const existing = listBackupKeys();
+      const same = existing.find((key) => storageAdapter.getItem(key) === raw);
+      if (same) {
+        backupKey = same;
+        return true;
+      }
+      const key = `${BACKUP_KEY_PREFIX}${new Date().toISOString()}`;
+      storageAdapter.setItem(key, raw);
+      backupKey = key;
+      existing.slice(0, Math.max(0, existing.length + 1 - MAX_BACKUPS)).forEach((oldKey) => {
+        try { storageAdapter.removeItem(oldKey); } catch (error) { /* Giữ lại nếu không xóa được. */ }
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   function normalizeDocument(input) {
@@ -92,8 +141,12 @@
       }
       return normalizeDocument(parsed);
     } catch (error) {
-      recoveryMode = 'corrupt-json';
-      return emptyDocument();
+      if (backupCorruptRaw(raw)) {
+        recoveryMode = 'corrupt-json';
+        return emptyDocument();
+      }
+      // Không sao lưu được thì chơi tạm trong bộ nhớ, giữ nguyên bản gốc trên thiết bị.
+      return useMemoryFallback(emptyDocument(), 'corrupt-json-unsaved');
     }
   }
 
@@ -188,8 +241,23 @@
     return removed;
   }
 
+  function getHealth() {
+    let bytes = null;
+    try { bytes = (readRaw() || '').length; } catch (error) { bytes = null; }
+    return {
+      persistent: persistent && pendingRaw === null,
+      recoveryMode,
+      pendingWrite: pendingRaw !== null,
+      lastWriteError,
+      backupKey,
+      backupKeys: listBackupKeys(),
+      sizeChars: bytes
+    };
+  }
+
   return Object.freeze({
     STORAGE_KEY,
+    BACKUP_KEY_PREFIX,
     schemaVersion: CURRENT_SCHEMA_VERSION,
     get,
     set,
@@ -199,7 +267,9 @@
     removeRawKeys,
     migrate,
     exportData: () => clone(readDocument()),
-    isPersistent: () => persistent,
+    flush,
+    getHealth,
+    isPersistent: () => persistent && pendingRaw === null,
     getRecoveryMode: () => recoveryMode
   });
 });
