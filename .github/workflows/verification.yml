@@ -103,10 +103,13 @@ jobs:
           set -euo pipefail
           echo "shallow before: $(git rev-parse --is-shallow-repository)"
           if [ "$(git rev-parse --is-shallow-repository)" = "true" ]; then
-            git fetch --unshallow --no-tags origin
+            # Với PR, HEAD là commit merge refs/pull/N/merge không thuộc nhánh nào:
+            # phải unshallow theo chính SHA của HEAD, refspec mặc định không đủ.
+            git fetch --unshallow --no-tags origin "$(git rev-parse HEAD)"
           fi
           echo "shallow after: $(git rev-parse --is-shallow-repository)"
-          git log -G 'const PHIEN_BAN' --format='%h %s' -2 -- sw.js
+          test "$(git rev-parse --is-shallow-repository)" = "false"
+          git log -G 'const PHIEN_BAN' --format='%h %s' -2 HEAD -- sw.js
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
