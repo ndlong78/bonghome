@@ -7,7 +7,7 @@ const source = fs.readFileSync(path.resolve(__dirname, '..', 'sw.js'), 'utf8');
 const ORIGIN = 'https://bong.test';
 
 /** Nạp sw.js trong sandbox với caches/fetch giả lập; đồng hồ do test điều khiển. */
-function loadWorker({ cached = {}, fetchImpl }) {
+function loadWorker({ cached = {}, fetchImpl, onFetch }) {
   const listeners = {};
   const store = new Map(Object.entries(cached));
   const timers = [];
@@ -25,7 +25,11 @@ function loadWorker({ cached = {}, fetchImpl }) {
       return undefined;
     },
     async open() {
-      return { put: async (key, response) => { store.set(keyOf(key), response); } };
+      return {
+        put: async (key, response) => { store.set(keyOf(key), response); },
+        keys: async () => [...store.keys()].map((url) => ({ url })),
+        delete: async (key) => store.delete(keyOf(key))
+      };
     },
     keys: async () => [],
     delete: async () => true
@@ -36,10 +40,11 @@ function loadWorker({ cached = {}, fetchImpl }) {
     Promise,
     console,
     caches,
-    fetch: fetchImpl,
+    fetch: (...args) => { onFetch?.(...args); return fetchImpl(...args); },
     setTimeout: (callback) => { timers.push(callback); return timers.length; },
     clearTimeout: () => {},
     self: {
+      location: new URL(`${ORIGIN}/sw.js`),
       addEventListener: (type, listener) => { listeners[type] = listener; },
       clients: { matchAll: async () => [], claim: async () => {} },
       skipWaiting: () => {}
@@ -50,10 +55,13 @@ function loadWorker({ cached = {}, fetchImpl }) {
     store,
     fireTimers: () => timers.splice(0).forEach((callback) => callback()),
     navigate(url) {
+      return this.request(url, 'navigate');
+    },
+    request(url, mode = 'no-cors') {
       let responded;
       const waits = [];
       listeners.fetch({
-        request: { method: 'GET', mode: 'navigate', url },
+        request: { method: 'GET', mode, url },
         respondWith: (promise) => { responded = promise; },
         waitUntil: (promise) => waits.push(promise)
       });
@@ -136,6 +144,41 @@ assert.match(source, /const NAVIGATION_TIMEOUT_MS = \d+;/);
     });
     const { responded } = worker.navigate(`${ORIGIN}/game13.html`);
     assert.equal(await (await responded).text(), 'home');
+  }
+
+  // Tệp đã precache: trả từ cache, không gọi mạng (kể cả khi URL có query).
+  {
+    let fetches = 0;
+    const worker = loadWorker({
+      cached: { [`${ORIGIN}/js/storage.js`]: page('cached-storage') },
+      fetchImpl: async () => page('network-storage'),
+      onFetch: () => { fetches += 1; }
+    });
+    const { responded } = worker.request(`${ORIGIN}/js/storage.js?v=2`);
+    assert.equal(await (await responded).text(), 'cached-storage');
+    assert.equal(fetches, 0, 'tệp precache không được tải lại qua mạng');
+  }
+
+  // Tệp ngoài precache: stale-while-revalidate vào runtime cache, có giới hạn số mục.
+  {
+    const cached = {};
+    for (let index = 0; index < 60; index += 1) cached[`${ORIGIN}/extra/${index}.json`] = page(`old-${index}`);
+    const worker = loadWorker({ cached, fetchImpl: async () => page('fresh-extra') });
+    Object.defineProperty(Response.prototype, 'type', { configurable: true, get: () => 'basic' });
+    const { responded, waits } = worker.request(`${ORIGIN}/extra/new.json`);
+    assert.equal(await (await responded).text(), 'fresh-extra');
+    await Promise.all(waits);
+    delete Response.prototype.type;
+    assert.ok(worker.store.has(`${ORIGIN}/extra/new.json`));
+    assert.equal(worker.store.size, 60, 'runtime cache phải được cắt về tối đa 60 mục');
+    assert.equal(worker.store.has(`${ORIGIN}/extra/0.json`), false, 'mục cũ nhất bị bỏ trước');
+  }
+
+  // Ngoài origin: Service Worker không chen vào.
+  {
+    const worker = loadWorker({ fetchImpl: async () => page('x') });
+    const { responded } = worker.request('https://cdn.example.com/lib.js');
+    assert.equal(responded, undefined);
   }
 
   console.log('Service Worker navigation checks passed.');

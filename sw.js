@@ -18,7 +18,7 @@ const TEP_SHELL = [
 const TEP_GAME = [
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html", "./game11.html", "./game12.html", "./game13.html",
   "./game1-difficulty.js", "./game1-autosave.js",
-  "./js/game1-rewards.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/game1-keyboard-accessibility.js", "./js/game2-keyboard-cursor.js", "./js/game3-keyboard-matching.js", "./js/game3-drag-stability.js", "./js/game4-keyboard-sorting.js", "./js/game5-touch-target.js", "./js/games2-4-rewards.js", "./js/games2-4-autosave.js", "./js/games5-7-rewards.js", "./js/games5-7-autosave.js", "./js/games8-10-rewards.js", "./js/games8-10-autosave.js", "./js/game11-blocks.js", "./js/game12-sudoku.js", "./js/game13-rewards.js", "./js/game13-tictactoe.js", "./js/game12-rewards.js",
+  "./js/game1-rewards.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/game1-keyboard-accessibility.js", "./js/game2-keyboard-cursor.js", "./js/game3-keyboard-matching.js", "./js/game3-drag-stability.js", "./js/game4-keyboard-sorting.js", "./js/game5-touch-target.js", "./js/games2-4-rewards.js", "./js/games2-4-autosave.js", "./js/games5-7-rewards.js", "./js/games5-7-autosave.js", "./js/games8-10-rewards.js", "./js/games8-10-autosave.js", "./js/game11-blocks.js", "./js/game11-rewards.js", "./js/game12-sudoku.js", "./js/game13-rewards.js", "./js/game13-tictactoe.js", "./js/game12-rewards.js",
   "./css/game1-autosave.css", "./css/games-autosave.css", "./css/game11-blocks.css", "./css/game12-sudoku.css", "./css/game13-tictactoe.css"
 ];
 
@@ -130,23 +130,58 @@ function networkFirstNavigation(event) {
   })();
 }
 
-async function staleWhileRevalidate(request) {
+/* Đường dẫn đã precache (không kèm query): phục vụ thẳng từ cache, không gọi mạng.
+   Chúng chỉ đổi khi đổi PHIEN_BAN, nên tải lại mỗi lần chỉ tốn data mà không bao giờ được dùng. */
+const DUONG_DAN_PRECACHE = new Set(
+  NHOM_PRECACHE.flatMap((group) => group.urls).map((url) => new URL(url, self.location.href).pathname)
+);
+const SO_MUC_RUNTIME_TOI_DA = 60;
+
+async function catBotRuntime(cache) {
+  const keys = await cache.keys();
+  const thua = keys.length - SO_MUC_RUNTIME_TOI_DA;
+  if (thua > 0) await Promise.all(keys.slice(0, thua).map((key) => cache.delete(key)));
+}
+
+async function luuRuntime(request, response) {
+  if (!response?.ok || response.type !== "basic") return;
+  const cache = await caches.open(TEN_CACHE.runtime);
+  await cache.put(request, response.clone());
+  await catBotRuntime(cache);
+}
+
+async function cacheFirstPrecache(request) {
+  const cached = await caches.match(request, { ignoreSearch: true });
+  if (cached) return cached;
+  // Precache thiếu tệp (hiếm): lấy mạng và giữ lại cho lần sau.
+  const response = await fetch(request);
+  await luuRuntime(request, response);
+  return response;
+}
+
+async function staleWhileRevalidate(event) {
+  const { request } = event;
   const cached = await caches.match(request);
   const network = fetch(request).then(async (response) => {
-    if (response?.ok && response.type === "basic") {
-      const cache = await caches.open(TEN_CACHE.runtime);
-      await cache.put(request, response.clone());
-    }
+    await luuRuntime(request, response);
     return response;
   }).catch(() => null);
+  event.waitUntil(network);
   return cached || (await network) || new Response("", { status: 503, statusText: "Không có mạng" });
 }
 
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
+  const url = new URL(event.request.url);
+  // Tài nguyên ngoài origin: để trình duyệt tự xử lý, không đưa vào cache của app.
+  if (url.origin !== self.location.origin) return;
   if (event.request.mode === "navigate") {
     event.respondWith(networkFirstNavigation(event));
     return;
   }
-  event.respondWith(staleWhileRevalidate(event.request));
+  if (DUONG_DAN_PRECACHE.has(url.pathname)) {
+    event.respondWith(cacheFirstPrecache(event.request));
+    return;
+  }
+  event.respondWith(staleWhileRevalidate(event));
 });

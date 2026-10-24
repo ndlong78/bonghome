@@ -530,30 +530,13 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
   huyHieu.textContent = "⏳ Đang tải các lớp học về máy…";
   huyHieu.className = "huy-hieu hien dang-tai";
 
-  navigator.serviceWorker.register("./sw.js")
-    .then(dangKy => {
-      /* Đã có sẵn trong máy từ lần trước */
-      if(navigator.serviceWorker.controller){
-        huyHieu.textContent = "✅ Đã sẵn sàng — chơi được cả khi không có mạng";
-        huyHieu.className = "huy-hieu hien";
-        return;
-      }
-      /* Lần đầu: chờ tải xong toàn bộ */
-      dangKy.addEventListener("updatefound", () => {
-        const sw = dangKy.installing;
-        if(!sw) return;
-        sw.addEventListener("statechange", () => {
-          if(sw.state === "activated" || sw.state === "installed"){
-            huyHieu.textContent = "✅ Đã sẵn sàng — chơi được cả khi không có mạng";
-            huyHieu.className = "huy-hieu hien";
-          }
-        });
-      });
-    })
-    .catch(() => {
-      huyHieu.textContent = "ℹ️ Trang vẫn chơi được bình thường";
-      huyHieu.className = "huy-hieu hien dang-tai";
-    });
+  /* pwa-ios.js đăng ký Service Worker cho mọi trang; ở đây chỉ chờ nó sẵn sàng.
+     `ready` chỉ resolve khi đã cài xong toàn bộ tệp offline; cài lỗi thì shared-ui.js
+     nhận CACHE_FAILED và báo trên huy hiệu này. */
+  navigator.serviceWorker.ready.then(() => {
+    huyHieu.textContent = "✅ Đã sẵn sàng — chơi được cả khi không có mạng";
+    huyHieu.className = "huy-hieu hien";
+  });
 }
 
 /* Báo cho bé biết khi máy vừa mất mạng: mọi thứ vẫn chạy ngon lành */
