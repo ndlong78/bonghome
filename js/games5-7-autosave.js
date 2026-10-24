@@ -84,67 +84,14 @@
     return true;
   }
 
+  // Game 6 đã tách engine (js/game6-engine.js, js/game6-ui.js): lưu/khôi phục qua window.BongGame6.
   function captureGame6() {
-    return {
-      schemaVersion: 1,
-      sessionId,
-      round: vong,
-      cells: [...luoi.children].map((cell) => cell.dataset.ma).filter(Boolean),
-      selectedIndex: daChon ? [...luoi.children].indexOf(daChon) : -1,
-      wrong: soSai,
-      seconds: giay,
-      started: daBatDau
-    };
+    return window.BongGame6.serialize(sessionId);
   }
 
   function restoreGame6(state) {
-    const round = Number.isInteger(state.round) ? state.round : -1;
-    const cells = Array.isArray(state.cells) ? state.cells : [];
-    if (!CAC_VONG[round] || cells.length !== CAC_VONG[round].o) return false;
-    if (cells.some((code) => !/^\d+-\d+$/.test(code))) return false;
-
-    clearInterval(dongHoChay);
-    vong = round;
-    soSai = Number.isFinite(state.wrong) ? Math.max(0, state.wrong) : 0;
-    giay = Number.isFinite(state.seconds) ? Math.max(0, state.seconds) : 0;
-    daBatDau = Boolean(state.started);
-    khoa = false;
-    daChon = null;
+    if (!window.BongGame6.restore(state)) return false;
     sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
-
-    const config = CAC_VONG[vong];
-    const width = Math.min(96, Math.floor(Math.min(innerWidth - 40, 720) / config.cot) - 10);
-    luoi.innerHTML = '';
-    luoi.style.gridTemplateColumns = `repeat(${config.cot}, ${width}px)`;
-    cells.forEach((code, index) => {
-      const [shape, color] = code.split('-').map(Number);
-      if (!DUONG[shape] || !MAU[color]) return;
-      const cell = document.createElement('div');
-      cell.className = 'o-hinh';
-      cell.dataset.ma = code;
-      cell.style.height = `${width}px`;
-      cell.setAttribute('role', 'button');
-      cell.setAttribute('tabindex', '0');
-      cell.setAttribute('aria-label', 'Ô hình');
-      cell.innerHTML = veHinh(shape, color);
-      cell.addEventListener('click', () => chamVaoO(cell));
-      cell.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          chamVaoO(cell);
-        }
-      });
-      if (index === state.selectedIndex) {
-        cell.classList.add('chon');
-        daChon = cell;
-      }
-      luoi.appendChild(cell);
-    });
-    oVong.textContent = `${vong + 1}/5`;
-    oDongHo.textContent = dinhDangGio(giay);
-    thongBao.textContent = '';
-    manThang.classList.remove('hien');
-    startClock(true);
     return true;
   }
 
@@ -238,8 +185,9 @@
       capture: captureGame6,
       restore: restoreGame6,
       difficulty: '5-rounds',
-      moves: () => vong + soSai,
-      canSave: () => !khoa && vong < CAC_VONG.length
+      moves: () => window.BongGame6.moves(),
+      seconds: () => window.BongGame6.seconds(),
+      canSave: () => window.BongGame6.canSave()
     },
     game7: {
       capture: captureGame7,
@@ -253,13 +201,16 @@
   function init(modules) {
     const progress = modules?.progress;
     const adapter = adapters[gameId];
-    if (!progress || !adapter) return;
+    // Hộp thoại thắng lấy theo id: Game 6 không còn biến toàn cục manThang.
+    const winDialog = document.getElementById('manThang');
+    if (!progress || !adapter || !winDialog) return;
+    const seconds = adapter.seconds || (() => giay);
 
     const saved = progress.loadGame(gameId);
     if (saved?.state && adapter.restore(saved.state)) showStatus('↩️ Đã khôi phục ván đang chơi');
 
     function save() {
-      if (manThang.classList.contains('hien') || !adapter.canSave()) return;
+      if (winDialog.classList.contains('hien') || !adapter.canSave()) return;
       progress.saveGame(gameId, {
         status: 'in_progress',
         difficulty: adapter.difficulty,
@@ -284,18 +235,18 @@
     });
 
     const observer = new MutationObserver(() => {
-      if (!manThang.classList.contains('hien')) return;
+      if (!winDialog.classList.contains('hien')) return;
       clearInterval(saveTimer);
       const result = progress.completeGame(gameId, {
         transactionId: `${gameId}-finish-${sessionId}`,
         difficulty: adapter.difficulty,
-        durationSeconds: giay,
+        durationSeconds: seconds(),
         moves: adapter.moves(),
         metadata: { source: 'games5-7-autosave' }
       });
       if (!result.duplicate) showStatus('✅ Đã lưu lượt hoàn thành');
     });
-    observer.observe(manThang, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(winDialog, { attributes: true, attributeFilter: ['class'] });
 
     window.BongGames57Autosave = Object.freeze({ gameId, save, capture: adapter.capture });
   }
