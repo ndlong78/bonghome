@@ -24,10 +24,10 @@ const expectedTitles = [
 ];
 
 assert.equal(catalog.schemaVersion, 1);
-const expectedIds = [...expectedTitles.map((_, index) => `game${index + 1}`), 'game12', 'game13'];
-assert.equal(catalog.games.length, 12);
+const expectedIds = [...expectedTitles.map((_, index) => `game${index + 1}`), 'game11', 'game12', 'game13'];
+assert.equal(catalog.games.length, 13);
 assert.deepEqual(catalog.games.map((game) => game.id), expectedIds);
-assert.deepEqual(catalog.games.map((game) => game.title), [...expectedTitles, 'Sudoku Vui Vẻ', 'Cờ Ca-rô Tí Hon']);
+assert.deepEqual(catalog.games.map((game) => game.title), [...expectedTitles, 'Xếp Khối Thông Minh', 'Sudoku Vui Vẻ', 'Cờ Ca-rô Tí Hon']);
 assert.deepEqual(
   catalog.games.filter((game) => game.rewardsEnabled).map((game) => game.id),
   expectedIds

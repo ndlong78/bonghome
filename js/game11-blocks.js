@@ -19,7 +19,10 @@
     lines: 0,
     gameOver: false,
     timer: null,
-    manualPaused: false
+    manualPaused: false,
+    roundId: '',
+    roundStartedAt: 0,
+    piecesPlaced: 0
   };
 
   const els = {};
@@ -234,6 +237,7 @@
       stopTimer();
       renderAll();
       announce('Bàn đã đầy rồi. Bé bấm Chơi lại để bắt đầu một bàn mới nhé!');
+      recordRound();
       return false;
     }
     renderAll();
@@ -333,11 +337,38 @@
     state.board = keptRows.flat();
   }
 
+  /** Ghi nhận bàn vừa kết thúc vào tiến độ và phần thưởng (bàn chưa dọn hàng nào thì bỏ qua). */
+  function recordRound() {
+    const ready = window.BongGame11RewardsReady;
+    if (!ready || typeof ready.then !== 'function' || !state.lines) return Promise.resolve(null);
+    const round = {
+      roundId: state.roundId,
+      lines: state.lines,
+      score: state.score,
+      pieces: state.piecesPlaced,
+      durationSeconds: Math.max(0, Math.round((Date.now() - state.roundStartedAt) / 1000))
+    };
+    return ready
+      .then((api) => {
+        const detail = api ? api.complete(round) : null;
+        // Bé đã bấm Chơi lại trong lúc chờ thì không đè thông báo của bàn mới.
+        if (detail && !detail.duplicate && state.roundId === round.roundId) {
+          announce(`Bàn đã đầy rồi. Bé dọn được ${round.lines} hàng! ${api.rewardLines(detail).join(' · ')}. Bấm Chơi lại để chơi tiếp nhé!`);
+        }
+        return detail;
+      })
+      .catch((error) => {
+        console.warn('[Bông Home] Không ghi được tiến độ/phần thưởng Game 11', error);
+        return null;
+      });
+  }
+
   function lockActive() {
     if (!state.active || state.gameOver) return;
     state.active.cells.forEach(([dr, dc]) => {
       state.board[boardIndex(state.active.row + dr, state.active.col + dc)] = state.active.color;
     });
+    state.piecesPlaced += 1;
     state.score += state.active.cells.length;
 
     const clearedRows = completedRows();
@@ -397,6 +428,9 @@
 
   function resetGame() {
     stopTimer();
+    state.roundId = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    state.roundStartedAt = Date.now();
+    state.piecesPlaced = 0;
     state.score = 0;
     state.lines = 0;
     state.gameOver = false;
