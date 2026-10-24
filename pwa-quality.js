@@ -219,7 +219,9 @@
       const count = document.querySelectorAll('#sanBai .la-bai').length;
       root.style.setProperty('--bh-game1-cols', count >= 20 ? (innerWidth >= 700 ? 6 : 4) : count >= 16 ? 4 : innerWidth >= 700 ? 6 : 4);
     };
-    new MutationObserver(update).observe(document.documentElement, { childList: true, subtree: true });
+    // Chỉ theo dõi việc thêm/bớt lá bài, không quan sát cả trang (mỗi lần lật bài đổi class ở rất nhiều nút).
+    const board = document.getElementById('sanBai');
+    if (board) new MutationObserver(update).observe(board, { childList: true });
     addEventListener('resize', update, { passive: true });
     update();
   }
