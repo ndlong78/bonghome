@@ -93,6 +93,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # e2e/version-upgrade.spec.js dựng bản phát hành trước từ lịch sử git.
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
