@@ -52,9 +52,9 @@
     valid.themeId = valid.themeId || requestedThemeId || DEFAULT_THEME_ID;
 
     root.BongGame1Content = valid;
-    if (typeof KHO_HINH !== 'undefined' && Array.isArray(KHO_HINH)) {
-      KHO_HINH.splice(0, KHO_HINH.length, ...valid.cards.map((card) => card.svg));
-    }
+    // Game 1 đã tách engine/UI: đổi bộ hình qua API, không ghi vào biến toàn cục của trang.
+    // Nếu giao diện chưa chạy, js/game1-ui.js tự đọc root.BongGame1Content khi khởi động.
+    root.BongGame1?.setCards(valid.cards.map((card) => card.svg));
 
     const title = root.document.querySelector('.thanh-tren h1');
     if (title) title.textContent = valid.title;

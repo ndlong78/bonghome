@@ -1,62 +1,25 @@
 (function (root, factory) {
   'use strict';
-  const api = factory();
+  const engine = root?.BongGame1Engine || (typeof require === 'function' ? require('./js/game1-engine.js') : null);
+  const api = factory(engine);
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (root?.document) {
     root.BongGame1Autosave = api;
     api.start(root);
   }
-})(typeof window !== 'undefined' ? window : globalThis, function createGame1Autosave() {
+})(typeof window !== 'undefined' ? window : globalThis, function createGame1Autosave(engine) {
   'use strict';
 
-  const SNAPSHOT_VERSION = 1;
+  if (!engine) throw new Error('Game 1 autosave requires js/game1-engine.js');
+  const SNAPSHOT_VERSION = engine.SNAPSHOT_VERSION;
   const BUNDLE_VERSION = 1;
   const GAME_ID = 'game1';
-  const ALLOWED_DIFFICULTIES = new Set([3, 6, 8, 12]);
+  const ALLOWED_DIFFICULTIES = new Set(engine.PAIR_COUNTS);
 
-  const uniqueIntegers = (values, max) => {
-    if (!Array.isArray(values)) return null;
-    const output = [];
-    const seen = new Set();
-    for (const value of values) {
-      if (!Number.isInteger(value) || value < 0 || value >= max || seen.has(value)) return null;
-      seen.add(value);
-      output.push(value);
-    }
-    return output;
-  };
-
+  /** Snapshot hợp lệ (đã chuẩn hoá) hoặc null; luật kiểm tra nằm ở engine (js/game1-engine.js). */
   function validateSnapshot(value) {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
-    const difficulty = Number(value.difficulty);
-    if (value.version !== SNAPSHOT_VERSION || !ALLOWED_DIFFICULTIES.has(difficulty)) return null;
-    if (!Array.isArray(value.deck) || value.deck.length !== difficulty * 2) return null;
-    if (!value.deck.every((code) => Number.isInteger(code) && code >= 0 && code < difficulty)) return null;
-
-    const counts = new Map();
-    value.deck.forEach((code) => counts.set(code, (counts.get(code) || 0) + 1));
-    if (counts.size !== difficulty || [...counts.values()].some((count) => count !== 2)) return null;
-
-    const matchedIndices = uniqueIntegers(value.matchedIndices, value.deck.length);
-    const openIndices = uniqueIntegers(value.openIndices, value.deck.length);
-    if (!matchedIndices || !openIndices || matchedIndices.length % 2 !== 0 || openIndices.length > 2) return null;
-    if (openIndices.some((index) => matchedIndices.includes(index))) return null;
-
-    const moves = Number(value.moves);
-    const seconds = Number(value.seconds);
-    if (!Number.isInteger(moves) || moves < 0 || !Number.isInteger(seconds) || seconds < 0) return null;
-
-    return {
-      version: SNAPSHOT_VERSION,
-      difficulty,
-      deck: value.deck.slice(),
-      matchedIndices,
-      openIndices,
-      moves,
-      seconds,
-      started: Boolean(value.started),
-      locked: Boolean(value.locked)
-    };
+    const state = engine.restore(value);
+    return state ? engine.serialize(state) : null;
   }
 
   function emptyBundle() {
@@ -115,10 +78,11 @@
     root.__bongGame1AutosaveStarted = true;
 
     const progress = root.BongProgress;
-    if (!progress) return;
+    // Game 1 đã tách engine/UI (js/game1-engine.js, js/game1-ui.js): mọi thao tác ván đi qua window.BongGame1.
+    const game = root.BongGame1;
+    if (!progress || !game) return;
 
     let startedAt = null;
-    let completed = false;
     let periodicSave = null;
     let statusTimer = null;
 
@@ -158,54 +122,12 @@
       });
     }
 
-    function setDifficultyButton(difficulty) {
-      root.document.querySelectorAll('#mucDo button').forEach((button) => {
-        const selected = Number(button.dataset.cap) === difficulty;
-        button.classList.toggle('dang-chon', selected);
-        button.setAttribute('aria-pressed', selected ? 'true' : 'false');
-      });
-    }
-
-    function resizeBoard() {
-      const columns = soCapCanTim === 3 ? 3 : 4;
-      const width = Math.min(140, Math.floor((Math.min(root.innerWidth - 40, 700)) / columns) - 12);
-      sanBai.style.gridTemplateColumns = `repeat(${columns}, ${width}px)`;
-    }
-
-    function startClock() {
-      root.clearInterval(dongHoChay);
-      dongHoChay = null;
-      if (!daBatDau || completed || capDaTim >= soCapCanTim) return;
-      dongHoChay = root.setInterval(() => {
-        giay += 1;
-        oDongHo.textContent = dinhDangGio(giay);
-      }, 1000);
-    }
-
-    function captureSnapshot() {
-      const cards = [...sanBai.querySelectorAll('.la-bai')];
-      if (cards.length !== soCapCanTim * 2) return null;
-      return validateSnapshot({
-        version: SNAPSHOT_VERSION,
-        difficulty: soCapCanTim,
-        deck: cards.map((card) => Number(card.dataset.ma)),
-        matchedIndices: cards.flatMap((card, index) => card.classList.contains('dung') ? [index] : []),
-        openIndices: cards.flatMap((card, index) => card.classList.contains('lat') && !card.classList.contains('dung') ? [index] : []),
-        moves: soLuot,
-        seconds: giay,
-        started: daBatDau,
-        locked: khoaBai
-      });
-    }
-
-    function isMeaningful(snapshot) {
-      return Boolean(snapshot && (snapshot.started || snapshot.moves || snapshot.matchedIndices.length || snapshot.openIndices.length));
-    }
+    const isMeaningful = (snapshot) => Boolean(snapshot) && engine.hasProgress(engine.restore(snapshot));
 
     function saveNow() {
-      if (completed) return false;
-      const snapshot = captureSnapshot();
-      if (!isMeaningful(snapshot)) return false;
+      if (!game.canSave() || !game.hasProgress()) return false;
+      const snapshot = validateSnapshot(game.serialize());
+      if (!snapshot) return false;
       const { bundle } = readBundle();
       const key = String(snapshot.difficulty);
       const previousStartedAt = bundle.snapshots[key]?.startedAt;
@@ -223,59 +145,12 @@
       writeBundle(bundle);
     }
 
-    function closePendingMismatch(delay = 700) {
-      if (!khoaBai || baiDangMo.length !== 2) return;
-      root.setTimeout(() => {
-        baiDangMo.forEach((card) => card.classList.remove('lat', 'sai'));
-        baiDangMo = [];
-        khoaBai = false;
-        saveNow();
-      }, delay);
-    }
-
-    function buildCard(code) {
-      const button = root.document.createElement('button');
-      button.className = 'la-bai';
-      button.dataset.ma = String(code);
-      button.setAttribute('aria-label', 'Lá bài úp');
-      button.innerHTML = `<div class="mat mat-sau">${HINH_MAT_SAU}</div><div class="mat mat-truoc">${KHO_HINH[code]}</div>`;
-      button.addEventListener('click', () => chamVaoBai(button));
-      return button;
-    }
-
+    /** Khôi phục qua giao diện: vẽ lại bàn, chạy lại đồng hồ, cặp sai đang chờ thì tự úp lại. */
     function restoreSnapshot(snapshot, entry, message = '🌷 Bé tiếp tục từ chỗ đang chơi nhé!') {
-      root.clearInterval(dongHoChay);
-      dongHoChay = null;
-      completed = false;
+      if (!game.restore(snapshot)) return false;
       startedAt = entry?.startedAt || null;
-      soCapCanTim = snapshot.difficulty;
-      setDifficultyButton(soCapCanTim);
-
-      sanBai.innerHTML = '';
-      snapshot.deck.forEach((code) => sanBai.appendChild(buildCard(code)));
-      const cards = [...sanBai.querySelectorAll('.la-bai')];
-      snapshot.matchedIndices.forEach((index) => cards[index].classList.add('lat', 'dung'));
-      snapshot.openIndices.forEach((index) => cards[index].classList.add('lat'));
-
-      baiDangMo = snapshot.openIndices.map((index) => cards[index]);
-      capDaTim = snapshot.matchedIndices.length / 2;
-      soLuot = snapshot.moves;
-      giay = snapshot.seconds;
-      daBatDau = snapshot.started;
-      khoaBai = snapshot.locked && baiDangMo.length === 2;
-
-      oSoCap.textContent = `${capDaTim}/${soCapCanTim}`;
-      oSoLuot.textContent = String(soLuot);
-      oDongHo.textContent = dinhDangGio(giay);
-      const record = docKyLuc(soCapCanTim);
-      oKyLuc.textContent = record ? dinhDangGio(record) : '--';
-      manThang.classList.remove('hien');
-      root.document.getElementById('bangKyLuc').classList.remove('hien');
-      dungPhaoGiay();
-      resizeBoard();
-      startClock();
-      closePendingMismatch();
       announce(message);
+      return true;
     }
 
     function restoreDifficulty(difficulty, message) {
@@ -285,8 +160,7 @@
       if (!snapshot || !isMeaningful(snapshot)) return false;
       bundle.activeDifficulty = difficulty;
       writeBundle(bundle);
-      restoreSnapshot(snapshot, entry, message);
-      return true;
+      return restoreSnapshot(snapshot, entry, message);
     }
 
     function showResumeChoice(entry, snapshot) {
@@ -315,22 +189,15 @@
       restartButton.addEventListener('click', () => {
         clearDifficulty(snapshot.difficulty);
         startedAt = null;
-        completed = false;
-        soCapCanTim = snapshot.difficulty;
-        setDifficultyButton(soCapCanTim);
-        vanMoi();
+        game.newGame(snapshot.difficulty);
         overlay.remove();
         announce('✨ Bé bắt đầu một ván mới nhé!');
       });
       continueButton.focus();
     }
 
-    const originalWin = thangCuoc;
-    thangCuoc = function autosavedWin() {
-      originalWin();
-      if (completed) return;
-      completed = true;
-      const finishedDifficulty = soCapCanTim;
+    game.onWin((state) => {
+      const finishedDifficulty = state.pairs;
       const finishedStartedAt = startedAt;
       const { bundle } = readBundle();
       delete bundle.snapshots[String(finishedDifficulty)];
@@ -338,13 +205,16 @@
       progress.completeGame(GAME_ID, {
         transactionId: makeTransactionId(finishedStartedAt, finishedDifficulty),
         difficulty: String(finishedDifficulty),
-        durationSeconds: giay,
-        moves: soLuot,
+        durationSeconds: state.seconds,
+        moves: state.moves,
         metadata: { pairs: finishedDifficulty }
       });
       writeBundle(remaining);
-    };
+    });
+    // Mỗi lần lật lá hoặc úp lại cặp sai thì lưu ngay (trước đây đoán bằng hẹn giờ 0 ms và 1100 ms sau cú chạm).
+    game.onChange(saveNow);
 
+    // Pha capture: lưu ván của mức cũ trước khi giao diện chuyển sang mức mới.
     root.document.addEventListener('click', (event) => {
       const difficultyButton = event.target.closest('#mucDo button');
       if (difficultyButton) saveNow();
@@ -355,7 +225,6 @@
       if (difficultyButton) {
         const targetDifficulty = Number(difficultyButton.dataset.cap);
         startedAt = null;
-        completed = false;
         root.setTimeout(() => {
           restoreDifficulty(targetDifficulty, '🌼 Bé quay lại đúng ván của mức này nhé!');
         }, 0);
@@ -363,14 +232,8 @@
       }
 
       if (event.target.closest('#nutChoiLai')) {
-        clearDifficulty(soCapCanTim);
+        clearDifficulty(game.pairs());
         startedAt = null;
-        completed = false;
-        return;
-      }
-      if (event.target.closest('#sanBai .la-bai')) {
-        root.setTimeout(saveNow, 0);
-        root.setTimeout(saveNow, 1100);
       }
     });
 

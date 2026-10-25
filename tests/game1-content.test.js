@@ -35,6 +35,20 @@ assert.equal(loader.validateContent({ ...content, cards: content.cards.slice(0, 
 assert.equal(loader.validateContent({ ...content, schemaVersion: 2 }), null);
 assert.equal(loader.validateContent({ ...content, difficulties: [{ pairs: 3, label: 'x', ariaLabel: 'x' }] }), null);
 
+// applyContent đổi bộ hình qua API của giao diện (không còn ghi vào biến toàn cục KHO_HINH của trang).
+{
+  const received = [];
+  const fakeRoot = {
+    document: { querySelector: () => null, getElementById: () => null },
+    BongGame1: { setCards: (svgs) => received.push(svgs) }
+  };
+  const applied = loader.applyContent(fakeRoot, content, 'bong-home');
+  assert.equal(fakeRoot.BongGame1Content, applied);
+  assert.deepEqual(received, [content.cards.map((card) => card.svg)]);
+  // Giao diện chưa chạy: không lỗi, js/game1-ui.js tự đọc BongGame1Content khi khởi động.
+  assert.doesNotThrow(() => loader.applyContent({ document: fakeRoot.document }, content));
+}
+
 assert.ok(sharedUi.includes('./js/game1-content.js'));
 assert.ok(sharedUi.includes('loadGame1Content(themeId)'));
 assert.ok(serviceWorker.includes('./content/games/game1.json'));
