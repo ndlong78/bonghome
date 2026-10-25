@@ -48,7 +48,8 @@ Một PR chỉ được merge khi đạt đủ các điều kiện sau:
 | 4 | ✅ Đã tách | `js/game4-engine.js` + `js/game4-ui.js`; `tests/game4-engine.test.js`, `e2e/game4-gameplay.spec.js`; bản lưu rất cũ chỉ có HTML vẫn nhận lại được |
 | 10 | ✅ Đã tách | `js/game10-engine.js` + `js/game10-ui.js`; `tests/game10-engine.test.js`, `e2e/game10-gameplay.spec.js` (điều khiển đồng hồ bằng `page.clock`) |
 | 9 | ✅ Đã tách | `js/game9-engine.js` + `js/game9-ui.js`; `tests/game9-engine.test.js`, `e2e/game9-gameplay.spec.js`; `games8-10-autosave.js` không còn đọc biến toàn cục nào |
-| 2, 1 | Chưa làm | theo thứ tự ở trên; Game 2 là game cuối dùng biến toàn cục trong `games2-4-autosave.js` |
+| 2 | ✅ Đã tách | `js/game2-engine.js` + `js/game2-ui.js`; `tests/game2-engine.test.js`, `e2e/game2-gameplay.spec.js`; `games2-4-autosave.js` không còn đọc biến toàn cục nào |
+| 1 | Chưa làm | nhiều lớp gắn thêm nhất (độ khó, chủ đề, bàn phím), làm cuối |
 
 Ghi chú khi làm Game 6, áp dụng cho các game sau:
 - Giữ đúng định dạng bản lưu cũ (`serialize()` trả về cùng các trường). Unit test và E2E có một bản lưu dạng cũ để chắc ván đang chơi dở vẫn mở được.
@@ -86,6 +87,11 @@ Ghi chú khi làm Game 9:
 - Trạng thái "đang chờ" (0,9 giây "Chuẩn bị…") phải là một trạng thái riêng trong engine; trước đây chỉ số từ đã là 0 nên bấm lúc chờ bị chấm theo từ đầu tiên.
 - Hàm chuyển trạng thái gọi lại khi đã ở trạng thái đích (ví dụ `reveal` khi từ đang hiện) phải không đổi gì; nếu không, gọi thừa một lần là xoá mất lượt bấm.
 - Khi tách engine có dữ liệu cố định lớn (câu chuyện, mẫu SVG), so tự động với bản cũ trước khi commit; tự đếm bằng tay dễ sai.
+
+Ghi chú khi làm Game 2:
+- RNG có hạt giống trong test: LCG đơn giản với các hạt giống liên tiếp cho số đầu tiên gần như bằng nhau, làm Fisher–Yates luôn bỏ sót một vật. Dùng mulberry32 (`tests/game2-engine.test.js`).
+- Test có hẹn giờ ngắn (600 ms chờ màn thắng) phải dừng đồng hồ bằng `page.clock`; trên iPhone giả lập, các bước cuộn và chạm có thể chậm hơn 600 ms.
+- Phát hiện khi viết E2E, chưa sửa: trên iPhone, nút âm thanh nổi (`#nutAmThanh`, `position: fixed`) và banner cài app che tâm nút "🔄 Tranh mới" của Game 2 kể cả khi cuộn hết trang. Lỗi bố cục của lớp dùng chung, cần PR riêng và kiểm tra các game khác.
 
 ## Quy tắc cho test, áp dụng ngay
 
