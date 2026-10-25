@@ -50,63 +50,14 @@
     return true;
   }
 
+  // Game 9 đã tách engine (js/game9-engine.js, js/game9-ui.js): lưu/khôi phục qua window.BongGame9.
   function captureGame9() {
-    return {
-      schemaVersion: 1,
-      sessionId,
-      storyIndex: CAC_CHUYEN.indexOf(chuyen),
-      wordIndex: i,
-      caughtCurrent: daBat,
-      correct: dung,
-      missed: lo,
-      wrong: nham,
-      running: dangChay,
-      readAloud: batLoaDoc
-    };
+    return window.BongGame9.serialize(sessionId);
   }
 
   function restoreGame9(state) {
-    const storyIndex = Number.isInteger(state.storyIndex) ? state.storyIndex : -1;
-    const story = CAC_CHUYEN[storyIndex];
-    if (!story || !Number.isInteger(state.wordIndex) || state.wordIndex < 0 || state.wordIndex >= story.tu.length) return false;
-
-    clearTimeout(hen);
-    chuyen = story;
-    i = state.wordIndex;
-    daBat = Boolean(state.caughtCurrent);
-    dung = Number.isFinite(state.correct) ? Math.max(0, state.correct) : 0;
-    lo = Number.isFinite(state.missed) ? Math.max(0, state.missed) : 0;
-    nham = Number.isFinite(state.wrong) ? Math.max(0, state.wrong) : 0;
-    dangChay = Boolean(state.running);
-    batLoaDoc = state.readAloud !== false;
+    if (!window.BongGame9.restore(state)) return false;
     sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
-
-    oTuKhoa.textContent = chuyen.tuKhoa;
-    oDung.textContent = String(dung);
-    oLo.textContent = String(lo);
-    oNham.textContent = String(nham);
-    vachTien.style.width = `${((i + 1) / chuyen.tu.length) * 100}%`;
-    nutBat.disabled = !dangChay;
-    manThang.classList.remove('hien');
-    capNhatNutLoa();
-
-    const word = chuyen.tu[i];
-    const keyword = word === chuyen.tuKhoa;
-    oChu.textContent = word;
-    oChu.classList.toggle('la-tu-khoa', keyword);
-    docTo(word);
-
-    if (dangChay) {
-      hen = setTimeout(() => {
-        if (keyword && !daBat) {
-          lo++;
-          oLo.textContent = String(lo);
-          amBoLo();
-        }
-        i++;
-        hienTu();
-      }, TOC_DO);
-    }
     return true;
   }
 
@@ -134,9 +85,9 @@
       capture: captureGame9,
       restore: restoreGame9,
       difficulty: () => 'keyword-story',
-      duration: () => Math.round((i * TOC_DO) / 1000),
-      moves: () => dung + lo + nham,
-      canSave: () => dangChay && Boolean(chuyen)
+      duration: () => window.BongGame9.seconds(),
+      moves: () => window.BongGame9.moves(),
+      canSave: () => window.BongGame9.canSave()
     },
     game10: {
       capture: captureGame10,

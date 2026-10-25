@@ -8,21 +8,15 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'game2.html'), 'utf8');
 
-function readHitRadii(html) {
-  const start = html.indexOf('const VAT_THE = [');
-  const end = html.indexOf('const SO_DIEM_KHAC', start);
-  assert.notEqual(start, -1, 'Game 2 cần khai báo VAT_THE');
-  assert.notEqual(end, -1, 'Game 2 cần kết thúc kho vật thể trước SO_DIEM_KHAC');
-  const objectSource = html.slice(start, end);
-  return [...objectSource.matchAll(/\br\s*:\s*(\d+(?:\.\d+)?)/g)].map((match) => Number(match[1]));
-}
+// Vùng chạm của các vật nằm trong engine (js/game2-engine.js), đọc thẳng dữ liệu thay vì so chuỗi mã nguồn.
+const engine = require(path.join(root, 'js', 'game2-engine.js'));
 
 test('Game 2 keeps every configured difference hit area at least 44 viewBox units wide', () => {
-  const radii = readHitRadii(source);
-  assert.ok(radii.length >= 5, 'Game 2 cần có đủ vùng chạm được cấu hình');
-  radii.forEach((radius) => {
-    assert.ok(Number.isFinite(radius) && radius > 0, `Bán kính vùng chạm không hợp lệ: ${radius}`);
-    assert.ok(radius * 2 >= 44, `Vùng chạm đường kính ${radius * 2} nhỏ hơn 44 đơn vị`);
+  assert.equal(engine.OBJECTS.length, 10, 'Game 2 cần đủ 10 vật có vùng chạm');
+  engine.OBJECTS.forEach(({ id, x, y, r }) => {
+    assert.ok(Number.isFinite(r) && r > 0, `${id}: bán kính vùng chạm không hợp lệ`);
+    assert.ok(r * 2 >= 44, `${id}: vùng chạm đường kính ${r * 2} nhỏ hơn 44 đơn vị`);
+    assert.ok(x >= 0 && x <= 300 && y >= 0 && y <= 300, `${id}: tâm nằm ngoài tranh 300x300`);
   });
 });
 

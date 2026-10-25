@@ -34,11 +34,7 @@ assert.match(adapter, /MutationObserver/);
 assert.match(adapter, /SAVE_INTERVAL_MS = 2000/);
 assert.match(adapter, /pagehide/);
 assert.match(adapter, /visibilitychange/);
-assert.match(adapter, /schemaVersion: 1/);
 
-assert.match(adapter, /storyIndex:/);
-assert.match(adapter, /wordIndex:/);
-assert.match(adapter, /caughtCurrent:/);
 
 assert.match(sharedUi, /isGames8To10/);
 assert.match(sharedUi, /\.\/js\/games8-10-autosave\.js/);
@@ -59,8 +55,17 @@ assert.ok(adapter.includes("const winDialog = document.getElementById('manThang'
 ['./js/game8-engine.js', './js/game8-ui.js'].forEach((file) => {
   assert.ok(serviceWorker.includes(`"${file}"`), `${file} must be precached`);
 });
-assert.match(game9, /let chuyen=null, i=0, hen=null, dangChay=false/);
-assert.match(game9, /function hienTu\(\)/);
+// Cả ba game 8–10 đã tách engine (tests/game9-engine.test.js kiểm tra hành vi của Game 9):
+// adapter chỉ gọi API window.BongGameN, định dạng bản lưu (schemaVersion…) nằm trong từng engine.
+assert.equal(/<script>(?!\s*<\/script>)/.test(game9), false, 'game9.html must not keep an inline script');
+assert.deepEqual([...game9.matchAll(/<script src="([^"]+)"/g)].map((match) => match[1]), ['./shared-ui.js', './js/game9-engine.js', './js/game9-ui.js']);
+['serialize(sessionId)', 'restore(state)', 'seconds()', 'moves()', 'canSave()'].forEach((call) => {
+  assert.ok(adapter.includes(`window.BongGame9.${call}`), `Game 9 adapter must call BongGame9.${call}`);
+});
+['CAC_CHUYEN', 'chuyen', 'TOC_DO', 'dangChay', 'daBat', 'hienTu', 'docTo'].forEach((name) => {
+  assert.doesNotMatch(adapter, new RegExp(`\\b${name}\\b`), `adapter must not use Game 9 global ${name}`);
+});
+['./js/game9-engine.js', './js/game9-ui.js'].forEach((file) => assert.ok(serviceWorker.includes(`"${file}"`), `${file} must be precached`));
 // Game 10 đã tách engine (tests/game10-engine.test.js kiểm tra hành vi chấm điểm và lưu/khôi phục).
 assert.equal(/<script>(?!\s*<\/script>)/.test(game10), false, 'game10.html must not keep an inline script');
 assert.deepEqual([...game10.matchAll(/<script src="([^"]+)"/g)].map((match) => match[1]), ['./shared-ui.js', './js/game10-engine.js', './js/game10-ui.js']);
