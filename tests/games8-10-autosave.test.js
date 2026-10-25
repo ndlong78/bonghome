@@ -36,9 +36,6 @@ assert.match(adapter, /pagehide/);
 assert.match(adapter, /visibilitychange/);
 assert.match(adapter, /schemaVersion: 1/);
 
-assert.match(adapter, /maze:/);
-assert.match(adapter, /player:/);
-assert.match(adapter, /path:/);
 assert.match(adapter, /storyIndex:/);
 assert.match(adapter, /wordIndex:/);
 assert.match(adapter, /caughtCurrent:/);
@@ -51,8 +48,20 @@ assert.match(sharedUi, /\.\/js\/games8-10-autosave\.js/);
 assert.match(sharedUi, /loadGames8To10Autosave\(\)/);
 assert.match(sharedUi, /isGames2To4\(\) \|\| isGames5To7\(\) \|\| isGames8To10\(\)/);
 
-assert.match(game8, /let N=8;/);
-assert.match(game8, /function taoMeCung\(\)/);
+// Game 8 đã tách engine (tests/game8-engine.test.js kiểm tra hành vi lưu/khôi phục):
+// trang không còn script inline, nạp engine trước UI, adapter chỉ gọi API window.BongGame8.
+assert.equal(/<script>(?!\s*<\/script>)/.test(game8), false, 'game8.html must not keep an inline script');
+const scriptOrder = [...game8.matchAll(/<script src="([^"]+)"/g)].map((match) => match[1]);
+assert.deepEqual(scriptOrder, ['./shared-ui.js', './js/game8-engine.js', './js/game8-ui.js']);
+assert.ok(adapter.includes('return window.BongGame8.serialize(sessionId);'), 'Game 8 saving must go through the engine');
+assert.ok(adapter.includes('window.BongGame8.restore(state)'), 'Game 8 restore must go through the engine');
+['difficulty', 'seconds', 'moves', 'canSave'].forEach((name) => {
+  assert.ok(adapter.includes(`window.BongGame8.${name}()`), `Game 8 adapter must delegate ${name}`);
+});
+assert.ok(adapter.includes("const winDialog = document.getElementById('manThang');"), 'adapter must find the win dialog by id');
+['./js/game8-engine.js', './js/game8-ui.js'].forEach((file) => {
+  assert.ok(serviceWorker.includes(`"${file}"`), `${file} must be precached`);
+});
 assert.match(game9, /let chuyen=null, i=0, hen=null, dangChay=false/);
 assert.match(game9, /function hienTu\(\)/);
 assert.match(game10, /let dsSao=\[\], batDauLuc=0, dangChay=false/);
