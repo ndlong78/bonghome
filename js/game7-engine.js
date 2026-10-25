@@ -93,6 +93,7 @@
       question: 0,
       ...createQuestion(0, rng),
       correct: 0,
+      missed: false,
       seconds: 0,
       started: false,
       locked: false,
@@ -103,6 +104,7 @@
   /**
    * Bé chọn lựa chọn thứ `choiceIndex`. Trả về { state, event, startedNow }:
    * event là 'ignored' | 'correct' | 'wrong'. Sau 'correct' câu bị khóa đến khi gọi nextQuestion().
+   * `correct` chỉ đếm câu bé chọn đúng ngay lần đầu; đã chọn sai thì câu đó không được đếm.
    */
   function choose(state, choiceIndex) {
     const valid = Number.isInteger(choiceIndex) && choiceIndex >= 0 && choiceIndex < state.choices.length;
@@ -110,10 +112,10 @@
     const startedNow = !state.started;
     const base = startedNow ? update(state, { started: true }) : state;
     if (sameCombo(base.choices[choiceIndex], base.answer)) {
-      // Giữ đúng hành vi cũ: mọi câu trả lời đúng đều được đếm, kể cả sau khi đã chọn sai.
-      return { state: update(base, { locked: true, correct: base.correct + 1 }), event: 'correct', startedNow };
+      const correct = base.correct + (base.missed ? 0 : 1);
+      return { state: update(base, { locked: true, correct }), event: 'correct', startedNow };
     }
-    return { state: base, event: 'wrong', startedNow };
+    return { state: base.missed ? base : update(base, { missed: true }), event: 'wrong', startedNow };
   }
 
   /** Sau khi trả lời đúng: sang câu kế, hoặc kết thúc ván nếu đã qua câu cuối. */
@@ -121,7 +123,7 @@
     if (!state.locked) return state;
     const question = state.question + 1;
     if (question >= QUESTION_COUNT) return update(state, { question, finished: true, locked: false });
-    return update(state, { question, ...createQuestion(question, rng), locked: false });
+    return update(state, { question, ...createQuestion(question, rng), missed: false, locked: false });
   }
 
   /** Một giây trôi qua: đồng hồ chỉ chạy sau lần chọn đầu và trước khi thắng. */
@@ -142,6 +144,7 @@
   /**
    * Bản lưu: giữ đúng định dạng của adapter games5-7-autosave trước khi tách engine,
    * để ván đang chơi dở trên máy của bé vẫn khôi phục được sau khi cập nhật.
+   * `missed` (câu hiện tại đã chọn sai) là trường thêm sau; bản lưu cũ không có thì coi là chưa sai.
    */
   function serialize(state, sessionId) {
     const plain = (value) => ({ h: value.h, m: value.m });
@@ -150,6 +153,7 @@
       sessionId,
       question: state.question,
       correct: state.correct,
+      missed: state.missed,
       sequence: state.sequence.map(plain),
       answer: plain(state.answer),
       choices: state.choices.map(plain),
@@ -175,7 +179,8 @@
       sequence: Object.freeze(sequence.map(freezeCombo)),
       answer: freezeCombo(saved.answer),
       choices: Object.freeze(choices.map(freezeCombo)),
-      correct: Math.min(QUESTION_COUNT, count(saved.correct)),
+      correct: Math.min(question, count(saved.correct)),
+      missed: saved.missed === true,
       seconds: count(saved.seconds),
       started: Boolean(saved.started),
       locked: false,

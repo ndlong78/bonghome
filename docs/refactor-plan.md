@@ -51,7 +51,7 @@ Ghi chú khi làm Game 6, áp dụng cho các game sau:
 - Vẽ SVG bằng `createElementNS`, không dùng `innerHTML`.
 - Mọi vòng lặp phụ thuộc rng phải có giới hạn và đường lui tất định. Game 7 từng có vòng chọn hình gây nhiễu `while` không giới hạn; một rng kém trong test đã làm nó treo.
 - Hẹn giờ phản hồi (ví dụ viền đỏ khi chọn sai) phải riêng cho mỗi lần chạm. Dùng chung một timer rồi hủy sẽ làm kẹt trạng thái của lần chạm trước.
-- Hành vi lạ nhưng có sẵn (ví dụ "Đúng ngay" của Game 7 đếm cả câu đúng sau khi đã chọn sai) được giữ nguyên trong PR tái cấu trúc và ghi chú lại; sửa luật chơi là PR riêng.
+- Hành vi lạ nhưng có sẵn (ví dụ "Đúng ngay" của Game 7 đếm cả câu đúng sau khi đã chọn sai) được giữ nguyên trong PR tái cấu trúc và ghi chú lại; sửa luật chơi là PR riêng (Game 7 đã sửa ở PR riêng sau đó, bản lưu thêm trường `missed` tùy chọn để vẫn đọc được bản lưu cũ).
 
 ## Quy tắc cho test, áp dụng ngay
 
