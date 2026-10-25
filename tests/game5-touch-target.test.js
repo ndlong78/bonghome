@@ -6,13 +6,12 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const game = fs.readFileSync(path.join(root, 'game5.html'), 'utf8');
+// Chấm hiện ra vẫn nhỏ (r=13) còn vùng chạm lớn hơn: e2e/game5-touch-target.spec.js kiểm bằng cách chạm thật.
 const helper = fs.readFileSync(path.join(root, 'js/game5-touch-target.js'), 'utf8');
 const loader = fs.readFileSync(path.join(root, 'js/games5-7-rewards.js'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 
 test('Game 5 keeps the visible dot small while adding a larger transparent hit circle', () => {
-  assert.match(game, /<circle cx="\$\{x\}" cy="\$\{y\}" r="13"\/>/);
   assert.match(helper, /const HIT_RADIUS = 27/);
   assert.match(helper, /style\.fill = 'transparent'/);
   assert.match(helper, /style\.pointerEvents = 'all'/);
