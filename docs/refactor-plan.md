@@ -47,7 +47,8 @@ Một PR chỉ được merge khi đạt đủ các điều kiện sau:
 | 3 | ✅ Đã tách | `js/game3-engine.js` + `js/game3-ui.js`; `tests/game3-engine.test.js`, `e2e/game3-gameplay.spec.js`; lớp bàn phím và chống giật layout giữ nguyên |
 | 4 | ✅ Đã tách | `js/game4-engine.js` + `js/game4-ui.js`; `tests/game4-engine.test.js`, `e2e/game4-gameplay.spec.js`; bản lưu rất cũ chỉ có HTML vẫn nhận lại được |
 | 10 | ✅ Đã tách | `js/game10-engine.js` + `js/game10-ui.js`; `tests/game10-engine.test.js`, `e2e/game10-gameplay.spec.js` (điều khiển đồng hồ bằng `page.clock`) |
-| 9, 2, 1 | Chưa làm | theo thứ tự ở trên; Game 2 còn dùng biến toàn cục trong `games2-4-autosave.js`; Game 9 trong `games8-10-autosave.js` |
+| 9 | ✅ Đã tách | `js/game9-engine.js` + `js/game9-ui.js`; `tests/game9-engine.test.js`, `e2e/game9-gameplay.spec.js`; `games8-10-autosave.js` không còn đọc biến toàn cục nào |
+| 2, 1 | Chưa làm | theo thứ tự ở trên; Game 2 là game cuối dùng biến toàn cục trong `games2-4-autosave.js` |
 
 Ghi chú khi làm Game 6, áp dụng cho các game sau:
 - Giữ đúng định dạng bản lưu cũ (`serialize()` trả về cùng các trường). Unit test và E2E có một bản lưu dạng cũ để chắc ván đang chơi dở vẫn mở được.
@@ -80,6 +81,11 @@ Ghi chú khi làm Game 10:
 - Game chạy theo thời gian thật: engine nhận thời điểm `t` làm tham số (chấm điểm, trượt nhịp), nên unit test tất định. E2E dùng `page.clock.install()` rồi `pauseAt()` **trước** khi mở trang; nếu không, đồng hồ giả vẫn trôi theo thời gian thật lúc trang tải và bài khôi phục bị trượt thêm sao.
 - Vòng sinh dữ liệu có xác suất bỏ qua phải có giới hạn tính sẵn (chỉ bỏ nhịp khi số nhịp còn lại vẫn đủ cho các sao còn thiếu), không chỉ "dừng bỏ qua sau N vòng".
 - Bắt phím toàn trang (phím cách) chỉ khi đang chơi; lúc chưa chơi phải để phím cách bấm được nút đang được chọn.
+
+Ghi chú khi làm Game 9:
+- Trạng thái "đang chờ" (0,9 giây "Chuẩn bị…") phải là một trạng thái riêng trong engine; trước đây chỉ số từ đã là 0 nên bấm lúc chờ bị chấm theo từ đầu tiên.
+- Hàm chuyển trạng thái gọi lại khi đã ở trạng thái đích (ví dụ `reveal` khi từ đang hiện) phải không đổi gì; nếu không, gọi thừa một lần là xoá mất lượt bấm.
+- Khi tách engine có dữ liệu cố định lớn (câu chuyện, mẫu SVG), so tự động với bản cũ trước khi commit; tự đếm bằng tay dễ sai.
 
 ## Quy tắc cho test, áp dụng ngay
 
