@@ -100,57 +100,14 @@
     return true;
   }
 
+  // Game 3 đã tách engine (js/game3-engine.js, js/game3-ui.js): lưu/khôi phục qua window.BongGame3.
   function captureGame3() {
-    return {
-      schemaVersion: 1,
-      sessionId,
-      colorOrder: [...khay.children].map((item) => item.dataset.id).filter(Boolean),
-      shadowOrder: [...hangBong.children].map((item) => item.dataset.id).filter(Boolean),
-      matched: [...hangBong.querySelectorAll('.o-bong.dung')].map((item) => item.dataset.id),
-      wrong: soSai,
-      seconds: giay,
-      started: daBatDau
-    };
+    return window.BongGame3.serialize(sessionId);
   }
 
   function restoreGame3(state) {
-    const colors = Array.isArray(state.colorOrder) ? state.colorOrder : [];
-    const shadows = Array.isArray(state.shadowOrder) ? state.shadowOrder : [];
-    if (colors.length !== SO_HINH || shadows.length !== SO_HINH) return false;
-    const matched = new Set(Array.isArray(state.matched) ? state.matched : []);
-    if ([...colors, ...shadows].some((id) => !KHO_HINH.some((item) => item.id === id))) return false;
-
-    clearInterval(dongHoChay);
-    khay.innerHTML = '';
-    hangBong.innerHTML = '';
-    soSai = Number.isFinite(state.wrong) ? Math.max(0, state.wrong) : 0;
-    giay = Number.isFinite(state.seconds) ? Math.max(0, state.seconds) : 0;
-    daBatDau = Boolean(state.started);
+    if (!window.BongGame3.restore(state)) return false;
     sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
-
-    colors.forEach((id) => {
-      const shape = KHO_HINH.find((item) => item.id === id);
-      const piece = document.createElement('div');
-      piece.className = `mieng-hinh${matched.has(id) ? ' xong' : ''}`;
-      piece.dataset.id = id;
-      piece.setAttribute('aria-label', `Hình ${shape.ten}`);
-      piece.innerHTML = veMau(shape);
-      ganKeoTha(piece);
-      khay.appendChild(piece);
-    });
-    shadows.forEach((id) => {
-      const shape = KHO_HINH.find((item) => item.id === id);
-      const target = document.createElement('div');
-      target.className = `o-bong${matched.has(id) ? ' dung' : ''}`;
-      target.dataset.id = id;
-      target.innerHTML = matched.has(id) ? veMau(shape) : veBong(shape);
-      hangBong.appendChild(target);
-    });
-    daGhep = matched.size;
-    oDung.textContent = `${daGhep}/${SO_HINH}`;
-    oDongHo.textContent = dinhDangGio(giay);
-    manThang.classList.remove('hien');
-    startClock();
     return true;
   }
 
@@ -240,20 +197,32 @@
 
   const adapters = {
     game2: { capture: captureGame2, restore: restoreGame2, difficulty: '5-differences', moves: () => soChamSai + daTimThay.length },
-    game3: { capture: captureGame3, restore: restoreGame3, difficulty: '6-shapes', moves: () => soSai + daGhep },
+    game3: {
+      capture: captureGame3,
+      restore: restoreGame3,
+      difficulty: '6-shapes',
+      moves: () => window.BongGame3.moves(),
+      seconds: () => window.BongGame3.seconds(),
+      canSave: () => window.BongGame3.canSave()
+    },
     game4: { capture: captureGame4, restore: restoreGame4, difficulty: '12-objects', moves: () => soSai + daGom }
   };
 
   function init(modules) {
     const progress = modules?.progress;
     const adapter = adapters[gameId];
-    if (!progress || !adapter) return;
+    // Hộp thoại thắng lấy theo id: Game 3 đã tách engine nên không còn biến toàn cục manThang.
+    const winDialog = document.getElementById('manThang');
+    if (!progress || !adapter || !winDialog) return;
+    // Game đã tách engine tự báo thời gian và lúc được lưu; Game 2, 4 vẫn đọc biến toàn cục giay.
+    const seconds = adapter.seconds || (() => giay);
+    const canSave = adapter.canSave || (() => true);
 
     const saved = progress.loadGame(gameId);
     if (saved?.state && adapter.restore(saved.state)) showStatus('↩️ Đã khôi phục ván đang chơi');
 
     function save() {
-      if (manThang.classList.contains('hien')) return;
+      if (winDialog.classList.contains('hien') || !canSave()) return;
       const state = adapter.capture();
       progress.saveGame(gameId, {
         status: 'in_progress',
@@ -281,18 +250,18 @@
     });
 
     const observer = new MutationObserver(() => {
-      if (!manThang.classList.contains('hien')) return;
+      if (!winDialog.classList.contains('hien')) return;
       clearInterval(saveTimer);
       const result = progress.completeGame(gameId, {
         transactionId: `${gameId}-finish-${sessionId}`,
         difficulty: adapter.difficulty,
-        durationSeconds: giay,
+        durationSeconds: seconds(),
         moves: adapter.moves(),
         metadata: { source: 'games2-4-autosave' }
       });
       if (!result.duplicate) showStatus('✅ Đã lưu lượt hoàn thành');
     });
-    observer.observe(manThang, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(winDialog, { attributes: true, attributeFilter: ['class'] });
 
     window.BongGamesAutosave = Object.freeze({ gameId, save, capture: adapter.capture });
   }
