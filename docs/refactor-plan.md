@@ -44,7 +44,8 @@ Một PR chỉ được merge khi đạt đủ các điều kiện sau:
 | 7 | ✅ Đã tách | `js/game7-engine.js` + `js/game7-ui.js`; `tests/game7-engine.test.js`, `e2e/game7-gameplay.spec.js` |
 | 8 | ✅ Đã tách | `js/game8-engine.js` + `js/game8-ui.js`; `tests/game8-engine.test.js`, `e2e/game8-gameplay.spec.js`; làm trước 5/3/4 theo yêu cầu |
 | 5 | ✅ Đã tách | `js/game5-engine.js` + `js/game5-ui.js`; `tests/game5-engine.test.js`, `e2e/game5-gameplay.spec.js`; `games5-7-autosave.js` không còn đọc biến toàn cục nào |
-| 3, 4, 10, 9, 2, 1 | Chưa làm | theo thứ tự ở trên; Game 9, 10 còn dùng biến toàn cục trong `games8-10-autosave.js` |
+| 3 | ✅ Đã tách | `js/game3-engine.js` + `js/game3-ui.js`; `tests/game3-engine.test.js`, `e2e/game3-gameplay.spec.js`; lớp bàn phím và chống giật layout giữ nguyên |
+| 4, 10, 9, 2, 1 | Chưa làm | theo thứ tự ở trên; Game 2, 4 còn dùng biến toàn cục trong `games2-4-autosave.js`; Game 9, 10 trong `games8-10-autosave.js` |
 
 Ghi chú khi làm Game 6, áp dụng cho các game sau:
 - Giữ đúng định dạng bản lưu cũ (`serialize()` trả về cùng các trường). Unit test và E2E có một bản lưu dạng cũ để chắc ván đang chơi dở vẫn mở được.
@@ -63,6 +64,11 @@ Ghi chú khi làm Game 5:
 - E2E chạm bằng con trỏ thật (`page.mouse.click` theo tọa độ) bắt được lỗi mà `dispatchEvent` bỏ qua: ở hình thuyền buồm, chấm 4 đè lên chấm 1 nên bé không chạm được số 1. Với game có dữ liệu ngẫu nhiên, test phải cố định dữ liệu (ở đây là chọn sẵn hình), nếu không lỗi chỉ hiện 1/5 số lần và trông như chập chờn.
 - Phần tử có `tabindex="0"` thì phải có xử lý Enter/Space và `role` phù hợp; tab tới được mà không bấm được là lỗi trợ năng.
 - Hẹn giờ của chuỗi hiệu ứng kết thúc (nối xong → tô màu → màn thắng) phải hủy khi bé vẽ lại hoặc đổi hình giữa chừng.
+
+Ghi chú khi làm Game 3:
+- Xáo trộn bằng `sort(() => Math.random() - 0.5)` cho phân bố lệch; engine dùng Fisher–Yates.
+- Khôi phục phải kiểm tra cả quan hệ giữa các trường (khay và hàng bóng cùng một bộ hình, không trùng id, hình đã ghép nằm trong ván), không chỉ từng id có tồn tại.
+- Adapter dùng chung cho nhóm game (`games2-4-autosave.js`) nhận `seconds`/`canSave` tùy chọn từ game đã tách; game chưa tách vẫn dùng biến toàn cục cho tới PR của nó.
 
 ## Quy tắc cho test, áp dụng ngay
 
