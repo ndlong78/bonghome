@@ -30,13 +30,23 @@ assert.match(adapter, /progress\.saveGame\(gameId/);
 assert.match(adapter, /progress\.loadGame\(gameId\)/);
 assert.match(adapter, /progress\.completeGame\(gameId/);
 assert.match(adapter, /transactionId: `\$\{gameId\}-finish-\$\{sessionId\}`/);
-assert.match(adapter, /durationSeconds: seconds\(\)/);
+assert.match(adapter, /durationSeconds: adapter\.seconds\(\)/);
 assert.match(adapter, /MutationObserver/);
 assert.match(adapter, /pagehide/);
 assert.match(adapter, /visibilitychange/);
 
-assert.match(adapter, /differences: dsKhacBiet/);
-assert.match(adapter, /found: \[\.\.\.daTimThay\]/);
+// Game 2 đã tách engine (tests/game2-engine.test.js kiểm tra hành vi): adapter chỉ gọi API window.BongGame2.
+const game2 = read('game2.html');
+assert.doesNotMatch(game2, /<script>/, 'game2.html không còn script inline');
+assert.ok(game2.indexOf('./js/game2-engine.js') > 0 && game2.indexOf('./js/game2-engine.js') < game2.indexOf('./js/game2-ui.js'));
+['serialize(sessionId)', 'restore(state)', 'moves()', 'seconds()', 'canSave()'].forEach((call) => {
+  assert.ok(adapter.includes(`window.BongGame2.${call}`), `Game 2 adapter phải gọi BongGame2.${call}`);
+});
+// Cả ba game 2–4 đã tách engine: adapter không còn đọc biến toàn cục nào của trang game.
+['dsKhacBiet', 'daTimThay', 'soChamSai', 'luotGoiY', 'VAT_THE', 'giay', 'daBatDau', 'dongHoChay', 'oDongHo', 'dinhDangGio', 'startClock'].forEach((name) => {
+  assert.doesNotMatch(adapter, new RegExp(`\\b${name}\\b`), `adapter không được dùng biến toàn cục ${name}`);
+});
+['./js/game2-engine.js', './js/game2-ui.js'].forEach((file) => assert.ok(serviceWorker.includes(`"${file}"`), `${file} phải có offline`));
 // Game 3 đã tách engine (tests/game3-engine.test.js kiểm tra hành vi lưu/khôi phục):
 // trang không còn script inline, nạp engine trước UI, adapter chỉ gọi API window.BongGame3.
 const game3 = read('game3.html');
