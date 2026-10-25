@@ -43,7 +43,8 @@ Một PR chỉ được merge khi đạt đủ các điều kiện sau:
 | 6 | ✅ Đã tách | `js/game6-engine.js` + `js/game6-ui.js`; `game6.html` không còn script inline; `tests/game6-engine.test.js`, `e2e/game6-gameplay.spec.js` |
 | 7 | ✅ Đã tách | `js/game7-engine.js` + `js/game7-ui.js`; `tests/game7-engine.test.js`, `e2e/game7-gameplay.spec.js` |
 | 8 | ✅ Đã tách | `js/game8-engine.js` + `js/game8-ui.js`; `tests/game8-engine.test.js`, `e2e/game8-gameplay.spec.js`; làm trước 5/3/4 theo yêu cầu |
-| 5, 3, 4, 10, 9, 2, 1 | Chưa làm | theo thứ tự ở trên; Game 5 là game cuối dùng chung `games5-7-autosave.js` với biến toàn cục; Game 9, 10 còn dùng biến toàn cục trong `games8-10-autosave.js` |
+| 5 | ✅ Đã tách | `js/game5-engine.js` + `js/game5-ui.js`; `tests/game5-engine.test.js`, `e2e/game5-gameplay.spec.js`; `games5-7-autosave.js` không còn đọc biến toàn cục nào |
+| 3, 4, 10, 9, 2, 1 | Chưa làm | theo thứ tự ở trên; Game 9, 10 còn dùng biến toàn cục trong `games8-10-autosave.js` |
 
 Ghi chú khi làm Game 6, áp dụng cho các game sau:
 - Giữ đúng định dạng bản lưu cũ (`serialize()` trả về cùng các trường). Unit test và E2E có một bản lưu dạng cũ để chắc ván đang chơi dở vẫn mở được.
@@ -57,6 +58,11 @@ Ghi chú khi làm Game 6, áp dụng cho các game sau:
 Ghi chú khi làm Game 8:
 - Bảng tra theo tên (ví dụ hướng đi `DIRECTIONS[direction]`) phải kiểm `Object.hasOwn`, nếu không `'toString'` sẽ lấy nhầm hàm của `Object.prototype`. Unit test có ca này.
 - Đối chiếu danh sách giá trị hợp lệ trong adapter cũ với giao diện thật: adapter cũ chỉ nhận mê cung 8/10/12 trong khi mức độ là 8/12/16, nên ván Khó không bao giờ khôi phục được. Engine dùng chung một hằng `SIZES` cho cả sinh mê cung lẫn khôi phục.
+
+Ghi chú khi làm Game 5:
+- E2E chạm bằng con trỏ thật (`page.mouse.click` theo tọa độ) bắt được lỗi mà `dispatchEvent` bỏ qua: ở hình thuyền buồm, chấm 4 đè lên chấm 1 nên bé không chạm được số 1. Với game có dữ liệu ngẫu nhiên, test phải cố định dữ liệu (ở đây là chọn sẵn hình), nếu không lỗi chỉ hiện 1/5 số lần và trông như chập chờn.
+- Phần tử có `tabindex="0"` thì phải có xử lý Enter/Space và `role` phù hợp; tab tới được mà không bấm được là lỗi trợ năng.
+- Hẹn giờ của chuỗi hiệu ứng kết thúc (nối xong → tô màu → màn thắng) phải hủy khi bé vẽ lại hoặc đổi hình giữa chừng.
 
 ## Quy tắc cho test, áp dụng ngay
 
