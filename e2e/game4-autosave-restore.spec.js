@@ -7,7 +7,8 @@ const { test, expect } = require('@playwright/test');
 
 async function openGame4(page) {
   await page.goto('/game4.html', { waitUntil: 'domcontentloaded' });
-  await page.evaluate(() => window.BongModulesReady);
+  // Đợi adapter tự lưu khởi động xong (nạp động sau BongModulesReady); trước đó bắn pagehide sẽ không lưu gì.
+  await page.waitForFunction(() => Boolean(window.BongGamesAutosave));
   await expect(page.locator('#sanDo .do-vat')).toHaveCount(12);
 }
 
