@@ -46,7 +46,8 @@ Một PR chỉ được merge khi đạt đủ các điều kiện sau:
 | 5 | ✅ Đã tách | `js/game5-engine.js` + `js/game5-ui.js`; `tests/game5-engine.test.js`, `e2e/game5-gameplay.spec.js`; `games5-7-autosave.js` không còn đọc biến toàn cục nào |
 | 3 | ✅ Đã tách | `js/game3-engine.js` + `js/game3-ui.js`; `tests/game3-engine.test.js`, `e2e/game3-gameplay.spec.js`; lớp bàn phím và chống giật layout giữ nguyên |
 | 4 | ✅ Đã tách | `js/game4-engine.js` + `js/game4-ui.js`; `tests/game4-engine.test.js`, `e2e/game4-gameplay.spec.js`; bản lưu rất cũ chỉ có HTML vẫn nhận lại được |
-| 10, 9, 2, 1 | Chưa làm | theo thứ tự ở trên; Game 2 còn dùng biến toàn cục trong `games2-4-autosave.js`; Game 9, 10 trong `games8-10-autosave.js` |
+| 10 | ✅ Đã tách | `js/game10-engine.js` + `js/game10-ui.js`; `tests/game10-engine.test.js`, `e2e/game10-gameplay.spec.js` (điều khiển đồng hồ bằng `page.clock`) |
+| 9, 2, 1 | Chưa làm | theo thứ tự ở trên; Game 2 còn dùng biến toàn cục trong `games2-4-autosave.js`; Game 9 trong `games8-10-autosave.js` |
 
 Ghi chú khi làm Game 6, áp dụng cho các game sau:
 - Giữ đúng định dạng bản lưu cũ (`serialize()` trả về cùng các trường). Unit test và E2E có một bản lưu dạng cũ để chắc ván đang chơi dở vẫn mở được.
@@ -74,6 +75,11 @@ Ghi chú khi làm Game 3:
 Ghi chú khi làm Game 4:
 - Khi bản lưu cũ được nhận lại bằng cách so chuỗi với mẫu (Game 4 so HTML với mẫu SVG), mẫu phải giữ đúng từng ký tự. Engine giữ mẫu như chuỗi hằng; UI dựng hình từ chuỗi đó qua `<template>` (trơ, không phải dữ liệu lưu). Có kiểm tra tự động so mẫu mới với mẫu cũ trước khi đổi.
 - Số đếm suy ra được (số đã gom, số trong từng giỏ) thì tính lại từ dữ liệu gốc khi khôi phục, không tin trường đếm đã lưu.
+
+Ghi chú khi làm Game 10:
+- Game chạy theo thời gian thật: engine nhận thời điểm `t` làm tham số (chấm điểm, trượt nhịp), nên unit test tất định. E2E dùng `page.clock.install()` rồi `pauseAt()` **trước** khi mở trang; nếu không, đồng hồ giả vẫn trôi theo thời gian thật lúc trang tải và bài khôi phục bị trượt thêm sao.
+- Vòng sinh dữ liệu có xác suất bỏ qua phải có giới hạn tính sẵn (chỉ bỏ nhịp khi số nhịp còn lại vẫn đủ cho các sao còn thiếu), không chỉ "dừng bỏ qua sau N vòng".
+- Bắt phím toàn trang (phím cách) chỉ khi đang chơi; lúc chưa chơi phải để phím cách bấm được nút đang được chọn.
 
 ## Quy tắc cho test, áp dụng ngay
 
