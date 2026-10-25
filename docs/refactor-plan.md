@@ -49,7 +49,7 @@ Một PR chỉ được merge khi đạt đủ các điều kiện sau:
 | 10 | ✅ Đã tách | `js/game10-engine.js` + `js/game10-ui.js`; `tests/game10-engine.test.js`, `e2e/game10-gameplay.spec.js` (điều khiển đồng hồ bằng `page.clock`) |
 | 9 | ✅ Đã tách | `js/game9-engine.js` + `js/game9-ui.js`; `tests/game9-engine.test.js`, `e2e/game9-gameplay.spec.js`; `games8-10-autosave.js` không còn đọc biến toàn cục nào |
 | 2 | ✅ Đã tách | `js/game2-engine.js` + `js/game2-ui.js`; `tests/game2-engine.test.js`, `e2e/game2-gameplay.spec.js`; `games2-4-autosave.js` không còn đọc biến toàn cục nào |
-| 1 | Chưa làm | nhiều lớp gắn thêm nhất (độ khó, chủ đề, bàn phím), làm cuối |
+| 1 | ✅ Đã tách | `js/game1-engine.js` + `js/game1-ui.js`; `tests/game1-engine.test.js`, `e2e/game1-gameplay.spec.js`; `game1-autosave.js` và `js/game1-content.js` không còn đọc/ghi biến toàn cục nào |
 
 Ghi chú khi làm Game 6, áp dụng cho các game sau:
 - Giữ đúng định dạng bản lưu cũ (`serialize()` trả về cùng các trường). Unit test và E2E có một bản lưu dạng cũ để chắc ván đang chơi dở vẫn mở được.
@@ -92,6 +92,12 @@ Ghi chú khi làm Game 2:
 - RNG có hạt giống trong test: LCG đơn giản với các hạt giống liên tiếp cho số đầu tiên gần như bằng nhau, làm Fisher–Yates luôn bỏ sót một vật. Dùng mulberry32 (`tests/game2-engine.test.js`).
 - Test có hẹn giờ ngắn (600 ms chờ màn thắng) phải dừng đồng hồ bằng `page.clock`; trên iPhone giả lập, các bước cuộn và chạm có thể chậm hơn 600 ms.
 - Phát hiện khi viết E2E, chưa sửa: trên iPhone, nút âm thanh nổi (`#nutAmThanh`, `position: fixed`) và banner cài app che tâm nút "🔄 Tranh mới" của Game 2 kể cả khi cuộn hết trang. Lỗi bố cục của lớp dùng chung, cần PR riêng và kiểm tra các game khác.
+
+Ghi chú khi làm Game 1:
+- Khi engine giữ trạng thái, hẹn giờ của giao diện gọi hàm engine trên trạng thái **hiện tại** (`closeMismatch` không làm gì nếu ván không đang khoá). Nhờ vậy hẹn giờ sót lại của ván cũ không làm hỏng ván mới, dù vẫn hủy hẹn giờ khi sang ván mới cho gọn.
+- Bé sang ván mới khi màn thắng còn đang chờ hiện: không hiện màn thắng, nhưng vẫn báo thắng cho adapter để lượt hoàn thành được ghi. Không ghi hoàn thành sớm lúc ghép đủ: phần thưởng sẽ được vẽ vào hộp thoại còn ẩn và live region không đọc lên.
+- Lớp nội dung theo chủ đề đổi bộ hình qua `BongGame1.setCards()`; giao diện vẽ lại mặt trước các lá đang có (trước đây ván đầu tiên vẫn mang hình mặc định cho tới ván sau).
+- Snapshot cũ có thể nằm ở ba tầng (snapshot thẳng → gói theo mức → gói theo chủ đề); E2E khôi phục dùng tầng cũ nhất để đi qua cả hai bước chuyển đổi.
 
 ## Quy tắc cho test, áp dụng ngay
 
