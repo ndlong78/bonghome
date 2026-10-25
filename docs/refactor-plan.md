@@ -45,7 +45,8 @@ Một PR chỉ được merge khi đạt đủ các điều kiện sau:
 | 8 | ✅ Đã tách | `js/game8-engine.js` + `js/game8-ui.js`; `tests/game8-engine.test.js`, `e2e/game8-gameplay.spec.js`; làm trước 5/3/4 theo yêu cầu |
 | 5 | ✅ Đã tách | `js/game5-engine.js` + `js/game5-ui.js`; `tests/game5-engine.test.js`, `e2e/game5-gameplay.spec.js`; `games5-7-autosave.js` không còn đọc biến toàn cục nào |
 | 3 | ✅ Đã tách | `js/game3-engine.js` + `js/game3-ui.js`; `tests/game3-engine.test.js`, `e2e/game3-gameplay.spec.js`; lớp bàn phím và chống giật layout giữ nguyên |
-| 4, 10, 9, 2, 1 | Chưa làm | theo thứ tự ở trên; Game 2, 4 còn dùng biến toàn cục trong `games2-4-autosave.js`; Game 9, 10 trong `games8-10-autosave.js` |
+| 4 | ✅ Đã tách | `js/game4-engine.js` + `js/game4-ui.js`; `tests/game4-engine.test.js`, `e2e/game4-gameplay.spec.js`; bản lưu rất cũ chỉ có HTML vẫn nhận lại được |
+| 10, 9, 2, 1 | Chưa làm | theo thứ tự ở trên; Game 2 còn dùng biến toàn cục trong `games2-4-autosave.js`; Game 9, 10 trong `games8-10-autosave.js` |
 
 Ghi chú khi làm Game 6, áp dụng cho các game sau:
 - Giữ đúng định dạng bản lưu cũ (`serialize()` trả về cùng các trường). Unit test và E2E có một bản lưu dạng cũ để chắc ván đang chơi dở vẫn mở được.
@@ -69,6 +70,10 @@ Ghi chú khi làm Game 3:
 - Xáo trộn bằng `sort(() => Math.random() - 0.5)` cho phân bố lệch; engine dùng Fisher–Yates.
 - Khôi phục phải kiểm tra cả quan hệ giữa các trường (khay và hàng bóng cùng một bộ hình, không trùng id, hình đã ghép nằm trong ván), không chỉ từng id có tồn tại.
 - Adapter dùng chung cho nhóm game (`games2-4-autosave.js`) nhận `seconds`/`canSave` tùy chọn từ game đã tách; game chưa tách vẫn dùng biến toàn cục cho tới PR của nó.
+
+Ghi chú khi làm Game 4:
+- Khi bản lưu cũ được nhận lại bằng cách so chuỗi với mẫu (Game 4 so HTML với mẫu SVG), mẫu phải giữ đúng từng ký tự. Engine giữ mẫu như chuỗi hằng; UI dựng hình từ chuỗi đó qua `<template>` (trơ, không phải dữ liệu lưu). Có kiểm tra tự động so mẫu mới với mẫu cũ trước khi đổi.
+- Số đếm suy ra được (số đã gom, số trong từng giỏ) thì tính lại từ dữ liệu gốc khi khôi phục, không tin trường đếm đã lưu.
 
 ## Quy tắc cho test, áp dụng ngay
 

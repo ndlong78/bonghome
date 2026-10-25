@@ -111,87 +111,15 @@
     return true;
   }
 
+  // Game 4 đã tách engine (js/game4-engine.js, js/game4-ui.js): lưu/khôi phục qua window.BongGame4.
+  // Bản lưu rất cũ chỉ có HTML được nhận lại trong BongGame4.restore (so với mẫu có sẵn, không chèn HTML lạ).
   function captureGame4() {
-    return {
-      schemaVersion: 1,
-      sessionId,
-      objects: [...sanDo.querySelectorAll('.do-vat')].map((item) => ({
-        color: item.dataset.mau,
-        shape: game4ShapeIndex(item.dataset.mau, item.dataset.kieu, item.innerHTML),
-        done: item.classList.contains('xong')
-      })),
-      basketCounts: { ...demTheoGio },
-      collected: daGom,
-      wrong: soSai,
-      seconds: giay,
-      started: daBatDau
-    };
-  }
-
-  /**
-   * HTML do trình duyệt chuẩn hóa, để so được chuỗi SVG lưu từ innerHTML với mẫu gốc.
-   * Phân tích trong <template> (nội dung trơ): <div> tách rời vẫn tải ảnh và chạy onerror.
-   */
-  function normalizeHtml(html) {
-    const holder = document.createElement('template');
-    holder.innerHTML = html;
-    return holder.innerHTML;
-  }
-
-  /**
-   * Chỉ số kiểu đồ vật trong KIEU_DO. Ưu tiên data-kieu; bản lưu cũ (chỉ có HTML) thì
-   * dò mẫu khớp. Không khớp mẫu nào trả về -1 để bản lưu bị bỏ, không chèn HTML lạ vào trang.
-   */
-  function game4ShapeIndex(colorId, datasetValue, html) {
-    const index = Number(datasetValue);
-    if (Number.isInteger(index) && index >= 0 && index < KIEU_DO.length) return index;
-    const color = MAU.find((item) => item.id === colorId);
-    if (!color || typeof html !== 'string') return -1;
-    const target = normalizeHtml(html);
-    return KIEU_DO.findIndex((draw) => normalizeHtml(draw(color)) === target);
+    return window.BongGame4.serialize(sessionId);
   }
 
   function restoreGame4(state) {
-    const objects = (Array.isArray(state.objects) ? state.objects : []).map((item) => ({
-      ...item,
-      shape: game4ShapeIndex(item?.color, item?.shape, item?.html)
-    }));
-    if (objects.length !== TONG_DO || objects.some((item) => !MAU.some((color) => color.id === item.color) || item.shape < 0)) return false;
-
-    clearInterval(dongHoChay);
-    sanDo.innerHTML = '';
-    hangGio.innerHTML = '';
-    daGom = Number.isFinite(state.collected) ? Math.max(0, Math.min(TONG_DO, state.collected)) : 0;
-    soSai = Number.isFinite(state.wrong) ? Math.max(0, state.wrong) : 0;
-    giay = Number.isFinite(state.seconds) ? Math.max(0, state.seconds) : 0;
-    daBatDau = Boolean(state.started);
+    if (!window.BongGame4.restore(state)) return false;
     sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
-
-    MAU.forEach((color) => {
-      demTheoGio[color.id] = Number(state.basketCounts?.[color.id]) || 0;
-      const basket = document.createElement('div');
-      basket.className = 'gio';
-      basket.dataset.mau = color.id;
-      basket.style.setProperty('--mau', color.chinh);
-      basket.innerHTML = veGio(color) + `<span class="ten-gio">Giỏ ${color.ten}</span><span class="dem" id="dem-${color.id}">${demTheoGio[color.id]}</span>`;
-      hangGio.appendChild(basket);
-    });
-    objects.forEach((saved) => {
-      const color = MAU.find((entry) => entry.id === saved.color);
-      const item = document.createElement('div');
-      item.className = `do-vat${saved.done ? ' xong' : ''}`;
-      item.dataset.mau = saved.color;
-      item.dataset.kieu = String(saved.shape);
-      item.setAttribute('aria-label', `Đồ vật màu ${color.ten}`);
-      // Chỉ dựng lại từ mẫu có sẵn trong game, không dùng HTML đọc từ bộ nhớ.
-      item.innerHTML = KIEU_DO[saved.shape](color);
-      ganKeoTha(item);
-      sanDo.appendChild(item);
-    });
-    oGom.textContent = `${daGom}/${TONG_DO}`;
-    oDongHo.textContent = dinhDangGio(giay);
-    manThang.classList.remove('hien');
-    startClock();
     return true;
   }
 
@@ -205,16 +133,23 @@
       seconds: () => window.BongGame3.seconds(),
       canSave: () => window.BongGame3.canSave()
     },
-    game4: { capture: captureGame4, restore: restoreGame4, difficulty: '12-objects', moves: () => soSai + daGom }
+    game4: {
+      capture: captureGame4,
+      restore: restoreGame4,
+      difficulty: '12-objects',
+      moves: () => window.BongGame4.moves(),
+      seconds: () => window.BongGame4.seconds(),
+      canSave: () => window.BongGame4.canSave()
+    }
   };
 
   function init(modules) {
     const progress = modules?.progress;
     const adapter = adapters[gameId];
-    // Hộp thoại thắng lấy theo id: Game 3 đã tách engine nên không còn biến toàn cục manThang.
+    // Hộp thoại thắng lấy theo id: Game 3, 4 đã tách engine nên không còn biến toàn cục manThang.
     const winDialog = document.getElementById('manThang');
     if (!progress || !adapter || !winDialog) return;
-    // Game đã tách engine tự báo thời gian và lúc được lưu; Game 2, 4 vẫn đọc biến toàn cục giay.
+    // Game đã tách engine tự báo thời gian và lúc được lưu; Game 2 vẫn đọc biến toàn cục giay.
     const seconds = adapter.seconds || (() => giay);
     const canSave = adapter.canSave || (() => true);
 
