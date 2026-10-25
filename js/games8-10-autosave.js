@@ -41,58 +41,12 @@
   }
 
   function captureGame8() {
-    return {
-      schemaVersion: 1,
-      sessionId,
-      size: N,
-      maze: luoi.map((row) => row.map(({ tren, phai, duoi, trai }) => ({ tren, phai, duoi, trai }))),
-      player: { x: beX, y: beY },
-      path: duongDaDi.map(([x, y]) => [x, y]),
-      steps: buoc,
-      seconds: giay,
-      started: daBatDau
-    };
+    return window.BongGame8.serialize(sessionId);
   }
 
   function restoreGame8(state) {
-    const size = Number.isInteger(state.size) ? state.size : 0;
-    const maze = Array.isArray(state.maze) ? state.maze : [];
-    if (![8, 10, 12].includes(size) || maze.length !== size || maze.some((row) => !Array.isArray(row) || row.length !== size)) return false;
-
-    clearInterval(dongHoChay);
-    N = size;
-    luoi = maze.map((row) => row.map((cell) => ({
-      tren: Boolean(cell.tren), phai: Boolean(cell.phai), duoi: Boolean(cell.duoi), trai: Boolean(cell.trai), tham: true
-    })));
-    beX = Number.isInteger(state.player?.x) ? Math.max(0, Math.min(N - 1, state.player.x)) : 0;
-    beY = Number.isInteger(state.player?.y) ? Math.max(0, Math.min(N - 1, state.player.y)) : 0;
-    buoc = Number.isFinite(state.steps) ? Math.max(0, state.steps) : 0;
-    giay = Number.isFinite(state.seconds) ? Math.max(0, state.seconds) : 0;
-    daBatDau = Boolean(state.started);
-    daThang = false;
+    if (!window.BongGame8.restore(state)) return false;
     sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
-    duongDaDi.length = 0;
-    const path = Array.isArray(state.path) ? state.path : [];
-    path.forEach((point) => {
-      if (Array.isArray(point) && Number.isInteger(point[0]) && Number.isInteger(point[1])) duongDaDi.push([point[0], point[1]]);
-    });
-    if (!duongDaDi.length) duongDaDi.push([0, 0]);
-
-    document.querySelectorAll('#mucDo button').forEach((button) => {
-      button.classList.toggle('dang-chon', Number(button.dataset.o) === N);
-    });
-    oBuoc.textContent = String(buoc);
-    oDongHo.textContent = dinhDangGio(giay);
-    const record = docKyLuc(N);
-    oKyLuc.textContent = record ? dinhDangGio(record) : '--';
-    manThang.classList.remove('hien');
-    ve();
-    if (daBatDau) {
-      dongHoChay = setInterval(() => {
-        giay++;
-        oDongHo.textContent = dinhDangGio(giay);
-      }, 1000);
-    }
     return true;
   }
 
@@ -205,10 +159,10 @@
     game8: {
       capture: captureGame8,
       restore: restoreGame8,
-      difficulty: () => `${N}x${N}`,
-      duration: () => giay,
-      moves: () => buoc,
-      canSave: () => !daThang && Array.isArray(luoi) && luoi.length === N
+      difficulty: () => window.BongGame8.difficulty(),
+      duration: () => window.BongGame8.seconds(),
+      moves: () => window.BongGame8.moves(),
+      canSave: () => window.BongGame8.canSave()
     },
     game9: {
       capture: captureGame9,
@@ -233,11 +187,13 @@
     const adapter = adapters[gameId];
     if (!progress || !adapter) return;
 
+    // Lấy hộp thoại thắng theo id: Game 8 đã tách engine nên không còn biến toàn cục manThang.
+    const winDialog = document.getElementById('manThang');
     const saved = progress.loadGame(gameId);
     if (saved?.state && adapter.restore(saved.state)) showStatus('↩️ Đã khôi phục ván đang chơi');
 
     function save() {
-      if (manThang.classList.contains('hien') || !adapter.canSave()) return;
+      if (winDialog.classList.contains('hien') || !adapter.canSave()) return;
       progress.saveGame(gameId, {
         status: 'in_progress',
         difficulty: adapter.difficulty(),
@@ -263,7 +219,7 @@
     });
 
     const observer = new MutationObserver(() => {
-      if (!manThang.classList.contains('hien')) return;
+      if (!winDialog.classList.contains('hien')) return;
       clearInterval(saveTimer);
       const result = progress.completeGame(gameId, {
         transactionId: `${gameId}-finish-${sessionId}`,
@@ -274,7 +230,7 @@
       });
       if (!result.duplicate) showStatus('✅ Đã lưu lượt hoàn thành');
     });
-    observer.observe(manThang, { attributes: true, attributeFilter: ['class'] });
+    observer.observe(winDialog, { attributes: true, attributeFilter: ['class'] });
 
     window.BongGames810Autosave = Object.freeze({ gameId, save, capture: adapter.capture });
   }
