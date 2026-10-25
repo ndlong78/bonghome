@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v79-game7-engine";
+const PHIEN_BAN = "bonghome-v80-game7-first-try";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
