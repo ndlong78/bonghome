@@ -2,7 +2,7 @@ const { test, expect } = require('@playwright/test');
 
 /*
  * Game 7 sau khi tách engine/UI: chơi trọn 8 câu trên trang thật, chọn sai (kể cả sai liên tiếp),
- * bàn phím, khôi phục bản lưu cũ và ghi lượt hoàn thành kèm phần thưởng.
+ * chỉ đếm câu đúng ngay lần đầu, bàn phím, khôi phục bản lưu cũ và ghi lượt hoàn thành kèm phần thưởng.
  */
 
 async function openGame7(page) {
@@ -43,11 +43,12 @@ test.describe('Game 7 – Đoán Hình Tiếp Theo', () => {
       const { correct } = await choiceIndexes(page);
       await choices.nth(correct).click();
       await expect(page.locator('#chuoi .o-hoi.da-dien svg')).toHaveCount(1);
-      await expect(page.locator('#soDung')).toHaveText(String(question + 1));
+      // Câu 1 đã chọn sai trước nên không tính "đúng ngay"; các câu sau chọn đúng ngay lần đầu.
+      await expect(page.locator('#soDung')).toHaveText(String(question));
     }
 
     await expect(page.locator('#manThang')).toHaveClass(/hien/);
-    await expect(page.locator('#dungCuoi')).toHaveText('8/8');
+    await expect(page.locator('#dungCuoi')).toHaveText('7/8');
     await expect(page.locator('#bangKyLuc')).toHaveClass(/hien/);
     await expect(page.locator('.man-thang .bh-reward-summary')).toContainText('⭐ Bé nhận 2 sao');
     await expect(page.locator('.man-thang .bh-reward-summary')).toContainText('Bóng đèn thông minh');
@@ -83,6 +84,28 @@ test.describe('Game 7 – Đoán Hình Tiếp Theo', () => {
     await page.keyboard.press('Enter');
     await expect(choices.nth(correct)).toHaveClass(/dung/);
     await expect(page.locator('#thongBao')).toHaveText('Chính xác! Quy luật đúng rồi!');
+    await expect(page.locator('#soCau')).toHaveText('2/8');
+  });
+
+  test('tải lại trang sau khi chọn sai: câu đó vẫn không tính là đúng ngay', async ({ page }) => {
+    await page.addInitScript(() => {
+      if (sessionStorage.getItem('game7-cleared')) return;
+      sessionStorage.setItem('game7-cleared', '1');
+      localStorage.clear();
+    });
+    await openGame7(page);
+    const choices = page.locator('#luaChon .nut-chon');
+    const { wrong } = await choiceIndexes(page);
+    await choices.nth(wrong[0]).click();
+    await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(window.BongGame7 && window.BongGames57Autosave));
+
+    await expect(page.locator('#bhGameAutosaveStatus')).toContainText('Đã khôi phục');
+    const { correct } = await choiceIndexes(page);
+    await choices.nth(correct).click();
+    await expect(page.locator('#thongBao')).toHaveText('Chính xác! Quy luật đúng rồi!');
+    await expect(page.locator('#soDung')).toHaveText('0');
     await expect(page.locator('#soCau')).toHaveText('2/8');
   });
 

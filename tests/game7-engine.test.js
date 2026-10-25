@@ -60,26 +60,29 @@ for (const constant of [0, 0.22, 0.5, 0.999999]) {
   assert.equal(result.startedNow, true);
   state = result.state;
   assert.equal(state.correct, 0);
+  assert.equal(state.missed, true);
   assert.equal(engine.canSave(state), true, 'chọn sai vẫn đang chờ bé chọn tiếp');
+  assert.equal(engine.choose(state, wrongIndex).state, state, 'chọn sai lần nữa không tạo trạng thái mới');
 
   result = engine.choose(state, answerIndex(state));
   assert.equal(result.event, 'correct');
   assert.equal(result.startedNow, false);
   state = result.state;
-  assert.equal(state.correct, 1, 'giữ hành vi cũ: đúng sau khi đã chọn sai vẫn được đếm');
+  assert.equal(state.correct, 0, 'đúng sau khi đã chọn sai thì không tính là đúng ngay');
   assert.equal(state.locked, true);
   assert.equal(engine.canSave(state), false);
   assert.equal(engine.choose(state, 0).event, 'ignored', 'câu đã khóa thì bỏ qua');
 
   state = engine.nextQuestion(state, rng);
   assert.equal(state.question, 1);
+  assert.equal(state.missed, false, 'sang câu mới thì xóa dấu đã sai');
   for (let index = 1; index < engine.QUESTION_COUNT; index += 1) {
     state = engine.choose(state, answerIndex(state)).state;
     state = engine.tick(state);
     state = engine.nextQuestion(state, rng);
   }
   assert.equal(state.finished, true);
-  assert.equal(state.correct, 8);
+  assert.equal(state.correct, 7, 'câu 1 chọn sai trước nên chỉ 7/8 đúng ngay');
   assert.equal(state.seconds, 7);
   assert.equal(engine.moves(state), 9, 'giữ công thức số lượt cũ (chỉ số câu + 1)');
   assert.equal(engine.tick(state).seconds, 7, 'đồng hồ dừng khi thắng');
@@ -101,9 +104,12 @@ for (const constant of [0, 0.22, 0.5, 0.999999]) {
   let state = engine.createGame(seededRng(21));
   state = engine.tick(engine.choose(state, (answerIndex(state) + 1) % 4).state);
   const saved = engine.serialize(state, 'game7-abc');
-  assert.deepEqual(Object.keys(saved).sort(), ['answer', 'choices', 'correct', 'question', 'schemaVersion', 'seconds', 'sequence', 'sessionId', 'started']);
+  assert.deepEqual(Object.keys(saved).sort(), ['answer', 'choices', 'correct', 'missed', 'question', 'schemaVersion', 'seconds', 'sequence', 'sessionId', 'started']);
+  assert.equal(saved.missed, true);
   const restored = engine.restore(JSON.parse(JSON.stringify(saved)));
   assert.deepEqual(engine.serialize(restored, 'game7-abc'), saved);
+  // Tải lại trang sau khi chọn sai: câu đó vẫn không được tính là đúng ngay.
+  assert.equal(engine.choose(restored, answerIndex(restored)).state.correct, 0);
 }
 
 // Bản lưu do adapter cũ tạo ra (câu 3, quy luật AAB) vẫn khôi phục được.
@@ -124,6 +130,8 @@ const legacy = {
   assert.equal(restored.correct, 3);
   assert.equal(restored.seconds, 48);
   assert.equal(answerIndex(restored), 1);
+  assert.equal(restored.missed, false, 'bản lưu cũ không có missed thì coi như chưa chọn sai');
+  assert.equal(engine.choose(restored, 1).state.correct, 4);
 }
 
 // Bản lưu hỏng thì bỏ (bé bắt đầu ván mới).
@@ -140,8 +148,8 @@ const legacy = {
     { ...legacy, choices: [{ h: '<svg onload=x>', m: 0 }, ...legacy.choices.slice(1)] }
   ];
   broken.forEach((saved, index) => assert.equal(engine.restore(saved), null, `bản lưu hỏng #${index}`));
-  const clamped = engine.restore({ ...legacy, correct: 99, seconds: -3 });
-  assert.deepEqual([clamped.correct, clamped.seconds], [8, 0]);
+  const clamped = engine.restore({ ...legacy, correct: 99, seconds: -3, missed: 'yes' });
+  assert.deepEqual([clamped.correct, clamped.seconds, clamped.missed], [3, 0, false], 'số câu đúng không vượt số câu đã qua');
 }
 
 console.log('Game 7 engine checks passed.');
