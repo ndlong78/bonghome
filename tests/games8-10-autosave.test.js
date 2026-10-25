@@ -39,9 +39,6 @@ assert.match(adapter, /schemaVersion: 1/);
 assert.match(adapter, /storyIndex:/);
 assert.match(adapter, /wordIndex:/);
 assert.match(adapter, /caughtCurrent:/);
-assert.match(adapter, /stars:/);
-assert.match(adapter, /elapsedMs/);
-assert.match(adapter, /longestStreak:/);
 
 assert.match(sharedUi, /isGames8To10/);
 assert.match(sharedUi, /\.\/js\/games8-10-autosave\.js/);
@@ -64,8 +61,16 @@ assert.ok(adapter.includes("const winDialog = document.getElementById('manThang'
 });
 assert.match(game9, /let chuyen=null, i=0, hen=null, dangChay=false/);
 assert.match(game9, /function hienTu\(\)/);
-assert.match(game10, /let dsSao=\[\], batDauLuc=0, dangChay=false/);
-assert.match(game10, /function chay\(\)/);
+// Game 10 đã tách engine (tests/game10-engine.test.js kiểm tra hành vi chấm điểm và lưu/khôi phục).
+assert.equal(/<script>(?!\s*<\/script>)/.test(game10), false, 'game10.html must not keep an inline script');
+assert.deepEqual([...game10.matchAll(/<script src="([^"]+)"/g)].map((match) => match[1]), ['./shared-ui.js', './js/game10-engine.js', './js/game10-ui.js']);
+['serialize(sessionId)', 'restore(state)', 'seconds()', 'moves()', 'canSave()'].forEach((call) => {
+  assert.ok(adapter.includes(`window.BongGame10.${call}`), `Game 10 adapter must call BongGame10.${call}`);
+});
+['dsSao', 'TONG_SAO', 'batDauLuc', 'nhipCuoiKeu', 'chuoiDaiNhat', 'vongLap'].forEach((name) => {
+  assert.doesNotMatch(adapter, new RegExp(`\\b${name}\\b`), `adapter must not use Game 10 global ${name}`);
+});
+['./js/game10-engine.js', './js/game10-ui.js'].forEach((file) => assert.ok(serviceWorker.includes(`"${file}"`), `${file} must be precached`));
 
 assert.ok(serviceWorker.includes('./js/games8-10-autosave.js'), 'adapter must be cached offline');
 assert.ok(serviceWorker.includes('./css/games-autosave.css'), 'shared autosave CSS must stay cached');

@@ -110,48 +110,14 @@
     return true;
   }
 
+  // Game 10 đã tách engine (js/game10-engine.js, js/game10-ui.js): lưu/khôi phục qua window.BongGame10.
   function captureGame10() {
-    const elapsedMs = dangChay ? Math.max(0, performance.now() - batDauLuc) : 0;
-    return {
-      schemaVersion: 1,
-      sessionId,
-      stars: dsSao.map((star) => ({ luc: star.luc, xong: Boolean(star.xong), trung: Boolean(star.trung) })),
-      elapsedMs,
-      score: diem,
-      streak: chuoi,
-      longestStreak: chuoiDaiNhat,
-      hits: trung,
-      misses: truot,
-      lastBeat: nhipCuoiKeu,
-      running: dangChay
-    };
+    return window.BongGame10.serialize(sessionId);
   }
 
   function restoreGame10(state) {
-    const stars = Array.isArray(state.stars) ? state.stars : [];
-    if (stars.length !== TONG_SAO || stars.some((star) => !Number.isFinite(star.luc))) return false;
-
-    cancelAnimationFrame(vongLap);
-    dsSao = stars.map((star) => ({ luc: star.luc, xong: Boolean(star.xong), trung: Boolean(star.trung) }));
-    diem = Number.isFinite(state.score) ? Math.max(0, state.score) : 0;
-    chuoi = Number.isFinite(state.streak) ? Math.max(0, state.streak) : 0;
-    chuoiDaiNhat = Number.isFinite(state.longestStreak) ? Math.max(0, state.longestStreak) : 0;
-    trung = Number.isFinite(state.hits) ? Math.max(0, state.hits) : 0;
-    truot = Number.isFinite(state.misses) ? Math.max(0, state.misses) : 0;
-    nhipCuoiKeu = Number.isInteger(state.lastBeat) ? state.lastBeat : -1;
-    nhayVach = 0;
-    dangChay = Boolean(state.running);
+    if (!window.BongGame10.restore(state)) return false;
     sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
-
-    oDiem.textContent = String(diem);
-    oChuoi.textContent = String(chuoi);
-    capNhatConLai();
-    nutGo.disabled = !dangChay;
-    manThang.classList.remove('hien');
-    const elapsedMs = Number.isFinite(state.elapsedMs) ? Math.max(0, state.elapsedMs) : 0;
-    batDauLuc = performance.now() - elapsedMs;
-    if (dangChay) chay();
-    else ve(elapsedMs);
     return true;
   }
 
@@ -176,9 +142,9 @@
       capture: captureGame10,
       restore: restoreGame10,
       difficulty: () => '24-stars',
-      duration: () => Math.round(Math.max(0, performance.now() - batDauLuc) / 1000),
-      moves: () => trung + truot,
-      canSave: () => dangChay && dsSao.length === TONG_SAO
+      duration: () => window.BongGame10.seconds(),
+      moves: () => window.BongGame10.moves(),
+      canSave: () => window.BongGame10.canSave()
     }
   };
 
