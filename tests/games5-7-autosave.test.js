@@ -38,10 +38,6 @@ assert.match(adapter, /SAVE_INTERVAL_MS = 2000/);
 
 assert.match(adapter, /shapeIndex:/);
 assert.match(adapter, /position: viTri/);
-assert.match(adapter, /question: cau/);
-assert.match(adapter, /sequence:/);
-assert.match(adapter, /choices:/);
-assert.match(adapter, /answer:/);
 assert.match(adapter, /schemaVersion: 1/);
 
 assert.match(sharedUi, /isGames5To7/);
@@ -51,8 +47,6 @@ assert.match(sharedUi, /isGames2To4\(\) \|\| isGames5To7\(\)/);
 
 assert.match(game5, /let hinhHienTai=null, viTri=0, soSai=0, giay=0/);
 assert.match(game5, /function thangCuoc\(\)/);
-assert.match(game7, /let cau=0, dungNgay=0, khoa=false, giay=0/);
-assert.match(game7, /function raCau\(\)/);
 
 // Game 6 đã tách engine: không còn script inline, adapter lưu ván qua window.BongGame6.
 assert.doesNotMatch(game6, /<script>/, 'game6.html không còn script inline');
@@ -60,6 +54,12 @@ assert.ok(game6.indexOf('./js/game6-engine.js') > 0 && game6.indexOf('./js/game6
 assert.match(adapter, /window\.BongGame6\.serialize\(sessionId\)/);
 assert.match(adapter, /window\.BongGame6\.restore\(state\)/);
 assert.ok(serviceWorker.includes('./js/game6-engine.js') && serviceWorker.includes('./js/game6-ui.js'), 'Game 6 phải có offline');
+// Game 7 cũng đã tách engine.
+assert.doesNotMatch(game7, /<script>/, 'game7.html không còn script inline');
+assert.ok(game7.indexOf('./js/game7-engine.js') > 0 && game7.indexOf('./js/game7-engine.js') < game7.indexOf('./js/game7-ui.js'));
+assert.match(adapter, /window\.BongGame7\.serialize\(sessionId\)/);
+assert.match(adapter, /window\.BongGame7\.restore\(state\)/);
+assert.ok(serviceWorker.includes('./js/game7-engine.js') && serviceWorker.includes('./js/game7-ui.js'), 'Game 7 phải có offline');
 
 assert.ok(serviceWorker.includes('./js/games5-7-autosave.js'), 'adapter must be cached offline');
 assert.ok(serviceWorker.includes('./css/games-autosave.css'), 'shared autosave CSS must stay cached');

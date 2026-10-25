@@ -95,81 +95,14 @@
     return true;
   }
 
-  function comboFromElement(element) {
-    const path = element?.querySelector('path');
-    if (!path) return null;
-    const shape = DUONG.indexOf(path.getAttribute('d'));
-    const fill = String(path.getAttribute('fill') || '').toLowerCase();
-    const stroke = String(path.getAttribute('stroke') || '').toLowerCase();
-    const color = MAU.findIndex((item) => item.c.toLowerCase() === fill && item.v.toLowerCase() === stroke);
-    return shape >= 0 && color >= 0 ? { h: shape, m: color } : null;
-  }
-
+  // Game 7 đã tách engine (js/game7-engine.js, js/game7-ui.js): lưu/khôi phục qua window.BongGame7.
   function captureGame7() {
-    return {
-      schemaVersion: 1,
-      sessionId,
-      question: cau,
-      correct: dungNgay,
-      sequence: [...oChuoi.querySelectorAll('.o-chuoi:not(.o-hoi)')].map(comboFromElement).filter(Boolean),
-      answer: dapAn ? { h: dapAn.h, m: dapAn.m } : null,
-      choices: [...oLuaChon.children].map(comboFromElement).filter(Boolean),
-      seconds: giay,
-      started: daBatDau
-    };
+    return window.BongGame7.serialize(sessionId);
   }
 
   function restoreGame7(state) {
-    const question = Number.isInteger(state.question) ? state.question : -1;
-    const sequence = Array.isArray(state.sequence) ? state.sequence : [];
-    const choices = Array.isArray(state.choices) ? state.choices : [];
-    const answer = state.answer;
-    if (!CAC_QUY_LUAT[question] || !sequence.length || choices.length !== 4 || !answer) return false;
-
-    clearInterval(dongHoChay);
-    cau = question;
-    dungNgay = Number.isFinite(state.correct) ? Math.max(0, Math.min(SO_CAU, state.correct)) : 0;
-    giay = Number.isFinite(state.seconds) ? Math.max(0, state.seconds) : 0;
-    daBatDau = Boolean(state.started);
-    khoa = false;
-    dapAn = { h: answer.h, m: answer.m };
+    if (!window.BongGame7.restore(state)) return false;
     sessionId = typeof state.sessionId === 'string' ? state.sessionId : sessionId;
-
-    oChuoi.innerHTML = '';
-    sequence.forEach((value) => {
-      const item = document.createElement('div');
-      item.className = 'o-chuoi';
-      item.innerHTML = veHinh(value);
-      oChuoi.appendChild(item);
-    });
-    const questionMark = document.createElement('div');
-    questionMark.className = 'o-chuoi o-hoi';
-    questionMark.id = 'oHoi';
-    questionMark.textContent = '?';
-    oChuoi.appendChild(questionMark);
-
-    oLuaChon.innerHTML = '';
-    choices.forEach((value) => {
-      const button = document.createElement('div');
-      button.className = 'nut-chon';
-      button.setAttribute('role', 'button');
-      button.setAttribute('tabindex', '0');
-      button.setAttribute('aria-label', 'Chọn hình này');
-      button.innerHTML = veHinh(value);
-      button.addEventListener('click', () => chon(value, button));
-      button.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          chon(value, button);
-        }
-      });
-      oLuaChon.appendChild(button);
-    });
-    oSoCau.textContent = `${cau + 1}/${SO_CAU}`;
-    oSoDung.textContent = String(dungNgay);
-    thongBao.textContent = '';
-    manThang.classList.remove('hien');
-    startClock(false);
     return true;
   }
 
@@ -193,8 +126,9 @@
       capture: captureGame7,
       restore: restoreGame7,
       difficulty: '8-patterns',
-      moves: () => cau + 1,
-      canSave: () => !khoa && Boolean(dapAn)
+      moves: () => window.BongGame7.moves(),
+      seconds: () => window.BongGame7.seconds(),
+      canSave: () => window.BongGame7.canSave()
     }
   };
 
