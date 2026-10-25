@@ -91,9 +91,8 @@ test.describe('Game 2 – Tìm Điểm Khác Biệt', () => {
     await tapPicture(page, 'tranhA', 150, 100);
     expect(await page.evaluate(() => window.BongGame2.getState().wrong)).toBe(0);
     await expect(page.locator('#manThang')).not.toHaveClass(/hien/);
-    // Trên iPhone, nút âm thanh nổi (và banner cài app) đang che tâm nút "Tranh mới" kể cả khi cuộn hết trang:
-    // lỗi bố cục có sẵn của lớp dùng chung, sửa ở PR riêng. Ở đây chỉ kiểm logic nên bấm thẳng vào nút.
-    await page.locator('#nutVanMoi').dispatchEvent('click');
+    // Bấm bằng con trỏ thật: nút âm thanh nổi và banner cài app không còn che "Tranh mới" trên iPhone.
+    await page.locator('#nutVanMoi').click();
     await page.clock.runFor(1200);
     await expect(page.locator('#manThang')).not.toHaveClass(/hien/);
     await expect(page.locator('#soTimDuoc')).toHaveText('0/5');

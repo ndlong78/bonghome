@@ -408,7 +408,7 @@
   .game11-page .nut-am-thanh {
     box-sizing: border-box;
     right: max(8px, env(safe-area-inset-right));
-    bottom: max(8px, env(safe-area-inset-bottom));
+    bottom: calc(max(8px, env(safe-area-inset-bottom)) + var(--bh-install-tip-space, 0px));
     width: var(--bh-touch-target, 44px);
     min-width: var(--bh-touch-target, 44px);
     height: var(--bh-touch-target, 44px);

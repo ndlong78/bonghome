@@ -43,7 +43,8 @@
       body {
         padding-top: max(var(--bh-existing-top, 0px), env(safe-area-inset-top));
         padding-right: max(var(--bh-existing-right, 0px), env(safe-area-inset-right));
-        padding-bottom: max(var(--bh-existing-bottom, 0px), env(safe-area-inset-bottom));
+        padding-bottom: max(var(--bh-existing-bottom, 0px), env(safe-area-inset-bottom),
+          calc(max(12px, env(safe-area-inset-bottom)) + var(--bh-floating-space, 0px)));
         padding-left: max(var(--bh-existing-left, 0px), env(safe-area-inset-left));
         overscroll-behavior-y: contain;
       }
@@ -113,6 +114,38 @@
     document.body.appendChild(tip);
   }
 
+  /*
+   * Nút âm thanh (shared-ui.js) và banner cài app cùng nổi ở đáy màn hình. Xếp nút âm thanh lên trên banner
+   * (CSS đọc --bh-install-tip-space) và chừa đáy trang bằng chiều cao cả chồng nổi (--bh-floating-space),
+   * để nút cuối trang (ví dụ "Tranh mới" của Game 2 trên iPhone) luôn cuộn lên trên chúng được.
+   */
+  const FLOATING_GAP = 8;
+  const FLOATING_SELECTOR = '#nutAmThanh, .bh-install-tip';
+
+  // Tính theo kích thước (không theo vị trí): lúc CSS chưa tải xong nút âm thanh còn nằm trong luồng trang,
+  // còn khi CSS tải xong nút chỉ đổi vị trí nên ResizeObserver không báo. Đáy cơ sở và vùng an toàn do CSS cộng.
+  function updateFloatingSpace() {
+    const tip = document.querySelector('.bh-install-tip');
+    const sound = document.getElementById('nutAmThanh');
+    const tipSpace = tip?.offsetHeight ? tip.offsetHeight + FLOATING_GAP : 0;
+    const soundSpace = sound?.offsetHeight ? sound.offsetHeight + FLOATING_GAP : 0;
+    root.style.setProperty('--bh-install-tip-space', `${tipSpace}px`);
+    root.style.setProperty('--bh-floating-space', `${tipSpace + soundSpace}px`);
+  }
+
+  function setupFloatingSpace() {
+    const resizeObserver = 'ResizeObserver' in window ? new ResizeObserver(() => updateFloatingSpace()) : null;
+    const watch = () => {
+      document.querySelectorAll(FLOATING_SELECTOR).forEach((element) => resizeObserver?.observe(element));
+      updateFloatingSpace();
+    };
+    // Chỉ theo dõi con trực tiếp của body: nút âm thanh và banner đều được gắn thẳng vào body.
+    new MutationObserver(watch).observe(document.body, { childList: true });
+    addEventListener('resize', updateFloatingSpace);
+    addEventListener('load', updateFloatingSpace, { once: true });
+    watch();
+  }
+
   function setupNetworkStatus() {
     let status = document.querySelector('.bh-network-status');
     if (!status) {
@@ -173,6 +206,7 @@
   const start = () => {
     setupNetworkStatus();
     showInstallTip();
+    setupFloatingSpace();
     registerServiceWorker();
   };
 
