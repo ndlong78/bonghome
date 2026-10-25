@@ -44,7 +44,7 @@
         padding-top: max(var(--bh-existing-top, 0px), env(safe-area-inset-top));
         padding-right: max(var(--bh-existing-right, 0px), env(safe-area-inset-right));
         padding-bottom: max(var(--bh-existing-bottom, 0px), env(safe-area-inset-bottom),
-          calc(max(12px, env(safe-area-inset-bottom)) + var(--bh-floating-space, 0px)));
+          calc(var(--bh-floating-base, 0px) + var(--bh-floating-space, 0px)));
         padding-left: max(var(--bh-existing-left, 0px), env(safe-area-inset-left));
         overscroll-behavior-y: contain;
       }
@@ -123,14 +123,19 @@
   const FLOATING_SELECTOR = '#nutAmThanh, .bh-install-tip';
 
   // Tính theo kích thước (không theo vị trí): lúc CSS chưa tải xong nút âm thanh còn nằm trong luồng trang,
-  // còn khi CSS tải xong nút chỉ đổi vị trí nên ResizeObserver không báo. Đáy cơ sở và vùng an toàn do CSS cộng.
+  // còn khi CSS tải xong nút chỉ đổi vị trí nên ResizeObserver không báo.
   function updateFloatingSpace() {
     const tip = document.querySelector('.bh-install-tip');
     const sound = document.getElementById('nutAmThanh');
     const tipSpace = tip?.offsetHeight ? tip.offsetHeight + FLOATING_GAP : 0;
-    const soundSpace = sound?.offsetHeight ? sound.offsetHeight + FLOATING_GAP : 0;
+    // Trang tự xếp nút âm thanh vào bố cục (Game 11 đặt nó cạnh thanh trạng thái) thì không chừa chỗ cho nút.
+    const soundDocked = document.body.hasAttribute('data-bh-sound-docked');
+    const soundSpace = sound?.offsetHeight && !soundDocked ? sound.offsetHeight + FLOATING_GAP : 0;
     root.style.setProperty('--bh-install-tip-space', `${tipSpace}px`);
-    root.style.setProperty('--bh-floating-space', `${tipSpace + soundSpace}px`);
+    const space = tipSpace + soundSpace;
+    root.style.setProperty('--bh-floating-space', `${space}px`);
+    // Đáy cơ sở của chồng nút nổi (như CSS của nút); không có gì cần chừa thì giữ nguyên đáy trang như cũ.
+    root.style.setProperty('--bh-floating-base', space ? 'max(12px, env(safe-area-inset-bottom))' : '0px');
   }
 
   function setupFloatingSpace() {
