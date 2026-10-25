@@ -1,7 +1,7 @@
 const { test, expect } = require('@playwright/test');
 
 /*
- * Game 4 lưu chỉ số kiểu đồ vật (KIEU_DO) chứ không lưu innerHTML. Bản lưu cũ chỉ có HTML
+ * Game 4 lưu chỉ số kiểu đồ vật (mẫu trong js/game4-engine.js) chứ không lưu innerHTML. Bản lưu cũ chỉ có HTML
  * vẫn khôi phục được nếu khớp mẫu có sẵn; HTML lạ thì bỏ bản lưu thay vì chèn vào trang.
  */
 
@@ -21,6 +21,10 @@ async function savedGame4(page) {
  */
 async function seedState(page, makeObject) {
   const objects = await page.evaluate((source) => {
+    // Mẫu đồ vật và màu lấy từ engine (trước khi tách engine là biến toàn cục KIEU_DO, MAU của trang).
+    const engine = window.BongGame4Engine;
+    const KIEU_DO = Array.from({ length: engine.SHAPE_COUNT }, (_, shape) => (color) => engine.shapeSvg(shape, color.id));
+    const MAU = engine.COLORS;
     const make = new Function('color', 'index', 'KIEU_DO', 'MAU', source);
     const list = [];
     MAU.forEach((color) => {
@@ -79,7 +83,7 @@ test.describe('Game 4 khôi phục ván từ mẫu đồ vật, không từ HTML
       label: item.getAttribute('aria-label'),
       matchesTemplate: item.innerHTML === (() => {
         const holder = document.createElement('div');
-        holder.innerHTML = KIEU_DO[Number(item.dataset.kieu)](MAU.find((color) => color.id === item.dataset.mau));
+        holder.innerHTML = window.BongGame4Engine.shapeSvg(Number(item.dataset.kieu), item.dataset.mau);
         return holder.innerHTML;
       })()
     })));

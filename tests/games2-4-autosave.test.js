@@ -50,8 +50,18 @@ assert.ok(game3.indexOf('./js/game3-engine.js') > 0 && game3.indexOf('./js/game3
 });
 assert.ok(adapter.includes("const winDialog = document.getElementById('manThang');"), 'adapter lấy hộp thoại thắng theo id');
 ['./js/game3-engine.js', './js/game3-ui.js'].forEach((file) => assert.ok(serviceWorker.includes(`"${file}"`), `${file} phải có offline`));
-assert.match(adapter, /objects:/);
-assert.match(adapter, /basketCounts:/);
+// Game 4 đã tách engine (tests/game4-engine.test.js kiểm tra hành vi; e2e/game4-autosave-restore.spec.js
+// kiểm tra bản lưu rất cũ chỉ có HTML): adapter chỉ gọi API window.BongGame4.
+const game4 = read('game4.html');
+assert.doesNotMatch(game4, /<script>/, 'game4.html không còn script inline');
+assert.ok(game4.indexOf('./js/game4-engine.js') > 0 && game4.indexOf('./js/game4-engine.js') < game4.indexOf('./js/game4-ui.js'));
+['serialize(sessionId)', 'restore(state)', 'moves()', 'seconds()', 'canSave()'].forEach((call) => {
+  assert.ok(adapter.includes(`window.BongGame4.${call}`), `Game 4 adapter phải gọi BongGame4.${call}`);
+});
+['KIEU_DO', 'MAU', 'sanDo', 'hangGio', 'demTheoGio', 'daGom', 'TONG_DO', 'veGio', 'innerHTML'].forEach((name) => {
+  assert.doesNotMatch(adapter, new RegExp(`\\b${name}\\b`), `adapter không được dùng ${name} của Game 4`);
+});
+['./js/game4-engine.js', './js/game4-ui.js'].forEach((file) => assert.ok(serviceWorker.includes(`"${file}"`), `${file} phải có offline`));
 
 assert.match(sharedUi, /isGames2To4/);
 assert.match(sharedUi, /\.\/js\/games2-4-autosave\.js/);
