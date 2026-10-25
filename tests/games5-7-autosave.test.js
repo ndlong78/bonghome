@@ -30,24 +30,28 @@ assert.match(adapter, /progress\.saveGame\(gameId/);
 assert.match(adapter, /progress\.loadGame\(gameId\)/);
 assert.match(adapter, /progress\.completeGame\(gameId/);
 assert.match(adapter, /transactionId: `\$\{gameId\}-finish-\$\{sessionId\}`/);
-assert.match(adapter, /durationSeconds: seconds\(\)/);
+assert.match(adapter, /durationSeconds: adapter\.seconds\(\)/);
 assert.match(adapter, /MutationObserver/);
 assert.match(adapter, /pagehide/);
 assert.match(adapter, /visibilitychange/);
 assert.match(adapter, /SAVE_INTERVAL_MS = 2000/);
 
-assert.match(adapter, /shapeIndex:/);
-assert.match(adapter, /position: viTri/);
-assert.match(adapter, /schemaVersion: 1/);
 
 assert.match(sharedUi, /isGames5To7/);
 assert.match(sharedUi, /\.\/js\/games5-7-autosave\.js/);
 assert.match(sharedUi, /loadGames5To7Autosave\(\)/);
 assert.match(sharedUi, /isGames2To4\(\) \|\| isGames5To7\(\)/);
 
-assert.match(game5, /let hinhHienTai=null, viTri=0, soSai=0, giay=0/);
-assert.match(game5, /function thangCuoc\(\)/);
-
+// Cả ba game đã tách engine: adapter chỉ gọi window.BongGameN, không còn đọc biến toàn cục của game.
+['viTri', 'soSai', 'giay', 'daBatDau', 'dongHoChay', 'hinhHienTai', 'KHO_HINH'].forEach((name) => {
+  assert.doesNotMatch(adapter, new RegExp(`\\b${name}\\b`), `adapter không được dùng biến toàn cục ${name}`);
+});
+// Game 5: không còn script inline, nạp engine trước UI, lưu/khôi phục qua window.BongGame5.
+assert.doesNotMatch(game5, /<script>/, 'game5.html không còn script inline');
+assert.ok(game5.indexOf('./js/game5-engine.js') > 0 && game5.indexOf('./js/game5-engine.js') < game5.indexOf('./js/game5-ui.js'));
+assert.match(adapter, /window\.BongGame5\.serialize\(sessionId\)/);
+assert.match(adapter, /window\.BongGame5\.restore\(state\)/);
+assert.ok(serviceWorker.includes('./js/game5-engine.js') && serviceWorker.includes('./js/game5-ui.js'), 'Game 5 phải có offline');
 // Game 6 đã tách engine: không còn script inline, adapter lưu ván qua window.BongGame6.
 assert.doesNotMatch(game6, /<script>/, 'game6.html không còn script inline');
 assert.ok(game6.indexOf('./js/game6-engine.js') > 0 && game6.indexOf('./js/game6-engine.js') < game6.indexOf('./js/game6-ui.js'));
