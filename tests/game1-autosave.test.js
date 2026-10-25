@@ -67,15 +67,21 @@ assert.equal(migratedLegacy.activeDifficulty, 3);
 assert.deepEqual(migratedLegacy.snapshots['3'].snapshot, validSnapshot);
 assert.equal(migratedLegacy.snapshots['3'].startedAt, '2026-07-22T00:00:00.000Z');
 
-assert.match(autosaveSource, /matchesGameRoute\(root\.location\?\.pathname, root\.BongRoutes\)/);
-assert.equal(
-  autosaveSource.includes("if (!/\\/game1\\.html$/.test(root.location.pathname)"),
-  false,
-  'Game 1 autosave không được giữ điều kiện route .html cũ'
-);
-assert.match(autosaveSource, /addEventListener\('click',[\s\S]*true\);/);
-assert.match(autosaveSource, /restoreDifficulty\(targetDifficulty/);
-assert.doesNotMatch(autosaveSource, /#nutChoiLai, #mucDo button/);
+// Luật kiểm tra snapshot nằm ở engine: adapter nhận thêm điều kiện quan hệ giữa các trường.
+assert.equal(autosave.validateSnapshot({ ...validSnapshot, matchedIndices: [0, 1] }), null, 'cặp đã ghép phải cùng hình');
+assert.deepEqual(autosave.validateSnapshot({ ...validSnapshot, difficulty: '3' }), validSnapshot);
+
+// Hợp đồng sau khi tách engine/UI: trang không còn script inline, nạp engine → UI theo thứ tự,
+// adapter chỉ gọi window.BongGame1 và không chạm biến toàn cục cũ của trang.
+const game1Html = fs.readFileSync(path.join(root, 'game1.html'), 'utf8');
+assert.doesNotMatch(game1Html, /<script>(?!\s*<\/script>)/, 'game1.html không còn script inline');
+const scriptOrder = ['./shared-ui.js', './js/game1-engine.js', './js/game1-ui.js'].map((src) => game1Html.indexOf(`<script src="${src}" defer></script>`));
+assert.ok(scriptOrder.every((index, i) => index > 0 && (i === 0 || index > scriptOrder[i - 1])), 'thứ tự script Game 1');
+assert.match(autosaveSource, /root\.BongGame1\b/);
+for (const legacyGlobal of ['soCapCanTim', 'KHO_HINH', 'HINH_MAT_SAU', 'chamVaoBai', 'thangCuoc', 'vanMoi', 'baiDangMo', 'khoaBai', 'dongHoChay', 'daBatDau', 'giay', 'sanBai', 'oSoCap', 'docKyLuc', 'dungPhaoGiay']) {
+  assert.doesNotMatch(autosaveSource, new RegExp(`\\b${legacyGlobal}\\b`), `adapter không được đọc biến toàn cục ${legacyGlobal}`);
+}
+for (const file of ['./js/game1-engine.js', './js/game1-ui.js']) assert.ok(serviceWorker.includes(file), `precache ${file}`);
 assert.match(sharedUi, /game1-autosave\.js/);
 assert.match(sharedUi, /game1-autosave\.css/);
 assert.match(sharedUi, /game1-theme-progress\.js/);
