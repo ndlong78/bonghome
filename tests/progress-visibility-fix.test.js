@@ -8,16 +8,18 @@ const adapter = read('js/games5-7-autosave.js');
 const dashboard = read('js/parent-dashboard.js');
 const serviceWorker = read('sw.js');
 
-[
-  'function comboFromElement(element)',
-  "querySelector('path')",
-  "path.getAttribute('d')",
-  "path.getAttribute('fill')",
-  "path.getAttribute('stroke')",
-  '.map(comboFromElement).filter(Boolean)'
-].forEach((snippet) => {
-  assert.ok(adapter.includes(snippet), `Game 7 adapter must include: ${snippet}`);
-});
+// Game 7 trước đây đọc ngược hình từ DOM để lưu ván (và từng so chuỗi HTML). Nay trạng thái nằm
+// trong js/game7-engine.js: kiểm tra lưu rồi khôi phục giữ đúng từng hình của ván đang chơi.
+{
+  const game7 = require('../js/game7-engine.js');
+  let seed = 37;
+  const next = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 2 ** 32; };
+  let state = game7.createGame(next);
+  state = game7.nextQuestion(game7.choose(state, state.choices.findIndex((c) => game7.sameCombo(c, state.answer))).state, next);
+  const saved = JSON.parse(JSON.stringify(game7.serialize(state, 'game7-visibility')));
+  assert.deepEqual(game7.serialize(game7.restore(saved), 'game7-visibility'), saved, 'Game 7 save/restore must keep every shape');
+  assert.ok(adapter.includes('window.BongGame7.serialize(sessionId)'), 'Game 7 adapter must delegate saving to the engine');
+}
 assert.ok(!adapter.includes('function comboFromHtml'), 'Game 7 must not compare rendered HTML strings');
 
 [
