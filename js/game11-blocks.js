@@ -134,7 +134,12 @@
     els.board.setAttribute('aria-rowcount', String(state.rows));
     els.board.setAttribute('aria-colcount', String(state.cols));
 
+    // role="grid" cần ô nằm trong role="row"; hàng dùng display: contents nên ô vẫn là phần tử của lưới CSS.
     for (let row = 0; row < state.rows; row += 1) {
+      const rowEl = document.createElement('div');
+      rowEl.className = 'block-row';
+      rowEl.setAttribute('role', 'row');
+      rowEl.setAttribute('aria-rowindex', String(row + 1));
       for (let col = 0; col < state.cols; col += 1) {
         const cell = document.createElement('div');
         cell.className = 'block-cell';
@@ -142,8 +147,9 @@
         cell.dataset.col = String(col);
         cell.setAttribute('role', 'gridcell');
         cell.setAttribute('aria-label', `Hàng ${row + 1}, cột ${col + 1}`);
-        els.board.appendChild(cell);
+        rowEl.appendChild(cell);
       }
+      els.board.appendChild(rowEl);
     }
   }
 

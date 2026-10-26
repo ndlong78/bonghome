@@ -174,11 +174,10 @@ DANH_SACH.forEach((lop, i) => {
   a.href = lop.file;
   a.style.setProperty("--vien", lop.vien);
   a.style.setProperty("--nen",  lop.nen);
-  a.setAttribute("aria-label", `Lớp ${i+1}: ${lop.ten}`);
   a.innerHTML = `
-    <div class="so">${i + 1}</div>
+    <div class="so"><span class="bh-visually-hidden">Lớp </span>${i + 1}</div>
     <div class="the">
-      <div class="hinh">${HINH_VE[i]}</div>
+      <div class="hinh" aria-hidden="true">${HINH_VE[i]}</div>
       <div class="ten">${lop.ten}</div>
       <span class="ky-nang">${lop.kyNang}</span>
     </div>`;

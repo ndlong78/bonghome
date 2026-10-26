@@ -17,7 +17,7 @@
       element.setAttribute('aria-live', 'polite');
       element.setAttribute('aria-atomic', 'true');
     }
-    document.body.appendChild(element);
+    (document.querySelector('main') || document.body).appendChild(element);
     return element;
   }
 
@@ -108,10 +108,8 @@
       else item.removeAttribute('aria-disabled');
     });
     document.querySelectorAll(BASKET_SELECTOR).forEach((basket) => {
-      const colorName = basket.querySelector('.ten-gio')?.textContent?.trim() || 'Giỏ';
       basket.setAttribute('role', 'button');
       basket.setAttribute('tabindex', '0');
-      basket.setAttribute('aria-label', colorName);
       basket.setAttribute('aria-describedby', instructions.id);
     });
   }

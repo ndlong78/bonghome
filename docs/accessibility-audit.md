@@ -45,6 +45,7 @@ Ngày rà soát: 24/07/2026
 
 Các yêu cầu trên được kiểm trên trang thật (cây trợ năng, kích thước và màu đã render) cho cả 16 trang:
 
+- **Quét axe-core:** `e2e/accessibility-axe.spec.js` — mọi trang (và hộp thoại thắng Game 1–10) không có vi phạm axe: landmark (`main` cho Game 1–10, live region nằm trong landmark), vai trò ARIA (lưới Game 11 có `role="row"`), tên truy cập khớp chữ nhìn thấy (emoji/hình trang trí `aria-hidden`), `dl` chỉ chứa `dt`/`dd`, không lồng điều khiển trong `role="img"`. Tạm tắt luật `color-contrast` cho tới khi sửa màu chữ nhạt (xem mục việc tiếp theo).
 - **Cấu trúc:** `e2e/page-structure.spec.js` — `lang="vi"`, `viewport-fit=cover`, vùng nội dung chính có tên, hộp thoại thắng là modal có tên, điều khiển game 11–13 có tên, trang phụ huynh chỉ đọc.
 - **Kiểu dùng chung:** `e2e/shared-styles.spec.js` — nút bị vô hiệu, vùng chạm và focus ring của `role="button"`, giảm chuyển động cho cả phần tử chèn sau khi tải.
 - **Vùng chạm:** `e2e/touch-targets.spec.js` (điều khiển chung), `e2e/game2-gameplay-touch-targets.spec.js`, `e2e/games3-4-gameplay-touch-targets.spec.js`, `e2e/game5-touch-target.spec.js`, `e2e/games6-7-gameplay-touch-targets.spec.js`, `e2e/games8-10-gameplay-touch-targets.spec.js` (mục tiêu trong vùng chơi, đo bằng `boundingBox()`); `e2e/gameplay-layout.spec.js` (số cột theo bề rộng, phím hướng Game 8, nút toàn chiều rộng Game 9/10). Dữ liệu vùng chạm trong engine: `tests/game2-gameplay-touch-targets.test.js`, `tests/games6-7-gameplay-touch-targets.test.js`.
@@ -67,7 +68,7 @@ Các yêu cầu trên được kiểm trên trang thật (cây trợ năng, kíc
 
 Mỗi mục sẽ được xử lý trong PR nhỏ, độc lập:
 
-1. Rà soát độ tương phản của nội dung nhỏ và vật thể gameplay còn lại.
+1. Sửa 43 phần tử axe báo thiếu tương phản (chữ nhạt trên trang chủ, phụ huynh, Game 1–11 và hộp thắng), rồi bật lại luật `color-contrast` trong `e2e/accessibility-axe.spec.js`.
 2. Kiểm thử thực tế thông báo phần thưởng và auto-save với VoiceOver/TalkBack cho Game 5–10.
 3. Mở rộng E2E accessibility cho các luồng tương tác hoàn chỉnh trên iPhone/iPad.
 

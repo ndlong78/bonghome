@@ -14,7 +14,7 @@
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
     status.setAttribute('aria-atomic', 'true');
-    document.body.appendChild(status);
+    (document.querySelector('main') || document.body).appendChild(status);
     return status;
   }
 
@@ -25,7 +25,7 @@
     instructions.id = 'bhGame3KeyboardInstructions';
     instructions.className = 'bh-visually-hidden';
     instructions.textContent = 'Nhấn Enter hoặc phím cách để chọn một hình màu. Sau đó Tab tới một cái bóng và nhấn Enter hoặc phím cách để thả hình.';
-    document.body.appendChild(instructions);
+    (document.querySelector('main') || document.body).appendChild(instructions);
     return instructions;
   }
 

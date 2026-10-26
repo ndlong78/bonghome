@@ -22,9 +22,8 @@
     card.dataset.game13Card = 'true';
     card.style.setProperty('--vien', '#8FB8EA');
     card.style.setProperty('--nen', '#EEF6FF');
-    card.setAttribute('aria-label', 'Lớp 13: Cờ Ca-rô Tí Hon');
     card.innerHTML = `
-      <div class="so">13</div>
+      <div class="so"><span class="bh-visually-hidden">Lớp </span>13</div>
       <div class="the">
         <div class="hinh" aria-hidden="true">
           <svg viewBox="0 0 64 64">

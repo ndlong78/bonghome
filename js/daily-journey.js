@@ -54,7 +54,6 @@
     const link = root.document.createElement('a');
     link.className = 'bh-daily-activity';
     link.href = activity.href;
-    link.setAttribute('aria-label', `${index + 1}. ${activity.title}, luyện ${activity.skill}`);
 
     const number = root.document.createElement('span');
     number.className = 'bh-daily-number';

@@ -50,7 +50,7 @@
     holder.innerHTML = svgString;
     return holder.content;
   }
-  const veGio = (m) => `<svg viewBox="0 0 100 80">
+  const veGio = (m) => `<svg viewBox="0 0 100 80" aria-hidden="true">
   <path d="M6 24 h88 l-11 44 a8 8 0 0 1 -8 6 h-50 a8 8 0 0 1 -8 -6z" fill="${m.main}" stroke="${m.dark}" stroke-width="4" stroke-linejoin="round"/>
   <path d="M26 32 v40 M50 32 v42 M74 32 v40" stroke="${m.dark}" stroke-width="3" stroke-linecap="round" opacity=".7"/>
   <path d="M24 24 q26-22 52 0" fill="none" stroke="${m.dark}" stroke-width="5" stroke-linecap="round"/></svg>`;
@@ -147,6 +147,8 @@
       element.className = `do-vat${item.done ? ' xong' : ''}`;
       element.dataset.mau = item.color;
       element.dataset.kieu = String(item.shape);
+      // Vai trò đi cùng tên ngay từ đầu (aria-label trên div không vai trò bị cấm); lớp bàn phím bổ sung tabindex.
+      element.setAttribute('role', 'button');
       element.setAttribute('aria-label', `Đồ vật màu ${engine.colorById(item.color).name}`);
       element.append(tuMau(engine.shapeSvg(item.shape, item.color)));
       ganKeoTha(element, index);

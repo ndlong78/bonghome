@@ -14,7 +14,7 @@
     instructions.id = 'bhGame2KeyboardInstructions';
     instructions.className = 'bh-visually-hidden';
     instructions.textContent = 'Dùng các phím mũi tên để di chuyển vòng tròn. Nhấn Enter hoặc phím cách để chọn vị trí.';
-    document.body.appendChild(instructions);
+    (document.querySelector('main') || document.body).appendChild(instructions);
 
     const status = document.createElement('div');
     status.id = 'bhGame2KeyboardStatus';
@@ -22,7 +22,7 @@
     status.setAttribute('role', 'status');
     status.setAttribute('aria-live', 'polite');
     status.setAttribute('aria-atomic', 'true');
-    document.body.appendChild(status);
+    (document.querySelector('main') || document.body).appendChild(status);
 
     // CSS nằm ở tệp riêng (CSP không cho <style> inline); .bh-visually-hidden dùng chung trong css/common.css.
     if (!document.getElementById('bhGame2KeyboardStyles')) {

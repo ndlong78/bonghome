@@ -121,6 +121,8 @@
       const piece = document.createElement('div');
       piece.className = `mieng-hinh${engine.isMatched(state, id) ? ' xong' : ''}`;
       piece.dataset.id = id;
+      // Vai trò đi cùng tên ngay từ đầu (aria-label trên div không vai trò bị cấm); lớp bàn phím bổ sung tabindex.
+      piece.setAttribute('role', 'button');
       piece.setAttribute('aria-label', `Hình ${shape.name}`);
       piece.append(veMau(shape));
       ganKeoTha(piece);
