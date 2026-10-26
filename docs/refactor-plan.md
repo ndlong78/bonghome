@@ -112,6 +112,12 @@ Ghi chú khi làm Game 1:
   - Trước khi bắt đầu chuyển: 51 tệp, 317 phép so chuỗi.
   - Đợt 1 (adapter autosave game 2–10): còn 47 tệp, 243 phép so chuỗi. `tests/helpers/browser-sandbox.js` chạy module trình duyệt thật trong `node:vm` với DOM, hẹn giờ và `MutationObserver` giả; module đọc biến toàn cục cũ của trang sẽ ném `ReferenceError` nên kiểm tra "không dùng biến toàn cục" thành kiểm tra hành vi.
   - Đợt 2 (lớp bàn phím/chạm game 1–5 và lớp nạp module): còn 36 tệp test, 149 phép so chuỗi trên mã JS. Các test so chuỗi được thay bằng E2E thật: đủ 4 phím mũi tên, giới hạn biên, phím cách và live region (Game 2); vai trò nút và live region (Game 3/4); nhãn lá bài (Game 1); vùng chạm được gắn lại sau khi vẽ lại (Game 5). `e2e/page-modules.spec.js` mở từng trang và đối chiếu module đã nạp cùng thứ tự nạp; `tests/service-worker-precache-coverage.test.js` bắt mọi tệp JS/CSS/HTML phải có trong precache, thay cho các dòng "tệp X phải có offline" rải rác.
+  - Đợt 3 (lớp dùng chung, phần thưởng, trang phụ huynh, hồ sơ, chủ đề): còn 5 tệp, 30 phép so chuỗi (đều thuộc game 11–13).
+    - `e2e/shared-quality.spec.js`: `pwa-quality.js` (nút `role="button"`, live region, giữ focus trong hộp thoại thắng, bố cục Game 1).
+    - `tests/reward-announcements.test.js`: bốn lớp phần thưởng, live region khai báo đủ trước khi chèn.
+    - `e2e/shared-startup.spec.js`: chuẩn hoá hồ sơ, chuyển đổi và áp chủ đề, sự kiện âm thanh.
+    - `e2e/parent-dashboard.spec.js`, `e2e/profile-theme-ui.spec.js`: số liệu phụ huynh, nội dung người dùng hiển thị nguyên văn, bộ chọn chủ đề.
+    - Ràng buộc "bảng phụ huynh không tự gọi `localStorage`/`fetch`" kiểm bằng cách bọc hai API đó trên trang thật và xét khung gọi trực tiếp.
 
 ## Đã làm trong PR rà soát (#4–#15)
 
