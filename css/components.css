@@ -138,7 +138,8 @@
 .nut-am-thanh {
   position: fixed;
   right: max(12px, env(safe-area-inset-right));
-  bottom: max(12px, env(safe-area-inset-bottom));
+  /* --bh-install-tip-space do pwa-ios.js đặt: banner cài app đang hiện thì nút nằm ngay trên banner. */
+  bottom: calc(max(12px, env(safe-area-inset-bottom)) + var(--bh-install-tip-space, 0px));
   z-index: 120;
   padding: 10px 14px;
   border: 3px solid var(--bh-color-purple);

@@ -91,7 +91,7 @@ Ghi chú khi làm Game 9:
 Ghi chú khi làm Game 2:
 - RNG có hạt giống trong test: LCG đơn giản với các hạt giống liên tiếp cho số đầu tiên gần như bằng nhau, làm Fisher–Yates luôn bỏ sót một vật. Dùng mulberry32 (`tests/game2-engine.test.js`).
 - Test có hẹn giờ ngắn (600 ms chờ màn thắng) phải dừng đồng hồ bằng `page.clock`; trên iPhone giả lập, các bước cuộn và chạm có thể chậm hơn 600 ms.
-- Phát hiện khi viết E2E, chưa sửa: trên iPhone, nút âm thanh nổi (`#nutAmThanh`, `position: fixed`) và banner cài app che tâm nút "🔄 Tranh mới" của Game 2 kể cả khi cuộn hết trang. Lỗi bố cục của lớp dùng chung, cần PR riêng và kiểm tra các game khác.
+- Phát hiện khi viết E2E: trên iPhone, nút âm thanh nổi (`#nutAmThanh`, `position: fixed`) và banner cài app che tâm nút "🔄 Tranh mới" của Game 2 kể cả khi cuộn hết trang. Đã sửa ở lớp dùng chung (`pwa-ios.js`: nút âm thanh xếp trên banner, đáy trang chừa bằng chiều cao chồng nút nổi); `e2e/floating-controls-overlap.spec.js` quét mọi trang, có và không có banner. Lưu ý: banner chỉ hiện với UA Safari iOS, các project E2E mặc định không có nên phải đặt `userAgent` riêng.
 
 Ghi chú khi làm Game 1:
 - Khi engine giữ trạng thái, hẹn giờ của giao diện gọi hàm engine trên trạng thái **hiện tại** (`closeMismatch` không làm gì nếu ván không đang khoá). Nhờ vậy hẹn giờ sót lại của ván cũ không làm hỏng ván mới, dù vẫn hủy hẹn giờ khi sang ván mới cho gọn.
