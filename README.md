@@ -118,7 +118,7 @@ Không đổi số này thì máy của bé vẫn chạy bản cũ đã lưu. Th
 ## 🧪 Kiểm thử
 
 ```bash
-for f in tests/*.test.js; do node "$f" || exit 1; done   # unit test (Node 22)
+for f in tests/*.test.js; do node "$f" || exit 1; done   # unit test (Node 24)
 npm ci && npx playwright install chromium
 npm run test:e2e                                         # E2E: Desktop, iPhone 13, iPad Mini, iPad Upgrade
 ```
