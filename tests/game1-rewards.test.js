@@ -5,7 +5,6 @@ const path = require('node:path');
 const rootPath = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(rootPath, file), 'utf8');
 const createGame1Rewards = require('../js/game1-rewards.js');
-const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
 
 const completions = [];
@@ -103,9 +102,6 @@ integrated.completeGame('game2', { transactionId: 'game2:finish', difficulty: '6
 assert.equal(stars, 2, 'PR này chỉ thưởng cho Game 1');
 assert.equal(completions.length, 3);
 
-assert.ok(sharedUi.includes("./js/rewards.js"));
-assert.ok(sharedUi.includes("./js/game1-rewards.js"));
-assert.ok(sharedUi.indexOf("./js/game1-rewards.js") < sharedUi.indexOf("./game1-autosave.js"));
 assert.ok(serviceWorker.includes('./js/game1-rewards.js'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 

@@ -5,7 +5,6 @@ const path = require('node:path');
 const rootPath = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(rootPath, file), 'utf8');
 const createRewardsAdapter = require('../js/games5-7-rewards.js');
-const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
 const catalog = JSON.parse(read('content/rewards/catalog.json'));
 
@@ -75,8 +74,6 @@ const stickerIds = new Set(catalog.stickers.map((item) => item.id));
 ['diligent-pencil', 'best-friends', 'bright-idea'].forEach((id) => assert.ok(stickerIds.has(id)));
 assert.ok(catalog.badges.some((item) => item.id === 'thinking-kid'));
 
-assert.ok(sharedUi.includes("./js/games5-7-rewards.js"));
-assert.ok(sharedUi.indexOf("./js/games5-7-rewards.js") < sharedUi.indexOf("./js/games5-7-autosave.js"));
 assert.ok(serviceWorker.includes('./js/games5-7-rewards.js'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 

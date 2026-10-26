@@ -11,6 +11,13 @@ test.describe('Ghép hình bằng bàn phím trong Game 3', () => {
     const piece = page.locator(`.mieng-hinh[data-id="${id}"]`);
     const shadow = page.locator(`.o-bong[data-id="${id}"]`);
 
+    await expect(piece).toHaveAttribute('role', 'button');
+    await expect(shadow).toHaveAttribute('role', 'button');
+    await expect(shadow).toHaveAttribute('tabindex', '0');
+    const status = page.locator('#bhGame3KeyboardStatus');
+    await expect(status).toHaveAttribute('role', 'status');
+    await expect(status).toHaveAttribute('aria-live', 'polite');
+
     await piece.focus();
     await page.keyboard.press('Enter');
     await expect(piece).toHaveAttribute('aria-pressed', 'true');

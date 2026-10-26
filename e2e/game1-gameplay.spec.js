@@ -36,7 +36,10 @@ test.describe('Game 1 – Lật Hình Tìm Cặp', () => {
     const [[a1, a2], [b1, b2], [c1, c2]] = await pairsOf(page);
 
     // Cặp sai: hai lá đỏ lên rồi tự úp lại, tính 1 lượt; lá thứ ba không lật được trong lúc chờ.
+    await expect(cards(page).nth(a1)).toHaveAttribute('aria-pressed', 'false');
     await tapCard(page, a1);
+    await expect(cards(page).nth(a1)).toHaveAttribute('aria-label', `Lá bài ${a1 + 1}, đang mở`);
+    await expect(cards(page).nth(a1)).toHaveAttribute('aria-pressed', 'true');
     await tapCard(page, b1);
     await expect(cards(page).nth(a1)).toHaveClass(/sai/);
     await expect(page.locator('#soLuot')).toHaveText('1');
@@ -54,6 +57,7 @@ test.describe('Game 1 – Lật Hình Tìm Cặp', () => {
       await expect(page.locator('#soCap')).toHaveText(`${index + 1}/3`);
     }
     await expect(cards(page).nth(a2)).toBeDisabled();
+    await expect(cards(page).nth(a2)).toHaveAttribute('aria-label', `Lá bài ${a2 + 1}, đã ghép đúng`);
 
     await expect(page.locator('#manThang')).toHaveClass(/hien/);
     await expect(page.locator('#luotCuoi')).toHaveText('4');

@@ -11,6 +11,9 @@ test.describe('Gom đồ bằng bàn phím trong Game 4', () => {
     const item = page.locator(`.do-vat[data-mau="${color}"]`).first();
     const basket = page.locator(`.gio[data-mau="${color}"]`);
 
+    await expect(item).toHaveAttribute('aria-pressed', 'false');
+    await expect(page.locator('#bhGame4KeyboardStatus')).toHaveAttribute('aria-live', 'polite');
+
     await item.focus();
     await page.keyboard.press('Enter');
     await expect(item).toHaveAttribute('aria-pressed', 'true');

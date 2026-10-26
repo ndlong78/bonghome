@@ -6,7 +6,6 @@ const rootPath = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(rootPath, file), 'utf8');
 const createRewardsAdapter = require('../js/games2-4-rewards.js');
 const routes = require('../js/routes.js');
-const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
 const catalog = JSON.parse(read('content/rewards/catalog.json'));
 
@@ -86,8 +85,6 @@ for (const id of ['little-flower', 'rainbow-friend', 'kind-heart']) {
   assert.ok(catalog.stickers.some((item) => item.id === id), `${id} must exist in reward catalog`);
 }
 assert.ok(catalog.badges.some((item) => item.id === 'curious-learner'));
-assert.ok(sharedUi.includes('./js/games2-4-rewards.js'));
-assert.ok(sharedUi.indexOf('./js/games2-4-rewards.js') < sharedUi.indexOf('./js/games2-4-autosave.js'));
 assert.ok(serviceWorker.includes('./js/games2-4-rewards.js'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 

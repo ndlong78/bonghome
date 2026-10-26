@@ -5,7 +5,6 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const autosave = require(path.join(root, 'game1-autosave.js'));
 const routes = require(path.join(root, 'js', 'routes.js'));
-const sharedUi = fs.readFileSync(path.join(root, 'shared-ui.js'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'css/game1-autosave.css'), 'utf8');
 const autosaveSource = fs.readFileSync(path.join(root, 'game1-autosave.js'), 'utf8');
@@ -82,10 +81,6 @@ for (const legacyGlobal of ['soCapCanTim', 'KHO_HINH', 'HINH_MAT_SAU', 'chamVaoB
   assert.doesNotMatch(autosaveSource, new RegExp(`\\b${legacyGlobal}\\b`), `adapter không được đọc biến toàn cục ${legacyGlobal}`);
 }
 for (const file of ['./js/game1-engine.js', './js/game1-ui.js']) assert.ok(serviceWorker.includes(file), `precache ${file}`);
-assert.match(sharedUi, /game1-autosave\.js/);
-assert.match(sharedUi, /game1-autosave\.css/);
-assert.match(sharedUi, /game1-theme-progress\.js/);
-assert.match(sharedUi, /window\.BongProgress = window\.BongGame1Progress/);
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 assert.ok(serviceWorker.includes('./game1-autosave.js'));
 assert.ok(serviceWorker.includes('./css/game1-autosave.css'));

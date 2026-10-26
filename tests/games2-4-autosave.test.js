@@ -2,7 +2,7 @@
 
 /*
  * Hợp đồng cấu hình của nhóm Game 2-4: trang không còn script inline, nạp engine trước UI, tệp có offline.
- * Hành vi của adapter js/games2-4-autosave.js nằm ở tests/games-autosave-behavior.test.js.
+ * Việc nạp đúng trang và đúng thứ tự: e2e/page-modules.spec.js. Hành vi của adapter js/games2-4-autosave.js nằm ở tests/games-autosave-behavior.test.js.
  */
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -10,7 +10,6 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
-const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
 
 for (const game of ['game2', 'game3', 'game4']) {
@@ -24,12 +23,6 @@ for (const game of ['game2', 'game3', 'game4']) {
   [`./js/${game}-engine.js`, `./js/${game}-ui.js`].forEach((file) => assert.ok(serviceWorker.includes(`"${file}"`), `${file} phải có offline`));
 }
 
-// shared-ui.js nạp adapter cho đúng nhóm trang (chuyển sang test hành vi khi tách lớp nạp của shared-ui.js).
-assert.match(sharedUi, /isGames2To4/);
-assert.match(sharedUi, /\.\/js\/games2-4-autosave\.js/);
-assert.match(sharedUi, /\.\/css\/games-autosave\.css/);
-assert.match(sharedUi, /loadGames2To4Autosave\(\)/);
-assert.match(sharedUi, /BongRoutesReady\.then/);
 
 const css = read('css/games-autosave.css');
 assert.match(css, /bh-game-autosave-status/);
