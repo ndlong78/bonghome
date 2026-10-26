@@ -6,8 +6,6 @@ const ROOT = path.join(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8');
 
 const content = JSON.parse(read('content/games/game11.json'));
-const html = read('game11.html');
-const style = read('css/game11-blocks.css');
 const sw = read('sw.js');
 const redirects = read('_redirects');
 
@@ -22,46 +20,10 @@ autoTest('nội dung Game 11 có schemaVersion và tetromino tách khỏi logic'
 });
 
 // Khối rơi, bám chuột, bấm để quay, nút và phím điều khiển, dọn hàng ngang: e2e/game11-block-puzzle.spec.js,
-// e2e/game11-rewards.spec.js. Ở đây chỉ còn hợp đồng HTML/CSS.
-autoTest('Game 11 có khối rơi, bám chuột ngang, quay bằng click và điều khiển dự phòng', () => {
-  assert.match(html, /css\/design-tokens\.css/);
-  assert.match(html, /id="blockLeft"/);
-  assert.match(html, /id="blockRotate"/);
-  assert.match(html, /id="blockRight"/);
-  assert.match(html, /id="blockDrop"/);
-  assert.match(html, /Rê chuột trái\/phải/);
-  assert.match(html, /Click\/chạm: quay khối/);
-  assert.match(html, /role="grid"/);
-  assert.match(html, /tabindex="0"/);
-  assert.match(style, /cursor:\s*ew-resize/);
-  assert.match(style, /prefers-reduced-motion:\s*reduce/);
-  assert.match(style, /--bh-touch-target/);
-});
-
-autoTest('Game 11 khóa viewport mobile để màn hình không bị trượt khi chơi', () => {
-  assert.match(style, /@media \(pointer:\s*coarse\)/);
-  assert.match(style, /\.game11-page\s*\{[\s\S]*?position:\s*fixed;[\s\S]*?overflow:\s*hidden;/);
-  assert.match(style, /html\s*\{[\s\S]*?overflow:\s*hidden;[\s\S]*?overscroll-behavior:\s*none;/);
-  assert.match(style, /\.game11-shell\s*\{[\s\S]*?box-sizing:\s*border-box;/);
-  assert.match(style, /\.block-board\s*\{[\s\S]*?box-sizing:\s*border-box;/);
-  assert.match(style, /@media \(pointer:\s*coarse\)[\s\S]*?\.block-board\s*\{[\s\S]*?touch-action:\s*none;/);
-  assert.match(style, /@supports \(height:\s*100svh\)/);
-});
-
-autoTest('Game 11 giữ 16 hàng bằng nhau và tránh artefact đồ họa trên Safari mobile', () => {
-  assert.match(style, /grid-template-rows:\s*repeat\(var\(--board-rows,\s*16\),\s*minmax\(0,\s*1fr\)\)/);
-  assert.match(style, /grid-auto-rows:\s*0/);
-  assert.match(style, /contain:\s*paint/);
-  assert.match(style, /\.block-cell\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*100%;/);
-  assert.match(style, /@media \(pointer:\s*coarse\)[\s\S]*?\.block-cell\s*\{[\s\S]*?transition:\s*none;/);
-  assert.match(style, /\.game11-page \.nut-am-thanh\s*\{/);
-  assert.match(style, /html\[data-sound="off"\] \.game11-page \.nut-am-thanh::before/);
-});
-
-autoTest('Game 11 chỉ dọn hàng ngang và không thêm cơ chế gây áp lực', () => {
-  assert.match(html, /không có đồng hồ đếm ngược/i);
-});
-
+// e2e/game11-rewards.spec.js. Khoá viewport mobile, 16 hàng bằng nhau, vùng chạm: e2e/game11-block-puzzle.spec.js.
+// Bàn là grid nhận focus, nút có tên, hướng dẫn chuột chỉ hiện trên máy có chuột, không đếm ngược:
+// e2e/page-structure.spec.js. Giảm chuyển động, focus ring: e2e/reduced-motion-all-pages.spec.js,
+// e2e/focus-visible.spec.js. Ở đây chỉ còn hợp đồng precache và route.
 autoTest('PWA precache và route có Game 11', () => {
   for (const asset of [
     './game11.html',

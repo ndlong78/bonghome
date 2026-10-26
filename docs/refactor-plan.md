@@ -1,8 +1,12 @@
 # Lộ trình tái cấu trúc game 1–10 và chuyển test sang kiểm tra hành vi
 
-Đây là tài liệu kế hoạch, chưa thực hiện. Mục tiêu: đưa game 1–10 về cùng mô hình với game 11–13, và để test kiểm tra hành vi thay vì kiểm tra chuỗi trong mã nguồn. Hai việc đi cùng nhau, vì game đã tách engine thì mới test hành vi được trong Node.
+**Đã hoàn thành** (PR #119–#135 và đợt 5 bên dưới). Mục tiêu ban đầu: đưa game 1–10 về cùng mô hình với game 11–13, và để test kiểm tra hành vi thay vì kiểm tra chuỗi trong mã nguồn. Hai việc đi cùng nhau, vì game đã tách engine thì mới test hành vi được trong Node.
 
-## Hiện trạng (đo ngày 2026-10-24)
+- Game 1–10 đã tách `js/gameN-engine.js` + `js/gameN-ui.js` (#119–#128), trang không còn script inline.
+- So chuỗi trên mã JS trong `tests/`: 317 → **0** (đợt 1–4, #131–#134). So chuỗi trên HTML/CSS: 141 → **3** (đợt 5); 3 dòng còn lại là hợp đồng không đo được trong Chromium (xem đợt 5).
+- Phần "Hiện trạng" ngay dưới là số đo lúc lập kế hoạch, giữ lại để đối chiếu.
+
+## Hiện trạng lúc lập kế hoạch (đo ngày 2026-10-24)
 
 | Hạng mục | Số liệu |
 |---|---|
@@ -108,7 +112,7 @@ Ghi chú khi làm Game 1:
   - định dạng `PHIEN_BAN`;
   - nội dung `_headers`, `_redirects`, `.assetsignore`;
   - thứ tự `<script>` trong HTML.
-- **Theo dõi tiến độ** bằng `node scripts/count-source-assertions.js` (thêm `--files` để xem từng tệp): đếm các phép so chuỗi/regex trên mã nguồn JS trong `tests/*.test.js`, không tính hợp đồng cấu hình. Mục tiêu là 0.
+- **Theo dõi tiến độ** bằng `node scripts/count-source-assertions.js` (thêm `--files` để xem từng tệp): đếm các phép so chuỗi/regex trên mã nguồn JS trong `tests/*.test.js`, không tính hợp đồng cấu hình. Mục tiêu là 0. Thêm `--markup` để đếm trên HTML/CSS.
   - Trước khi bắt đầu chuyển: 51 tệp, 317 phép so chuỗi.
   - Đợt 1 (adapter autosave game 2–10): còn 47 tệp, 243 phép so chuỗi. `tests/helpers/browser-sandbox.js` chạy module trình duyệt thật trong `node:vm` với DOM, hẹn giờ và `MutationObserver` giả; module đọc biến toàn cục cũ của trang sẽ ném `ReferenceError` nên kiểm tra "không dùng biến toàn cục" thành kiểm tra hành vi.
   - Đợt 2 (lớp bàn phím/chạm game 1–5 và lớp nạp module): còn 36 tệp test, 149 phép so chuỗi trên mã JS. Các test so chuỗi được thay bằng E2E thật: đủ 4 phím mũi tên, giới hạn biên, phím cách và live region (Game 2); vai trò nút và live region (Game 3/4); nhãn lá bài (Game 1); vùng chạm được gắn lại sau khi vẽ lại (Game 5). `e2e/page-modules.spec.js` mở từng trang và đối chiếu module đã nạp cùng thứ tự nạp; `tests/service-worker-precache-coverage.test.js` bắt mọi tệp JS/CSS/HTML phải có trong precache, thay cho các dòng "tệp X phải có offline" rải rác.
@@ -119,7 +123,17 @@ Ghi chú khi làm Game 1:
     - `e2e/parent-dashboard.spec.js`, `e2e/profile-theme-ui.spec.js`: số liệu phụ huynh, nội dung người dùng hiển thị nguyên văn, bộ chọn chủ đề.
     - Ràng buộc "bảng phụ huynh không tự gọi `localStorage`/`fetch`" kiểm bằng cách bọc hai API đó trên trang thật và xét khung gọi trực tiếp.
   - Đợt 4 (game 11–13): **0** phép so chuỗi trên mã JS. E2E bổ sung phím ←/↓ và kiểm "Game 11 không tự ghi `localStorage`" (xét khung gọi trực tiếp), số ô và điểm sau khi dọn hàng; ghi chú, phần thưởng Game 12 và chế độ chơi với bạn của Game 13 đã có E2E sẵn.
-  - Những gì còn đọc mã nguồn trong `tests/` là hợp đồng cấu hình (HTML, CSS, precache, `_redirects`) hoặc quy tắc dạng lint áp cho cả tệp: không gán `innerHTML` bằng chuỗi có `${…}` (`user-content-escaping`), danh sách khoá `localStorage` (`storage-keys`). Script đếm không tính các quy tắc này.
+  - Đợt 5 (HTML/CSS): so chuỗi trên HTML/CSS 141 → **3** (`node scripts/count-source-assertions.js --markup`). Kiểm tra trên trang thật bằng cây trợ năng, kích thước và kiểu đã tính:
+    - `e2e/page-structure.spec.js`: `lang="vi"` và `viewport-fit=cover` ở mọi trang; vùng nội dung chính có tên; hộp thoại thắng game 1–10, 12, 13 là modal có tên; điều khiển game 11–13 có tên, bàn nhận focus; Sudoku xếp đúng N×N ô; trang phụ huynh chỉ đọc; nút trang chủ đủ 44px, thẻ hành trình 72px trên màn hẹp; hướng dẫn chuột Game 11 chỉ hiện trên máy có chuột.
+    - `e2e/shared-styles.spec.js`: nút bị vô hiệu (gốc và `role="button"`), vùng chạm và focus ring của `role="button"`, giảm chuyển động áp cả cho phần tử chèn sau khi tải, token thiết kế, tên màu cũ (`--kem`, `--chu`, `--tim`) đi theo chủ đề.
+    - `e2e/gameplay-layout.spec.js`: số cột lựa chọn Game 7 và giỏ Game 4 theo bề rộng, phím hướng Game 8 hình chữ thập và thứ tự Tab, nút chính Game 9/10 trải hết bề ngang, tranh Game 2 dùng hệ toạ độ 300×300.
+    - `touch-targets`, `focus-visible`, `reduced-motion-all-pages` mở rộng ra game 11–13 (và trang bộ sưu tập).
+    - Bỏ các test unit chỉ còn so CSS/HTML đã có E2E tương đương: độ tương phản tính từ mã CSS (E2E đo màu đã render), `accessibility-baseline`, `disabled-controls`, `accessibility-shared-controls`, `design-system-smoke`, `reward-win-dialog`, `game1-reward-win-dialog`, `reward-runtime-wiring`, `games3-4`/`games8-10-gameplay-touch-targets`.
+  - Những gì còn đọc mã nguồn trong `tests/` là hợp đồng cấu hình và quy tắc dạng lint, không đo được bằng hành vi:
+    - precache trong `sw.js`, định dạng `PHIEN_BAN`, `_headers`, `_redirects`, `.assetsignore`, thứ tự `<script>` tĩnh trong HTML;
+    - trang không có script inline (`game1-autosave`);
+    - `env(safe-area-inset-*)` cho hộp hồ sơ và trạng thái lưu (`profile`, `games2-4-autosave`): Chromium không giả lập tai thỏ nên giữ dạng so chuỗi;
+    - không gán `innerHTML` bằng chuỗi có `${…}` (`user-content-escaping`), danh sách khoá `localStorage` (`storage-keys`).
 
 ## Đã làm trong PR rà soát (#4–#15)
 

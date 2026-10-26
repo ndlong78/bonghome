@@ -125,7 +125,6 @@ autoTest('Xóa lịch sử chơi ở Góc phụ huynh xóa luôn ván Ca-rô đa
 
 autoTest('trang Game 13 nạp module phần thưởng trước game, chỉ thưởng khi chơi với máy và precache offline', () => {
   assert.ok(html.indexOf('js/game13-rewards.js') > 0 && html.indexOf('js/game13-rewards.js') < html.indexOf('js/game13-tictactoe.js'));
-  assert.match(html, /id="tttWinRewards"[^>]*role="status"/);
   // Chỉ thưởng khi chơi với máy (chơi với bạn không cộng thưởng): e2e/game13-tictactoe.spec.js.
   assert.ok(sw.includes('"./js/game13-rewards.js"'));
 });

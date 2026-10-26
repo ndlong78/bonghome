@@ -120,7 +120,6 @@ autoTest('Xóa lịch sử chơi ở Góc phụ huynh xóa luôn ván Sudoku đa
 
 autoTest('trang Game 12 nạp module phần thưởng trước engine và precache offline', () => {
   assert.ok(html.indexOf('js/game12-rewards.js') > 0 && html.indexOf('js/game12-rewards.js') < html.indexOf('js/game12-sudoku.js'));
-  assert.match(html, /id="sudokuWinRewards"[^>]*role="status"/);
   // Thắng ván thì nhận sao + sticker, hiện ở Góc phụ huynh và Bộ sưu tập: e2e/game12-sudoku.spec.js.
   assert.ok(sw.includes('"./js/game12-rewards.js"'));
 });

@@ -58,4 +58,10 @@ test('hộp tiếp tục Game 1 giữ tương phản chữ tối thiểu 4.5:1',
     const ratio = contrastRatio(parseRgb(colors.foreground), parseRgb(colors.background));
     expect(ratio, `${selector} cần đạt tương phản 4.5:1`).toBeGreaterThanOrEqual(4.5);
   }
+
+  // Hai nút là lựa chọn chính của bé khi quay lại: đủ cao để chạm.
+  for (const selector of ['.bh-game1-continue', '.bh-game1-restart']) {
+    const box = await page.locator(selector).boundingBox();
+    expect(box.height, `${selector} cao tối thiểu 44px`).toBeGreaterThanOrEqual(44);
+  }
 });

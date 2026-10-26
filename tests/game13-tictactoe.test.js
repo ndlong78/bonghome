@@ -7,8 +7,6 @@ const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8');
 
 const engine = require('../js/game13-tictactoe.js');
 const content = JSON.parse(read('content/games/game13.json'));
-const html = read('game13.html');
-const style = read('css/game13-tictactoe.css');
 const sw = read('sw.js');
 const redirects = read('_redirects');
 
@@ -125,23 +123,9 @@ autoTest('chooseMove tất định theo seed và chỉ trả ô trống', () => 
   assert.equal(engine.chooseMove([1, 2, 1, 1, 2, 2, 2, 1, 1], BOT), -1);
 });
 
-autoTest('Game 13 có bàn 3×3 bấm được bằng nút, chế độ chơi, tỉ số và không gây áp lực thời gian', () => {
-  assert.match(html, /css\/design-tokens\.css/);
-  assert.match(html, /css\/game13-tictactoe\.css/);
-  assert.match(html, /js\/game13-tictactoe\.js/);
-  assert.match(html, /js\/game13-rewards\.js/);
-  assert.match(html, /shared-ui\.js/);
-  for (const id of ['tttBoard', 'tttModes', 'tttLevels', 'tttNew', 'tttStatus', 'tttTurn', 'tttScorePlayer', 'tttScoreDraw', 'tttScoreBot', 'tttWin', 'tttWinRewards', 'tttWinNext']) {
-    assert.match(html, new RegExp(`id="${id}"`), `thiếu #${id}`);
-  }
-  assert.match(html, /aria-live="polite"/);
-  assert.match(html, /role="dialog"[^>]*aria-modal="true"/);
-  assert.match(html, /Không có đồng hồ đếm ngược/);
-  assert.match(style, /--bh-touch-target/);
-  assert.match(style, /prefers-reduced-motion:\s*reduce/);
-  assert.match(style, /\.ttt-levels\[hidden\]\s*\{\s*display:\s*none;/);
-});
-
+// Bàn 3×3 bấm được bằng nút, chế độ chơi, tỉ số, hộp thoại thắng là modal có tên, không đếm ngược:
+// e2e/page-structure.spec.js; ẩn chọn độ khó khi chơi với bạn: e2e/game13-tictactoe.spec.js. Giảm chuyển động,
+// focus ring, vùng chạm: e2e/reduced-motion-all-pages.spec.js, e2e/focus-visible.spec.js, e2e/touch-targets.spec.js.
 autoTest('PWA precache, route và thẻ trang chủ có Game 13', () => {
   for (const asset of [
     './game13.html',

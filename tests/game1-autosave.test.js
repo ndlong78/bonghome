@@ -6,7 +6,6 @@ const root = path.resolve(__dirname, '..');
 const autosave = require(path.join(root, 'game1-autosave.js'));
 const routes = require(path.join(root, 'js', 'routes.js'));
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
-const css = fs.readFileSync(path.join(root, 'css/game1-autosave.css'), 'utf8');
 
 const validSnapshot = {
   version: 1,
@@ -79,7 +78,6 @@ for (const file of ['./js/game1-engine.js', './js/game1-ui.js']) assert.ok(servi
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 assert.ok(serviceWorker.includes('./game1-autosave.js'));
 assert.ok(serviceWorker.includes('./css/game1-autosave.css'));
-assert.match(css, /min-height:var\(--bh-touch-target,44px\)/);
-assert.match(css, /prefers-reduced-motion/);
+// Nút "Tiếp tục"/"Chơi lại" đủ cao và đủ tương phản: e2e/game1-resume-contrast.spec.js.
 
 console.log('Game 1 autosave checks passed.');

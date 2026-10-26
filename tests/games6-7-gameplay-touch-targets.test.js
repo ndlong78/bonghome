@@ -2,12 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-
-const root = path.resolve(__dirname, '..');
 const game6Engine = require('../js/game6-engine.js');
-const game7 = fs.readFileSync(path.join(root, 'game7.html'), 'utf8');
 
 const MIN_TARGET_PX = 44;
 const PHONE_WIDTH_PX = 390;
@@ -21,9 +16,5 @@ test('Game 6 keeps every round above 44px on iPhone width', () => {
   }
 });
 
-test('Game 7 keeps choices responsive and touch-friendly', () => {
-  assert.match(game7, /\.lua-chon\s*\{[^}]*grid-template-columns\s*:\s*repeat\(4,1fr\)/s);
-  assert.match(game7, /@media\s*\(max-width:520px\)\s*\{\s*\.lua-chon\s*\{\s*grid-template-columns\s*:\s*repeat\(2,1fr\)/s);
-  assert.match(game7, /\.nut-chon\s*\{[^}]*padding\s*:\s*10px/s);
-  assert.match(game7, /\.nut-chon svg\s*\{[^}]*width\s*:\s*100%/s);
-});
+// Lựa chọn Game 7 xếp 4 cột (màn hẹp 2 cột), hình lấp đầy nút: e2e/gameplay-layout.spec.js; vùng chạm ≥44px:
+// e2e/games6-7-gameplay-touch-targets.spec.js.
