@@ -16,9 +16,8 @@
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="./css/game-shell.css">
 <style>
-  :root{ --kem:#FFF7F0; --hong:#FFB7C5; --tim:#C9B6F5; --vang:#FFE0A3; --mint:#A8E6CF; --troi:#BFE3FF; --chu:#6B4E71; }
-  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body{
     margin:0; min-height:100vh; padding:14px 12px 40px;
     font-family:"Segoe UI","Nunito",Arial,sans-serif; color:var(--chu);
@@ -29,12 +28,7 @@
     background-attachment:fixed; overflow-x:hidden; user-select:none;
   }
   .khung{ max-width:640px; margin:0 auto; }
-  .thanh-tren{ display:flex; align-items:center; gap:10px; }
-  .nut-ve{ display:inline-flex; gap:6px; padding:10px 16px; background:#fff; color:var(--chu); text-decoration:none;
-    font-size:16px; font-weight:800; border:3px solid var(--tim); border-radius:999px; box-shadow:0 4px 0 rgba(0,0,0,.06); }
-  .nut-ve:active{ transform:translateY(2px); box-shadow:none; }
   h1{ flex:1; text-align:center; font-size:clamp(20px,4.8vw,32px); margin:0; color:#7A4E86; text-shadow:0 2px 0 #fff; }
-  .cham{ width:52px; }
   @media (max-width:560px){ .cham{display:none;} h1{font-size:18px;} }
 
   /* Thẻ nhiệm vụ: từ khoá cần bắt */
@@ -48,9 +42,7 @@
     color:#E0729B; margin-top:4px; letter-spacing:1px;
   }
 
-  .bang-so{ display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
   .o-so{ background:#fff; border:3px solid var(--mint); border-radius:18px; padding:7px 14px; min-width:94px; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.05); }
-  .o-so .nhan{ font-size:12px; font-weight:700; color:#8D7595; display:block; }
   .o-so .gia-tri{ font-size:21px; font-weight:900; color:#4E9A78; }
 
   /* Sân khấu chữ */
@@ -93,27 +85,12 @@
   .nut-bat-dau{ background:var(--hong); color:#fff; }
   .nut-loa{ background:var(--troi); color:#3E6E96; }
   .nut-loa:disabled{ opacity:.55; cursor:not-allowed; }
-  .nhom-nut-duoi button:active{ transform:translateY(3px); box-shadow:none; }
 
-  #phaoGiay{ position:fixed; inset:0; pointer-events:none; z-index:60; display:none; }
-  .man-thang{ position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center; background:rgba(122,78,134,.35); padding:16px; }
-  .man-thang.hien{ display:flex; }
-  .hop-thang{ background:#fff; border:6px solid var(--vang); border-radius:34px; padding:26px 24px; text-align:center; max-width:400px; width:100%; box-shadow:0 20px 50px rgba(120,80,140,.35); animation:bat-len .5s cubic-bezier(.2,1.4,.4,1); }
-  @keyframes bat-len{ from{transform:scale(.6);opacity:0;} to{transform:scale(1);opacity:1;} }
   .hop-thang h2{ font-size:28px; margin:6px 0 4px; color:#E0729B; }
-  .hop-thang .loi{ font-size:17px; font-weight:700; color:#8D7595; margin:0 0 14px; }
   .ket-qua{ display:flex; gap:8px; }
   .ket-qua div{ flex:1; background:#FFF8E7; border:3px solid var(--vang); border-radius:16px; padding:10px 4px; }
   .ket-qua .nhan{ font-size:11px; font-weight:700; color:#9A7B4F; display:block; }
   .ket-qua .gia-tri{ font-size:22px; font-weight:900; color:#9A6410; }
-  .ky-luc-moi{ font-size:17px; font-weight:900; color:#4E9A78; background:#EAFBF3; border:3px dashed var(--mint); border-radius:14px; padding:8px; margin:12px 0 0; display:none; }
-  .ky-luc-moi.hien{ display:block; }
-  .nhom-nut{ display:flex; gap:10px; margin-top:16px; }
-  .nhom-nut button,.nhom-nut a{ flex:1; font-family:inherit; font-size:17px; font-weight:800; padding:14px 10px; border:none; border-radius:999px; cursor:pointer; text-decoration:none; box-shadow:0 5px 0 rgba(0,0,0,.12); }
-  .nut-choi-lai{ background:var(--hong); color:#fff; }
-  .nhom-nut a{ background:var(--troi); color:#3E6E96; display:flex; align-items:center; justify-content:center; }
-  .nhom-nut button:active,.nhom-nut a:active{ transform:translateY(3px); box-shadow:none; }
-  @media (prefers-reduced-motion:reduce){ *{ animation:none !important; } }
 </style>
 <script src="./shared-ui.js" defer></script>
 <script src="./js/game9-engine.js" defer></script>

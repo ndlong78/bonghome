@@ -124,6 +124,7 @@ npm run test:e2e                                         # E2E: Desktop, iPhone 
 
 - Project **iPad Upgrade** (`e2e/version-upgrade.spec.js`) dựng bản phát hành trước từ lịch sử git, tạo dữ liệu bằng code cũ, nâng cấp lên bản hiện tại. Sau đó kiểm tra dữ liệu còn nguyên và app mở được khi mất mạng hoặc mạng chập chờn.
 - **CI** (`.github/workflows/verification.yml`) chạy cả hai nhóm test trên mọi PR vào `main`. E2E chia hai phần chạy song song (`--shard=1/2`, `--shard=2/2`, mỗi phần 1 worker); check gom **iPhone and iPad E2E** chỉ đạt khi cả hai phần đạt.
+- Dọn CSS mà không đổi giao diện: `node scripts/style-snapshot.js capture <url> before.json` trước khi sửa, chụp lại sau khi sửa, rồi `compare before.json after.json` phải ra 0 khác biệt (kiểu đã tính của mọi phần tử game 1–10, iPhone/iPad/desktop, hộp thắng đóng và mở).
 - Chạy lại riêng một phần như CI: `CI=1 npx playwright test --shard=1/2`. Máy yếu hoặc sandbox hay crash Chromium khi tạo context: thêm `--workers=1`, chạy lại test lỗi bằng `--last-failed`.
 
 ---
