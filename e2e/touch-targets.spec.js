@@ -24,6 +24,9 @@ test.describe('Vùng chạm giao diện chung trên iPhone và iPad', () => {
     test(`${path} giữ vùng chạm tối thiểu 44px`, async ({ page }) => {
       await page.goto(path, { waitUntil: 'domcontentloaded' });
       await page.waitForFunction(() => document.querySelector('.nut-am-thanh'));
+      // Kích thước tối thiểu nằm trong components.css do shared-ui.js nạp không đồng bộ: đo khi tệp đã áp dụng
+      // (máy chậm từng đo trúng lúc nút âm thanh mới cao 40px).
+      await page.waitForFunction(() => document.querySelector('link[data-bh-components]')?.sheet);
 
       const audit = await page.locator(sharedControls).evaluateAll((elements) => {
         const visible = elements.filter((element) => {
