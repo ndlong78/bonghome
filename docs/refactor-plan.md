@@ -108,7 +108,9 @@ Ghi chú khi làm Game 1:
   - định dạng `PHIEN_BAN`;
   - nội dung `_headers`, `_redirects`, `.assetsignore`;
   - thứ tự `<script>` trong HTML.
-- **Theo dõi tiến độ** bằng số tệp `tests/*.test.js` còn so regex trên mã nguồn logic. Hiện là 72; mục tiêu là chỉ còn các test hợp đồng cấu hình.
+- **Theo dõi tiến độ** bằng `node scripts/count-source-assertions.js` (thêm `--files` để xem từng tệp): đếm các phép so chuỗi/regex trên mã nguồn JS trong `tests/*.test.js`, không tính hợp đồng cấu hình. Mục tiêu là 0.
+  - Trước khi bắt đầu chuyển: 51 tệp, 317 phép so chuỗi.
+  - Đợt 1 (adapter autosave game 2–10): còn 47 tệp, 243 phép so chuỗi. `tests/helpers/browser-sandbox.js` chạy module trình duyệt thật trong `node:vm` với DOM, hẹn giờ và `MutationObserver` giả; module đọc biến toàn cục cũ của trang sẽ ném `ReferenceError` nên kiểm tra "không dùng biến toàn cục" thành kiểm tra hành vi.
 
 ## Đã làm trong PR rà soát (#4–#15)
 
