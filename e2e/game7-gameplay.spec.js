@@ -31,10 +31,15 @@ test.describe('Game 7 – Đoán Hình Tiếp Theo', () => {
 
     // Câu 1: chọn sai hai lần liên tiếp, cả hai hình đều hết viền đỏ sau đó.
     const first = await choiceIndexes(page);
-    await choices.nth(first.wrong[0]).click();
-    await choices.nth(first.wrong[1]).click();
+    // Hai lần chọn sai và phép đếm chạy trong cùng một lượt trên trang: viền đỏ tự tắt sau 900ms, nên đếm bằng
+    // hai bước Playwright riêng thì máy chậm có thể đã tắt viền của lần chọn đầu.
+    const marked = await page.evaluate((indexes) => {
+      const buttons = document.querySelectorAll('#luaChon .nut-chon');
+      indexes.forEach((index) => buttons[index].click());
+      return document.querySelectorAll('#luaChon .nut-chon.sai').length;
+    }, first.wrong.slice(0, 2));
+    expect(marked).toBe(2);
     await expect(page.locator('#thongBao')).toHaveText('Bé nhìn lại chuỗi hình xem nhé!');
-    await expect(page.locator('#luaChon .nut-chon.sai')).toHaveCount(2);
     await expect(page.locator('#luaChon .nut-chon.sai')).toHaveCount(0, { timeout: 3000 });
 
     for (let question = 0; question < 8; question += 1) {
