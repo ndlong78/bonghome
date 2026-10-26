@@ -1,0 +1,47 @@
+/* CSS riêng của game4.html (tách khỏi <style> inline để CSP không cần 'unsafe-inline' cho style). */
+body{
+  margin:0; min-height:100vh; padding:14px 12px 40px;
+  font-family:"Segoe UI","Nunito",Arial,sans-serif; color:var(--chu);
+  background:var(--kem);
+  background-image:radial-gradient(circle at 12% 6%,rgba(255,203,164,.35),transparent 30%),
+                   radial-gradient(circle at 88% 8%,rgba(191,227,255,.35),transparent 32%),
+                   linear-gradient(180deg,#FFF1E4 0%,var(--kem) 40%);
+  background-attachment:fixed; overflow-x:hidden;
+  user-select:none; -webkit-user-select:none; touch-action:manipulation;
+}
+.khung{ max-width:860px; margin:0 auto; }
+
+/* Sân đồ vật */
+.san-do{
+  background:#fff; border:5px dashed var(--vang); border-radius:26px;
+  padding:16px 12px; margin-bottom:20px;
+  display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center;
+  min-height:150px;
+}
+.do-vat{ width:74px; height:74px; cursor:grab; touch-action:none; transition:transform .15s ease; }
+.do-vat svg{ width:100%; height:100%; pointer-events:none; }
+.do-vat:active{ transform:scale(1.08); }
+.do-vat.dang-keo{ position:fixed; z-index:90; transform:scale(1.2) rotate(-5deg); filter:drop-shadow(0 10px 14px rgba(120,80,140,.35)); }
+.do-vat.xong{ display:none; }
+.san-do .loi-het{ font-size:19px; font-weight:800; color:#B7A4C2; }
+
+/* Hàng 4 cái giỏ */
+.hang-gio{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+@media (max-width:520px){ .hang-gio{ grid-template-columns:repeat(2,1fr); } }
+.gio{
+  background:#fff; border:5px solid var(--mau,#ccc); border-radius:22px;
+  padding:8px 6px 10px; text-align:center;
+  box-shadow:0 6px 0 rgba(0,0,0,.06);
+  transition:transform .15s ease, background .15s ease;
+}
+.gio svg{ width:70%; max-width:96px; height:auto; }
+.gio .ten-gio{ font-size:15px; font-weight:800; color:#7A6180; display:block; margin-top:2px; }
+.gio .dem{ font-size:13px; font-weight:800; color:#fff; background:var(--mau,#ccc); border-radius:999px; padding:2px 12px; display:inline-block; margin-top:4px; }
+.gio.gan-toi{ transform:scale(1.07) translateY(-4px); background:#FFFBEF; }
+.gio.dung{ animation:reo-vui .45s ease; }
+@keyframes reo-vui{ 0%,100%{transform:scale(1);} 45%{transform:scale(1.1);} }
+.gio.sai{ animation:lac-nhe .4s ease; }
+@keyframes lac-nhe{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-7px);} 75%{transform:translateX(7px);} }
+
+.nhom-nut-duoi{ display:flex; justify-content:center; margin-top:22px; }
+.nhom-nut-duoi button{ font-family:inherit; font-size:17px; font-weight:800; padding:13px 26px; border:none; border-radius:999px; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.12); background:var(--troi); color:#3E6E96; }

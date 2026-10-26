@@ -17,69 +17,7 @@
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="./css/game-shell.css">
-<style>
-  body{
-    margin:0; min-height:100vh; padding:14px 12px 34px;
-    font-family:"Segoe UI","Nunito",Arial,sans-serif; color:var(--chu);
-    background:var(--kem);
-    background-image:radial-gradient(circle at 10% 6%,rgba(168,230,207,.4),transparent 30%),
-                     radial-gradient(circle at 90% 8%,rgba(201,182,245,.35),transparent 32%),
-                     linear-gradient(180deg,#EDFBF4 0%,var(--kem) 40%);
-    background-attachment:fixed; overflow-x:hidden;
-    user-select:none; touch-action:manipulation;
-  }
-  .khung{ max-width:520px; margin:0 auto; }
-  h1{ flex:1; text-align:center; font-size:clamp(20px,4.8vw,32px); margin:0; color:#7A4E86; text-shadow:0 2px 0 #fff; }
-  @media (max-width:560px){ .cham{display:none;} h1{font-size:18px;} }
-  .huong-dan{ text-align:center; font-size:clamp(14px,3.2vw,18px); font-weight:700; color:#806987; margin:8px 0 12px; }
-
-  .bang-so{ display:flex; justify-content:center; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
-  .o-so{ background:#fff; border:3px solid var(--mint); border-radius:18px; padding:7px 14px; min-width:88px; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.05); }
-  .o-so .gia-tri{ font-size:21px; font-weight:900; color:#4E9A78; }
-
-  .bang-nhac{
-    background:#fff; border:5px solid var(--tim); border-radius:26px;
-    padding:8px; box-shadow:0 6px 0 rgba(0,0,0,.06), 0 12px 24px rgba(150,120,170,.14);
-    position:relative;
-  }
-  canvas#lan{ width:100%; height:auto; display:block; border-radius:18px; }
-
-  /* Chữ chấm điểm bay lên giữa làn */
-  .cham-diem{
-    position:absolute; left:50%; top:58%;
-    transform:translate(-50%,-50%);
-    font-size:30px; font-weight:900;
-    pointer-events:none; opacity:0;
-  }
-  .cham-diem.hien{ animation:bay-len .65s ease-out; }
-  @keyframes bay-len{
-    0%{ opacity:1; transform:translate(-50%,-50%) scale(.7); }
-    100%{ opacity:0; transform:translate(-50%,-150%) scale(1.2); }
-  }
-
-  /* Nút gõ nhịp thật to */
-  .nut-go{
-    display:block; width:100%; margin-top:16px;
-    font-family:inherit; font-size:24px; font-weight:900;
-    padding:28px 12px;
-    background:var(--hong); color:#fff;
-    border:5px solid #E9799C; border-radius:28px;
-    cursor:pointer;
-    box-shadow:0 8px 0 #D96486;
-  }
-  .nut-go:active{ transform:translateY(5px); box-shadow:0 3px 0 #D96486; }
-  .nut-go:disabled{ opacity:.45; cursor:default; }
-
-  .nhom-nut-duoi{ display:flex; justify-content:center; gap:10px; margin-top:14px; flex-wrap:wrap; }
-  .nhom-nut-duoi button{ font-family:inherit; font-size:16px; font-weight:800; padding:12px 24px; border:none; border-radius:999px; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.12); background:var(--troi); color:#3E6E96; }
-
-  .hop-thang h2{ font-size:28px; margin:6px 0 4px; color:#E0729B; }
-  .ket-qua{ display:flex; gap:8px; }
-  .ket-qua div{ flex:1; background:#FFF8E7; border:3px solid var(--vang); border-radius:16px; padding:10px 4px; }
-  .ket-qua .nhan{ font-size:11px; font-weight:700; color:#9A7B4F; display:block; }
-  .ket-qua .gia-tri{ font-size:22px; font-weight:900; color:#9A6410; }
-  @media (prefers-reduced-motion:reduce){ .cham-diem.hien{ animation:none; opacity:1; } }
-</style>
+<link rel="stylesheet" href="./css/pages/game10.css">
 <script src="./shared-ui.js" defer></script>
 <script src="./js/game10-engine.js" defer></script>
 <script src="./js/game10-ui.js" defer></script>
@@ -118,7 +56,7 @@
 
 <div class="man-thang" id="manThang" role="dialog" aria-modal="true" aria-labelledby="tieuDeThang" aria-describedby="loiKhen">
   <div class="hop-thang">
-    <div style="font-size:50px">🎵🎉</div>
+    <div class="bieu-tuong-thang">🎵🎉</div>
     <h2 id="tieuDeThang">Bé gõ hay quá!</h2>
     <p class="loi" id="loiKhen">Bé bắt được nhịp rất tốt!</p>
     <div class="ket-qua">

@@ -1,0 +1,95 @@
+/* CSS riêng của game2.html (tách khỏi <style> inline để CSP không cần 'unsafe-inline' cho style). */
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Segoe UI","Nunito",Arial,sans-serif;
+  color:var(--chu);
+  background:var(--kem);
+  background-image:
+    radial-gradient(circle at 10% 6%,  rgba(201,182,245,.32), transparent 30%),
+    radial-gradient(circle at 90% 10%, rgba(168,230,207,.32), transparent 32%),
+    linear-gradient(180deg,#F1EEFB 0%, var(--kem) 40%);
+  background-attachment:fixed;
+  padding:14px 12px 40px;
+  overflow-x:hidden;
+  user-select:none;
+}
+
+.khung{ max-width:900px; margin:0 auto; }
+
+/* ===== THANH TRÊN ===== */
+.nut-ve{
+  display:inline-flex; align-items:center; gap:6px;
+  padding:10px 16px;
+  background:#fff; color:var(--chu);
+  text-decoration:none;
+  font-size:16px; font-weight:800;
+  border:3px solid var(--tim);
+  border-radius:999px;
+  box-shadow:0 4px 0 rgba(0,0,0,.06);
+}
+
+/* ===== HAI BỨC TRANH ===== */
+.hai-tranh{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+@media (max-width:640px){ .hai-tranh{ grid-template-columns:1fr; } }
+
+.tranh{
+  background:#fff;
+  border:5px solid var(--hong);
+  border-radius:24px;
+  padding:8px;
+  box-shadow:0 6px 0 rgba(0,0,0,.06), 0 12px 24px rgba(150,120,170,.14);
+  position:relative;
+}
+.tranh:nth-child(2){ border-color:var(--tim); }
+.nhan-tranh{
+  position:absolute; top:-14px; left:16px;
+  background:var(--hong); color:#fff;
+  font-size:14px; font-weight:800;
+  padding:4px 14px; border-radius:999px;
+  border:3px solid #fff;
+}
+.tranh:nth-child(2) .nhan-tranh{ background:var(--tim); }
+
+.tranh svg{ width:100%; height:auto; display:block; border-radius:16px; cursor:pointer; }
+
+/* Vòng tròn xanh đánh dấu chỗ bé tìm đúng */
+.vong-dung{
+  fill:none; stroke:#3FBF8F; stroke-width:5;
+  animation:hien-vong .45s cubic-bezier(.2,1.5,.4,1);
+}
+@keyframes hien-vong{ from{ opacity:0; transform:scale(.3); transform-origin:center; } to{ opacity:1; } }
+
+/* Dấu X đỏ nhạt khi bé chấm sai */
+.dau-sai{
+  stroke:#F09B9B; stroke-width:5; stroke-linecap:round;
+  animation:tan-dan .7s ease forwards;
+}
+@keyframes tan-dan{ 0%{ opacity:1; } 100%{ opacity:0; } }
+
+/* Nhấp nháy khi bé bấm gợi ý */
+.goi-y{
+  fill:none; stroke:#FFD166; stroke-width:6;
+  animation:nhap-nhay 1.4s ease 2;
+}
+@keyframes nhap-nhay{ 0%,100%{ opacity:0; } 50%{ opacity:1; } }
+
+/* ===== NÚT ĐIỀU KHIỂN ===== */
+.nhom-nut-duoi{ display:flex; justify-content:center; gap:10px; margin-top:18px; flex-wrap:wrap; }
+.nhom-nut-duoi button{
+  font-family:inherit;
+  font-size:17px; font-weight:800;
+  padding:13px 26px;
+  border:none; border-radius:999px;
+  cursor:pointer;
+  box-shadow:0 5px 0 rgba(0,0,0,.12);
+}
+.nut-goi-y{ background:var(--vang); color:#8A6522; }
+.nut-van-moi{ background:var(--troi); color:#3E6E96; }
+
+/* ===== MÀN THẮNG CUỘC ===== */
+.ket-qua{ display:flex; gap:10px; justify-content:center; }

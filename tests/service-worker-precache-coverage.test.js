@@ -19,7 +19,8 @@ const precached = new Set([...serviceWorker.matchAll(/"\.\/([^"\n]+)"/g)].map((m
 const runtimeFiles = [
   ...fs.readdirSync(root).filter((file) => /\.(?:js|css)$/.test(file) && !NOT_SHIPPED.has(file)),
   ...fs.readdirSync(path.join(root, 'js')).filter((file) => file.endsWith('.js')).map((file) => `js/${file}`),
-  ...fs.readdirSync(path.join(root, 'css')).filter((file) => file.endsWith('.css')).map((file) => `css/${file}`)
+  ...fs.readdirSync(path.join(root, 'css')).filter((file) => file.endsWith('.css')).map((file) => `css/${file}`),
+  ...fs.readdirSync(path.join(root, 'css', 'pages')).filter((file) => file.endsWith('.css')).map((file) => `css/pages/${file}`)
 ];
 
 assert.ok(runtimeFiles.length > 50, 'phải quét được các tệp JS/CSS của trang');

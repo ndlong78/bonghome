@@ -1,0 +1,57 @@
+/* Vùng an toàn iPhone/iPad, chừa đáy cho nút nổi, banner cài app và báo mất mạng (pwa-ios.js gắn tệp này). */
+html, body { min-height: 100%; min-height: 100dvh; }
+body {
+  padding-top: max(var(--bh-existing-top, 0px), env(safe-area-inset-top));
+  padding-right: max(var(--bh-existing-right, 0px), env(safe-area-inset-right));
+  padding-bottom: max(var(--bh-existing-bottom, 0px), env(safe-area-inset-bottom),
+    calc(var(--bh-floating-base, 0px) + var(--bh-floating-space, 0px)));
+  padding-left: max(var(--bh-existing-left, 0px), env(safe-area-inset-left));
+  overscroll-behavior-y: contain;
+}
+button, a, input, select, textarea { touch-action: manipulation; }
+.bh-install-tip {
+  position: fixed;
+  z-index: 500;
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 620px;
+  margin-inline: auto;
+  padding: 12px 14px;
+  border: 3px solid #C9B6F5;
+  border-radius: 20px;
+  background: rgba(255,255,255,.97);
+  color: #6B4E71;
+  box-shadow: 0 12px 32px rgba(80,50,95,.22);
+  font: 700 14px/1.35 system-ui, sans-serif;
+}
+.bh-install-tip button {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 11px;
+  background: #FFF0F4;
+  color: #7A4E86;
+  font: inherit;
+}
+.bh-network-status {
+  position: fixed;
+  z-index: 490;
+  left: 50%;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  border-radius: 999px;
+  padding: 8px 13px;
+  background: #FFF8E7;
+  color: #7A5A2A;
+  border: 2px solid #FFE0A3;
+  font: 800 13px/1.2 system-ui, sans-serif;
+  box-shadow: 0 8px 22px rgba(80,50,95,.15);
+}
+.bh-network-status[hidden] { display: none; }
+@media (display-mode: standalone) {
+  .bh-install-tip { display: none !important; }
+}

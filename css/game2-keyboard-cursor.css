@@ -1,0 +1,10 @@
+/* Vòng tròn chọn vị trí bằng bàn phím của Game 2 (js/game2-keyboard-cursor.js gắn tệp này). */
+.bh-game2-keyboard-cursor {
+  fill: rgba(255, 255, 255, 0.32);
+  stroke: #5B3C62;
+  stroke-width: 4;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bh-game2-keyboard-cursor { transition: none !important; }
+}

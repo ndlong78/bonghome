@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v92-csp-no-inline-script";
+const PHIEN_BAN = "bonghome-v93-csp-no-inline-style";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
@@ -19,7 +19,9 @@ const TEP_GAME = [
   "./game1.html", "./game2.html", "./game3.html", "./game4.html", "./game5.html", "./game6.html", "./game7.html", "./game8.html", "./game9.html", "./game10.html", "./game11.html", "./game12.html", "./game13.html",
   "./game1-difficulty.js", "./game1-autosave.js",
   "./js/game1-rewards.js", "./js/game1-theme-progress.js", "./js/game1-content.js", "./js/game1-keyboard-accessibility.js", "./js/game1-engine.js", "./js/game1-ui.js", "./js/game2-keyboard-cursor.js", "./js/game2-engine.js", "./js/game2-ui.js", "./js/game3-keyboard-matching.js", "./js/game3-drag-stability.js", "./js/game3-engine.js", "./js/game3-ui.js", "./js/game4-keyboard-sorting.js", "./js/game4-engine.js", "./js/game4-ui.js", "./js/game5-touch-target.js", "./js/game5-engine.js", "./js/game5-ui.js", "./js/game6-engine.js", "./js/game6-ui.js", "./js/game7-engine.js", "./js/game7-ui.js", "./js/game8-engine.js", "./js/game8-ui.js", "./js/game9-engine.js", "./js/game9-ui.js", "./js/game10-engine.js", "./js/game10-ui.js", "./js/games2-4-rewards.js", "./js/games2-4-autosave.js", "./js/games5-7-rewards.js", "./js/games5-7-autosave.js", "./js/games8-10-rewards.js", "./js/games8-10-autosave.js", "./js/game11-blocks.js", "./js/game11-rewards.js", "./js/game12-sudoku.js", "./js/game13-rewards.js", "./js/game13-tictactoe.js", "./js/game12-rewards.js",
-  "./css/game-shell.css", "./css/game1-autosave.css", "./css/games-autosave.css", "./css/game11-blocks.css", "./css/game12-sudoku.css", "./css/game13-tictactoe.css"
+  "./css/game-shell.css", "./css/pwa-quality.css", "./css/pwa-ios.css", "./css/game2-keyboard-cursor.css",
+  "./css/pages/index.css", "./css/pages/collection.css", "./css/pages/game1.css", "./css/pages/game2.css", "./css/pages/game3.css", "./css/pages/game4.css", "./css/pages/game5.css", "./css/pages/game6.css", "./css/pages/game7.css", "./css/pages/game8.css", "./css/pages/game9.css", "./css/pages/game10.css",
+  "./css/game1-autosave.css", "./css/games-autosave.css", "./css/game11-blocks.css", "./css/game12-sudoku.css", "./css/game13-tictactoe.css"
 ];
 
 const TEP_NOI_DUNG = [

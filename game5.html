@@ -17,46 +17,7 @@
 <meta property="og:image:height" content="512">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="./css/game-shell.css">
-<style>
-  body{
-    margin:0; min-height:100vh; padding:14px 12px 40px;
-    font-family:"Segoe UI","Nunito",Arial,sans-serif; color:var(--chu);
-    background:var(--kem);
-    background-image:radial-gradient(circle at 10% 6%,rgba(191,227,255,.4),transparent 30%),
-                     radial-gradient(circle at 90% 8%,rgba(255,183,197,.35),transparent 32%),
-                     linear-gradient(180deg,#EAF4FD 0%,var(--kem) 40%);
-    background-attachment:fixed; overflow-x:hidden; user-select:none;
-  }
-  .khung{ max-width:640px; margin:0 auto; }
-
-  .o-so{ background:#fff; border:3px solid var(--mint); border-radius:18px; padding:8px 16px; min-width:110px; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.05); }
-
-  .bang-ve{
-    background:#fff; border:5px solid var(--troi); border-radius:26px;
-    padding:8px; box-shadow:0 6px 0 rgba(0,0,0,.06), 0 12px 24px rgba(150,120,170,.14);
-  }
-  svg#tranh{ width:100%; height:auto; display:block; }
-
-  .diem{ cursor:pointer; }
-  .diem circle{ fill:#fff; stroke:#9BC7EA; stroke-width:3; transition:fill .15s ease; }
-  .diem text{ font-size:15px; font-weight:900; fill:#4E7FA8; text-anchor:middle; dominant-baseline:central; pointer-events:none; }
-  .diem.xong circle{ fill:#A8E6CF; stroke:#4E9A78; }
-  .diem.xong text{ fill:#31705A; }
-  /* Chấm tiếp theo nhấp nháy để bé biết đi đâu */
-  .diem.ke-tiep circle{ fill:#FFE0A3; stroke:#E0A94F; animation:tho 1.1s ease-in-out infinite; }
-  @keyframes tho{ 0%,100%{ r:13; } 50%{ r:17; } }
-  .diem.sai circle{ fill:#FFD9D9; stroke:#E88; }
-
-  #duongNoi{ fill:none; stroke:#9B85D6; stroke-width:5; stroke-linecap:round; stroke-linejoin:round; }
-  #hinhTo{ opacity:0; transition:opacity .8s ease; }
-  #hinhTo.hien{ opacity:1; }
-
-  .nhom-nut-duoi{ display:flex; justify-content:center; gap:10px; margin-top:18px; flex-wrap:wrap; }
-  .nhom-nut-duoi button{ font-family:inherit; font-size:17px; font-weight:800; padding:13px 24px; border:none; border-radius:999px; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.12); }
-  .nut-hinh-moi{ background:var(--troi); color:#3E6E96; }
-  .nut-lam-lai{ background:var(--vang); color:#8A6522; }
-
-</style>
+<link rel="stylesheet" href="./css/pages/game5.css">
 <script src="./shared-ui.js" defer></script>
 <script src="./js/game5-engine.js" defer></script>
 <script src="./js/game5-ui.js" defer></script>
@@ -96,7 +57,7 @@
 
 <div class="man-thang" id="manThang" role="dialog" aria-modal="true" aria-labelledby="tieuDeThang" aria-describedby="loiKhen">
   <div class="hop-thang">
-    <div style="font-size:52px">✏️🎉</div>
+    <div class="bieu-tuong-thang">✏️🎉</div>
     <h2 id="tieuDeThang">Bé vẽ xong rồi!</h2>
     <p class="loi" id="loiKhen">Bé đếm số giỏi lắm!</p>
     <div class="ket-qua">
