@@ -193,3 +193,26 @@ test.describe('Game 1 – Lật Hình Tìm Cặp', () => {
     }));
   });
 });
+
+// Service Worker tự lấy tệp nội dung (yêu cầu của SW không đi qua page.route), nên chặn SW để mô phỏng mất nội dung.
+test.describe('Game 1 – không tải được nội dung', () => {
+  test.use({ serviceWorkers: 'block' });
+
+  test('không tải được nội dung JSON: mức Khó dùng đủ hình dự phòng, không có lá trống', async ({ page }) => {
+    await page.addInitScript(() => localStorage.clear());
+    await page.route('**/content/games/game1.json', (route) => route.abort());
+    await page.route('**/content/themes/*/game1.json', (route) => route.abort());
+    await page.goto('/game1.html', { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(window.BongGame1 && window.BongGame1Autosave));
+    expect(await page.evaluate(() => window.BongGame1Content)).toBeUndefined();
+
+    const hard = page.locator('#mucDo button').nth(2);
+    const pairs = Number(await hard.getAttribute('data-cap'));
+    await expect(hard).toHaveText(`Khó · ${pairs * 2} lá`);
+    await hard.click();
+    await expect(cards(page)).toHaveCount(pairs * 2);
+    const faces = await page.evaluate(() => [...document.querySelectorAll('#sanBai .mat-truoc')].map((face) => face.innerHTML));
+    expect(faces.every((face) => face.includes('<svg')), 'mọi lá đều có hình').toBe(true);
+    expect(new Set(faces).size, 'mỗi cặp một hình riêng').toBe(pairs);
+  });
+});
