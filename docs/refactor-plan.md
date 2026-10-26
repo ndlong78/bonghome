@@ -111,6 +111,7 @@ Ghi chú khi làm Game 1:
 - **Theo dõi tiến độ** bằng `node scripts/count-source-assertions.js` (thêm `--files` để xem từng tệp): đếm các phép so chuỗi/regex trên mã nguồn JS trong `tests/*.test.js`, không tính hợp đồng cấu hình. Mục tiêu là 0.
   - Trước khi bắt đầu chuyển: 51 tệp, 317 phép so chuỗi.
   - Đợt 1 (adapter autosave game 2–10): còn 47 tệp, 243 phép so chuỗi. `tests/helpers/browser-sandbox.js` chạy module trình duyệt thật trong `node:vm` với DOM, hẹn giờ và `MutationObserver` giả; module đọc biến toàn cục cũ của trang sẽ ném `ReferenceError` nên kiểm tra "không dùng biến toàn cục" thành kiểm tra hành vi.
+  - Đợt 2 (lớp bàn phím/chạm game 1–5 và lớp nạp module): còn 36 tệp test, 149 phép so chuỗi trên mã JS. Các test so chuỗi được thay bằng E2E thật: đủ 4 phím mũi tên, giới hạn biên, phím cách và live region (Game 2); vai trò nút và live region (Game 3/4); nhãn lá bài (Game 1); vùng chạm được gắn lại sau khi vẽ lại (Game 5). `e2e/page-modules.spec.js` mở từng trang và đối chiếu module đã nạp cùng thứ tự nạp; `tests/service-worker-precache-coverage.test.js` bắt mọi tệp JS/CSS/HTML phải có trong precache, thay cho các dòng "tệp X phải có offline" rải rác.
 
 ## Đã làm trong PR rà soát (#4–#15)
 

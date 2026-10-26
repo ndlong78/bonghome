@@ -8,7 +8,6 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const tokens = read('css/design-tokens.css');
 const common = read('css/common.css');
 const components = read('css/components.css');
-const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
 
 [
@@ -31,7 +30,6 @@ assert.match(components, /min-height:\s*var\(--bh-touch-target\)/);
   './css/common.css',
   './css/components.css'
 ].forEach((file) => {
-  assert.ok(sharedUi.includes(file), `${file} must be loaded by shared-ui.js`);
   assert.ok(serviceWorker.includes(file), `${file} must be cached by sw.js`);
 });
 

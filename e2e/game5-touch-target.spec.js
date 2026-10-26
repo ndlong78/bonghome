@@ -61,4 +61,23 @@ test.describe('Vùng chạm Game 5', () => {
     await expect(first.locator('.bh-game5-hit-target')).toHaveAttribute('r', '27');
     await expect(first.locator('circle:not(.bh-game5-hit-target)')).toHaveAttribute('r', '13');
   });
+
+  test('vùng chạm được gắn lại sau mỗi lần vẽ lại bảng (Hình mới, Vẽ lại)', async ({ page }) => {
+    await page.goto('/game5.html', { waitUntil: 'domcontentloaded' });
+    const synced = () => page.evaluate(() => {
+      const dots = document.querySelectorAll('#lopDiem .diem');
+      return dots.length > 0 && [...dots].every((dot) => {
+        const hit = dot.querySelector('.bh-game5-hit-target');
+        // Vùng chạm trong suốt, nằm dưới chấm nhìn thấy và vẫn nhận chạm.
+        return hit && hit.nextElementSibling?.matches('circle:not(.bh-game5-hit-target)')
+          && ['transparent', 'rgba(0, 0, 0, 0)'].includes(getComputedStyle(hit).fill)
+          && getComputedStyle(hit).pointerEvents === 'all';
+      });
+    });
+    await expect.poll(synced).toBe(true);
+    for (const id of ['#nutHinhMoi', '#nutLamLai', '#nutHinhMoi']) {
+      await page.locator(id).dispatchEvent('click');
+      await expect.poll(synced, `${id}`).toBe(true);
+    }
+  });
 });

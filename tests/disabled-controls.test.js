@@ -9,7 +9,6 @@ const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const common = read('css/common.css');
 const quality = read('pwa-quality.js');
-const sharedUi = read('shared-ui.js');
 const games = Array.from({ length: 10 }, (_, index) => read(`game${index + 1}.html`));
 
 test('native and custom disabled controls share a clear visual state', () => {
@@ -26,7 +25,6 @@ test('custom disabled buttons cannot be triggered from the keyboard', () => {
 });
 
 test('shared accessibility CSS stays connected through the shared loader', () => {
-  assert.match(sharedUi, /loadSharedStyle\('\.\/css\/common\.css',\s*'data-bh-common'\)/);
   games.forEach((html, index) => {
     assert.match(html, /<script[^>]+src=["']\.\/shared-ui\.js["']/i,
       `game${index + 1}.html must load shared-ui.js`);

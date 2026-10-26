@@ -7,7 +7,6 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const content = JSON.parse(read('content/games/game1.json'));
 const animalContent = JSON.parse(read('content/themes/animals/game1.json'));
 const loader = require('../js/game1-content.js');
-const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
 const difficulty = read('game1-difficulty.js');
 
@@ -49,8 +48,6 @@ assert.equal(loader.validateContent({ ...content, difficulties: [{ pairs: 3, lab
   assert.doesNotThrow(() => loader.applyContent({ document: fakeRoot.document }, content));
 }
 
-assert.ok(sharedUi.includes('./js/game1-content.js'));
-assert.ok(sharedUi.includes('loadGame1Content(themeId)'));
 assert.ok(serviceWorker.includes('./content/games/game1.json'));
 assert.ok(serviceWorker.includes('./content/themes/animals/game1.json'));
 assert.ok(!serviceWorker.includes('./content/games/game1-animals.json'));
