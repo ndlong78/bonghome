@@ -73,3 +73,29 @@ test.describe('Độ tương phản chữ hướng dẫn', () => {
     });
   }
 });
+
+/*
+ * Lần vẽ đầu: components.css (nơi đặt màu chữ phụ đủ tương phản) do shared-ui.js nạp sau khi trang đã hiện. Chặn
+ * hẳn tệp đó để đo màu chỉ với css/game-shell.css (nạp tĩnh, chặn render): chữ hướng dẫn, nhãn thống kê và câu khen
+ * phải đạt 4.5:1 ngay từ lúc trang mới hiện, không chờ lớp dùng chung.
+ */
+test.describe('Độ tương phản chữ phụ trước khi CSS dùng chung nạp xong', () => {
+  test.use({ serviceWorkers: 'block' });
+
+  test('game 1–10: chữ hướng dẫn, nhãn ô số và câu khen đạt 4.5:1 chỉ với game-shell.css', async ({ page }) => {
+    await page.route('**/css/components.css', (route) => route.abort());
+    for (const target of instructionTargets) {
+      await page.goto(target.path, { waitUntil: 'domcontentloaded' });
+      await page.locator('.man-thang').evaluate((element) => element.classList.add('hien'));
+      for (const selector of [target.selector, '.o-so .nhan', '.hop-thang .loi']) {
+        const element = page.locator(selector).first();
+        if (!(await element.count())) continue;
+        const colors = await renderedColors(element);
+        expect(
+          contrastRatio(parseRgb(colors.foreground), parseRgb(colors.background)),
+          `${target.path} ${selector} khi chưa có components.css`
+        ).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+});
