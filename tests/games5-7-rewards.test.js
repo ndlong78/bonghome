@@ -77,14 +77,4 @@ assert.ok(catalog.badges.some((item) => item.id === 'thinking-kid'));
 assert.ok(serviceWorker.includes('./js/games5-7-rewards.js'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 
-const source = read('js/games5-7-rewards.js');
-[
-  'function renderInWinDialog(detail)',
-  "querySelector('.man-thang .hop-thang')",
-  "summary.className = 'bh-reward-summary'",
-  "summary.setAttribute('aria-live', 'polite')",
-  '⭐ Bé nhận ${detail.stars} sao',
-  '🧠 Huy hiệu mới: Bé tư duy'
-].forEach((snippet) => assert.ok(source.includes(snippet), `Reward adapter must include: ${snippet}`));
-
 console.log('Game 5-7 rewards checks passed.');

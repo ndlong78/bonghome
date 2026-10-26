@@ -5,7 +5,6 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const catalog = JSON.parse(read('content/games/index.json'));
-const loader = read('js/game-catalog.js');
 const dashboard = read('js/parent-dashboard.js');
 const parents = read('parents.html');
 const serviceWorker = read('sw.js');
@@ -32,13 +31,7 @@ assert.deepEqual(
   catalog.games.filter((game) => game.rewardsEnabled).map((game) => game.id),
   expectedIds
 );
-assert.ok(loader.includes("fetchJson('./content/games/index.json')"));
-assert.ok(loader.includes("fetchJson('./content/rewards/catalog.json')"));
-assert.ok(loader.includes('function hasRewards(gameId)'));
-assert.ok(loader.includes('function getSticker(id)'));
-assert.ok(loader.includes('function getBadge(id)'));
-assert.ok(loader.includes('window.BongGameCatalog'));
-assert.ok(dashboard.includes('catalog?.getTitle?.(gameId)'));
+// Trang phụ huynh lấy tên trò, sticker và huy hiệu từ catalog này: e2e/parent-dashboard.spec.js.
 assert.ok(parents.includes('./js/game-catalog.js'));
 assert.ok(serviceWorker.includes('./js/game-catalog.js'));
 assert.ok(serviceWorker.includes('./content/games/index.json'));

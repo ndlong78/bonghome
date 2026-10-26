@@ -7,8 +7,6 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const routes = require(path.join(root, 'js', 'routes.js'));
-const sharedUi = fs.readFileSync(path.join(root, 'shared-ui.js'), 'utf8');
-const pwaQuality = fs.readFileSync(path.join(root, 'pwa-quality.js'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 
 test('normalizes supported Bông Home paths', () => {
@@ -45,22 +43,6 @@ test('recognizes every existing game page and nothing else', () => {
   for (const pathname of ['/game0.html', `/game${gameIds.length + 1}`, '/game1-extra.html', '/games1.html']) {
     assert.equal(routes.getGameId(pathname), null, pathname);
   }
-});
-
-test('shared UI waits for and uses the common route module', () => {
-  assert.match(sharedUi, /loadSharedScript\('\.\/js\/routes\.js', 'data-bh-routes'\)/);
-  assert.match(sharedUi, /window\.BongRoutesReady\.then\(\(\) => \{/);
-  assert.match(sharedUi, /getRoutes\(\)\.isGameInRange\(2, 4\)/);
-  assert.match(sharedUi, /getRoutes\(\)\.isHome\(\)/);
-});
-
-test('PWA quality helpers resolve routes when each feature initializes', () => {
-  assert.match(pwaQuality, /const getRoutes = \(\) => window\.BongRoutes\?\.isGame \? window\.BongRoutes : FALLBACK_ROUTES/);
-  assert.match(pwaQuality, /const isGame = \(gameId, pathname = location\.pathname\) => getRoutes\(\)\.isGame\(gameId, pathname\)/);
-  assert.match(pwaQuality, /function setupGame1ResponsiveBoard\(\) \{\s+if \(!isGame\(1\)\) return;/);
-  assert.match(pwaQuality, /function loadGame3DragStability\(\) \{\s+if \(!isGame\(3\)/);
-  assert.equal(pwaQuality.includes("const isGame1 = /\\/game1\\.html$/.test(location.pathname);"), false);
-  assert.equal(pwaQuality.includes('const isGame3 = window.BongRoutes'), false);
 });
 
 test('service worker precaches the routes module', () => {

@@ -7,7 +7,6 @@ const autosave = require(path.join(root, 'game1-autosave.js'));
 const routes = require(path.join(root, 'js', 'routes.js'));
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'css/game1-autosave.css'), 'utf8');
-const autosaveSource = fs.readFileSync(path.join(root, 'game1-autosave.js'), 'utf8');
 
 const validSnapshot = {
   version: 1,
@@ -71,15 +70,11 @@ assert.equal(autosave.validateSnapshot({ ...validSnapshot, matchedIndices: [0, 1
 assert.deepEqual(autosave.validateSnapshot({ ...validSnapshot, difficulty: '3' }), validSnapshot);
 
 // Hợp đồng sau khi tách engine/UI: trang không còn script inline, nạp engine → UI theo thứ tự,
-// adapter chỉ gọi window.BongGame1 và không chạm biến toàn cục cũ của trang.
+// adapter chạy thật (lưu, khôi phục qua hộp "Tiếp tục", ghi hoàn thành) trong e2e/game1-gameplay.spec.js.
 const game1Html = fs.readFileSync(path.join(root, 'game1.html'), 'utf8');
 assert.doesNotMatch(game1Html, /<script>(?!\s*<\/script>)/, 'game1.html không còn script inline');
 const scriptOrder = ['./shared-ui.js', './js/game1-engine.js', './js/game1-ui.js'].map((src) => game1Html.indexOf(`<script src="${src}" defer></script>`));
 assert.ok(scriptOrder.every((index, i) => index > 0 && (i === 0 || index > scriptOrder[i - 1])), 'thứ tự script Game 1');
-assert.match(autosaveSource, /root\.BongGame1\b/);
-for (const legacyGlobal of ['soCapCanTim', 'KHO_HINH', 'HINH_MAT_SAU', 'chamVaoBai', 'thangCuoc', 'vanMoi', 'baiDangMo', 'khoaBai', 'dongHoChay', 'daBatDau', 'giay', 'sanBai', 'oSoCap', 'docKyLuc', 'dungPhaoGiay']) {
-  assert.doesNotMatch(autosaveSource, new RegExp(`\\b${legacyGlobal}\\b`), `adapter không được đọc biến toàn cục ${legacyGlobal}`);
-}
 for (const file of ['./js/game1-engine.js', './js/game1-ui.js']) assert.ok(serviceWorker.includes(file), `precache ${file}`);
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 assert.ok(serviceWorker.includes('./game1-autosave.js'));

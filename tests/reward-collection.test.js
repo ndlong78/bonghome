@@ -94,11 +94,7 @@ test('collection uses local profile name and avatar', () => {
   assert.equal(document.title, 'Bộ sưu tập của Mít');
 });
 
-test('home profile UI links to the child collection page', () => {
-  const source = fs.readFileSync(path.join(__dirname, '..', 'js', 'profile-ui.js'), 'utf8');
-  assert.match(source, /\.\/collection\.html/);
-  assert.match(source, /Bộ sưu tập của Bông/);
-});
+// Trang chủ có lối vào bộ sưu tập: e2e/parent-dashboard.spec.js.
 
 test('collection page uses shared modules and reduced-motion support', () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'collection.html'), 'utf8');

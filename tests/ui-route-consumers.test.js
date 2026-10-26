@@ -10,9 +10,6 @@ globalThis.BongRoutes = routes;
 
 const themePicker = require(path.join(root, 'js', 'theme-picker.js'));
 const createProfileUI = require(path.join(root, 'js', 'profile-ui.js'));
-const parentDashboardSource = fs.readFileSync(path.join(root, 'js', 'parent-dashboard.js'), 'utf8');
-const themePickerSource = fs.readFileSync(path.join(root, 'js', 'theme-picker.js'), 'utf8');
-const profileSource = fs.readFileSync(path.join(root, 'js', 'profile-ui.js'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(root, 'sw.js'), 'utf8');
 
 assert.equal(themePicker.isHomePage('/index'), true);
@@ -25,11 +22,8 @@ assert.equal(profileUi.isHomePage('/index'), true);
 assert.equal(profileUi.isHomePage('/index.html'), true);
 assert.equal(profileUi.isHomePage('/game1'), false);
 
-assert.match(themePickerSource, /BongRoutesReady/);
-assert.match(themePickerSource, /getRoutes\(\)\.isGame\(1, root\.location\.pathname\)/);
-assert.match(profileSource, /BongRoutes\?\.isHome/);
-assert.match(parentDashboardSource, /BongRoutesReady/);
-assert.match(parentDashboardSource, /getRoutes\(\)\.isParentPage\(pathname\)/);
+// Bộ chọn chủ đề chỉ hiện ở trang chủ và Game 1, trang phụ huynh dựng bảng số liệu: e2e/profile-theme-ui.spec.js,
+// e2e/parent-dashboard.spec.js.
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 for (const asset of ['./js/theme-picker.js', './js/profile-ui.js', './js/parent-dashboard.js']) {
   assert.ok(serviceWorker.includes(asset), `${asset} must stay cached offline`);

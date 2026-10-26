@@ -52,23 +52,7 @@ for (const file of ['js/profile-ui.js', 'js/theme-picker.js', 'js/profile.js']) 
   );
 }
 
-// Nút hồ sơ và nút chủ đề phải dựng bằng textContent.
-const profileUi = read('js/profile-ui.js');
-assert.match(profileUi, /name\.textContent = current\.displayName;/, 'tên hiển thị phải đi qua textContent');
-assert.match(profileUi, /button\.replaceChildren\(icon, name\);/);
-assert.equal(
-  profileUi.includes('<strong>${current.displayName}</strong>'),
-  false,
-  'không được giữ lại bản chèn tên bằng innerHTML'
-);
-
-const themePicker = read('js/theme-picker.js');
-assert.match(themePicker, /name\.textContent = theme\.name;/);
-assert.match(themePicker, /icon\.textContent = theme\.icon \|\| '🎨';/);
-
-// Danh sách avatar cũng dựng bằng nút DOM thay vì chuỗi HTML.
-assert.match(profileUi, /radio\.type = 'radio';/);
-assert.match(profileUi, /name\.textContent = avatar\.name;/);
-assert.match(profileUi, /label\.append\(radio, icon, name\);/);
+// Tên bé, tên avatar và tên chủ đề hiển thị nguyên văn (không chạy như HTML): e2e/profile-theme-ui.spec.js,
+// e2e/parent-dashboard.spec.js.
 
 console.log('✓ User content escaping checks passed');

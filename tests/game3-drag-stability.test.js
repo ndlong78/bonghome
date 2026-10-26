@@ -6,7 +6,6 @@ const path = require('node:path');
 
 const rootPath = path.resolve(__dirname, '..');
 const createDragStability = require(path.join(rootPath, 'js', 'game3-drag-stability.js'));
-const qualitySource = fs.readFileSync(path.join(rootPath, 'pwa-quality.js'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(rootPath, 'sw.js'), 'utf8');
 
 class FakeEventTarget {
@@ -66,8 +65,6 @@ documentTarget.emit('pointerup');
 assert.equal(tray.style.minHeight, '');
 assert.equal('bhDragLayoutLocked' in tray.dataset, false);
 
-assert.match(qualitySource, /game3-drag-stability\.js/);
-assert.match(qualitySource, /loadGame3DragStability\(\)/);
 assert.ok(serviceWorker.includes('./js/game3-drag-stability.js'), 'Game 3 drag module must be cached offline');
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 

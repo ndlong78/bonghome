@@ -4,27 +4,10 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
-const adapter = read('js/game1-rewards.js');
 const css = read('css/game1-autosave.css');
 const serviceWorker = read('sw.js');
 
-[
-  'function rewardLines(detail)',
-  'function renderInWinDialog(detail)',
-  "querySelector('#manThang .hop-thang')",
-  "querySelector('.nhom-nut')",
-  "summary.className = 'bh-game1-reward-summary'",
-  "summary.setAttribute('role', 'status')",
-  "summary.setAttribute('aria-live', 'polite')",
-  'dialog.insertBefore(summary, actions || null)',
-  '⭐ Bé nhận ${detail.stars} sao',
-  '🌟 Sticker mới: Ngôi sao vui vẻ',
-  '🎈 Huy hiệu mới: Lần đầu hoàn thành',
-  'newBadge: !badge.duplicate',
-  'if (renderInWinDialog(detail)) return;'
-].forEach((snippet) => {
-  assert.ok(adapter.includes(snippet), `Game 1 reward dialog must include: ${snippet}`);
-});
+// Hành vi hiển thị phần thưởng: tests/reward-announcements.test.js. Ở đây chỉ còn hợp đồng CSS.
 
 assert.ok(css.includes('.bh-game1-reward-summary'));
 assert.ok(css.includes('.bh-game1-reward-stars'));
