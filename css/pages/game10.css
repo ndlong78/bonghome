@@ -54,10 +54,4 @@ canvas#lan{ width:100%; height:auto; display:block; border-radius:18px; }
 .nhom-nut-duoi{ display:flex; justify-content:center; gap:10px; margin-top:14px; flex-wrap:wrap; }
 .nhom-nut-duoi button{ font-family:inherit; font-size:16px; font-weight:800; padding:12px 24px; border:none; border-radius:999px; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.12); background:var(--troi); color:#3E6E96; }
 
-.hop-thang h2{ font-size:28px; margin:6px 0 4px; color:#E0729B; }
-.ket-qua{ display:flex; gap:8px; }
-.ket-qua div{ flex:1; background:#FFF8E7; border:3px solid var(--vang); border-radius:16px; padding:10px 4px; }
-.ket-qua .nhan{ font-size:11px; font-weight:700; color:#9A7B4F; display:block; }
-.ket-qua .gia-tri{ font-size:22px; font-weight:900; color:#9A6410; }
 @media (prefers-reduced-motion:reduce){ .cham-diem.hien{ animation:none; opacity:1; } }
-.bieu-tuong-thang{ font-size:50px; }

@@ -67,9 +67,3 @@ h1{ flex:1; text-align:center; font-size:clamp(20px,4.8vw,32px); margin:0; color
 .nut-loa{ background:var(--troi); color:#3E6E96; }
 .nut-loa:disabled{ opacity:.55; cursor:not-allowed; }
 
-.hop-thang h2{ font-size:28px; margin:6px 0 4px; color:#E0729B; }
-.ket-qua{ display:flex; gap:8px; }
-.ket-qua div{ flex:1; background:#FFF8E7; border:3px solid var(--vang); border-radius:16px; padding:10px 4px; }
-.ket-qua .nhan{ font-size:11px; font-weight:700; color:#9A7B4F; display:block; }
-.ket-qua .gia-tri{ font-size:22px; font-weight:900; color:#9A6410; }
-.bieu-tuong-thang{ font-size:50px; }
