@@ -75,6 +75,37 @@ test.describe('Cấu trúc trang', () => {
     }
   });
 
+  test('game 1–10: hộp thắng cùng một kiểu chữ và khoảng cách (tiêu đề, emoji, ô kết quả)', async ({ page }) => {
+    const looks = {};
+    for (const path of GAMES_1_TO_10) {
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
+      await page.waitForFunction(() => document.querySelector('link[data-bh-components]')?.sheet);
+      looks[path] = await page.locator('.hop-thang').evaluate((box) => {
+        const style = (selector, ...names) => {
+          const element = box.querySelector(selector);
+          if (!element) return null;
+          const computed = getComputedStyle(element);
+          return names.map((name) => computed.getPropertyValue(name)).join(' ');
+        };
+        return {
+          title: style('h2', 'font-size', 'color'),
+          emoji: style('.bieu-tuong-thang', 'font-size'),
+          results: style('.ket-qua', 'column-gap'),
+          resultBox: style('.ket-qua div', 'padding-left', 'padding-right', 'border-top-width'),
+          resultLabel: style('.ket-qua .nhan', 'font-size'),
+          resultValue: style('.ket-qua .gia-tri', 'font-size')
+        };
+      });
+    }
+    const reference = looks[GAMES_1_TO_10[0]];
+    for (const [path, look] of Object.entries(looks)) {
+      for (const [part, value] of Object.entries(look)) {
+        if (value === null) continue;
+        expect(value, `${path}: ${part} của hộp thắng khác Game 1`).toBe(reference[part]);
+      }
+    }
+  });
+
   test('Game 11: bàn là grid nhận focus, đủ nút điều khiển có tên, có hướng dẫn chuột/chạm và không đếm ngược', async ({ page, browser, baseURL }) => {
     await page.goto('/game11.html', { waitUntil: 'domcontentloaded' });
     const board = page.getByRole('grid', { name: /Bàn xếp khối 16 hàng 10 cột/ });
