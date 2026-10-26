@@ -4,8 +4,6 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
-const adapter = read('js/games5-7-autosave.js');
-const dashboard = read('js/parent-dashboard.js');
 const serviceWorker = read('sw.js');
 
 // Game 7 trước đây đọc ngược hình từ DOM để lưu ván (và từng so chuỗi HTML). Nay trạng thái nằm

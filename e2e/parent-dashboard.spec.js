@@ -45,7 +45,9 @@ test.describe('Trang phụ huynh', () => {
       window.BongRewards.unlockBadge('first-finish', { source: 'game1-completion' });
       window.BongProfile.updateProfile({ displayName: '<b>An</b>' });
     });
+    // Tải lại rồi chờ như lúc mở trang: ngay sau reload, BongModulesReady có thể chưa kịp tồn tại.
     await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => window.BongModulesReady && typeof window.BongModulesReady.then === 'function');
     await page.evaluate(() => window.BongModulesReady);
 
     await expect(page.locator('#completedCount')).toHaveText('3');

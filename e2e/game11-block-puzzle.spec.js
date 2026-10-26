@@ -130,12 +130,44 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     const moved = await page.evaluate(() => window.BongGame11.getState());
     expect(moved.active.col).toBeGreaterThanOrEqual(initial.active.col);
     expect(moved.active.cells).not.toEqual(initial.active.cells);
+    // ← sang trái một cột, ↓ rơi xuống một hàng.
+    await page.keyboard.press('ArrowLeft');
+    const left = await page.evaluate(() => window.BongGame11.getState());
+    expect(left.active.col).toBe(Math.max(0, moved.active.col - 1));
+    // ↓ bị bỏ qua khi tạm dừng (stepDown dừng cùng đồng hồ rơi), nên cho chơi tiếp rồi mới thử.
+    await page.evaluate(() => window.BongGame11.resume());
+    const beforeDown = await page.evaluate(() => window.BongGame11.getState().active.row);
+    await page.keyboard.press('ArrowDown');
+    expect((await page.evaluate(() => window.BongGame11.getState())).active.row).toBeGreaterThan(beforeDown);
+    await page.evaluate(() => window.BongGame11.pause());
 
     await page.keyboard.press('Space');
     const state = await page.evaluate(() => window.BongGame11.getState());
     expect(state.usedCells).toBe(4);
     expect(state.score).toBe(4);
     expect(errors).toEqual([]);
+  });
+
+  test('Game 11 không tự ghi localStorage: tiến độ và phần thưởng đi qua module dùng chung', async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__directWrites = [];
+      // Khung gọi trực tiếp (0: "Error", 1: hàm bọc, 2: nơi gọi): module dùng chung ghi localStorage là đúng.
+      for (const method of ['setItem', 'removeItem', 'clear']) {
+        const original = Storage.prototype[method];
+        Storage.prototype[method] = function (...args) {
+          const caller = (new Error().stack || '').split('\n')[2] || '';
+          if (caller.includes('game11-blocks.js')) window.__directWrites.push(method);
+          return original.apply(this, args);
+        };
+      }
+    });
+    await waitForGame(page);
+    await page.evaluate(() => window.BongModulesReady);
+    await page.evaluate(() => {
+      for (let index = 0; index < 200 && !window.BongGame11.getState().gameOver; index += 1) window.BongGame11.hardDrop();
+    });
+    await page.locator('#blockReset').click();
+    expect(await page.evaluate(() => window.__directWrites)).toEqual([]);
   });
 
   test('các nút điều khiển chính đủ lớn để chạm trên mobile', async ({ page }) => {

@@ -5,7 +5,6 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const catalog = JSON.parse(read('content/games/index.json'));
-const dashboard = read('js/parent-dashboard.js');
 const parents = read('parents.html');
 const serviceWorker = read('sw.js');
 

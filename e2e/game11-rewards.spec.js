@@ -47,7 +47,8 @@ test.describe('Game 11 ghi tiến độ và phần thưởng khi hết bàn', ()
     await repeat(page, 'moveRight', 10);
     await repeat(page, 'moveLeft', 1);
     await repeat(page, 'hardDrop', 1);
-    expect(await page.evaluate(() => window.BongGame11.getState().lines)).toBe(1);
+    // Hàng đầy được dọn: 16 ô đã đặt − 10 ô của hàng dọn = 6 ô còn lại; mỗi hàng cộng 100 điểm.
+    expect(await page.evaluate(() => window.BongGame11.getState())).toEqual(expect.objectContaining({ lines: 1, usedCells: 6, score: 116 }));
 
     await dropUntilGameOver(page);
     await expect(page.locator('#blockStatus')).toContainText('Bé dọn được 1 hàng');

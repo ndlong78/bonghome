@@ -46,7 +46,6 @@ assert.throws(() => statistics.summarize(new Date('invalid')), TypeError);
 assert.throws(() => createStatistics(storage), /requires BongProgress/);
 
 const html = read('parents.html');
-const dashboard = read('js/parent-dashboard.js');
 const css = read('css/parent-dashboard.css');
 const serviceWorker = read('sw.js');
 // Trang phụ huynh lấy thống kê từ lượt hoàn thành thật (trung bình thời gian, số lượt, 7 ngày): e2e/parent-dashboard.spec.js.

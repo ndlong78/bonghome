@@ -14,7 +14,6 @@ const createParentDataControls = require('../js/parent-data-controls.js');
 const rewardCatalog = JSON.parse(read('content/rewards/catalog.json'));
 const gameCatalog = JSON.parse(read('content/games/index.json'));
 const html = read('game13.html');
-const game = read('js/game13-tictactoe.js');
 const sw = read('sw.js');
 
 function memoryAdapter(initial = {}) {
@@ -127,8 +126,7 @@ autoTest('Xóa lịch sử chơi ở Góc phụ huynh xóa luôn ván Ca-rô đa
 autoTest('trang Game 13 nạp module phần thưởng trước game, chỉ thưởng khi chơi với máy và precache offline', () => {
   assert.ok(html.indexOf('js/game13-rewards.js') > 0 && html.indexOf('js/game13-rewards.js') < html.indexOf('js/game13-tictactoe.js'));
   assert.match(html, /id="tttWinRewards"[^>]*role="status"/);
-  assert.match(game, /BongGame13RewardsReady/);
-  assert.match(game, /if \(!vsBot\(\)\) return Promise\.resolve\(null\);/);
+  // Chỉ thưởng khi chơi với máy (chơi với bạn không cộng thưởng): e2e/game13-tictactoe.spec.js.
   assert.ok(sw.includes('"./js/game13-rewards.js"'));
 });
 

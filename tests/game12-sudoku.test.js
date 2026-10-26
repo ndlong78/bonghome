@@ -9,10 +9,8 @@ const engine = require('../js/game12-sudoku.js');
 const content = JSON.parse(read('content/games/game12.json'));
 const html = read('game12.html');
 const style = read('css/game12-sudoku.css');
-const script = read('js/game12-sudoku.js');
 const sw = read('sw.js');
 const redirects = read('_redirects');
-const sharedUi = read('shared-ui.js');
 
 autoTest('nội dung Game 12 có 3 cỡ bàn hợp lệ, tách khỏi logic', () => {
   assert.equal(content.schemaVersion, 1);
@@ -70,10 +68,7 @@ autoTest('Game 12 có ghi chú bút chì cho bàn 9×9, cấu hình qua content'
   assert.deepEqual(notesLevels, ['cay'], 'chỉ bàn 9×9 bật ghi chú');
   assert.match(html, /id="sudokuNotes"[^>]*aria-pressed="false"[^>]*hidden/);
   assert.match(html, /id="sudokuNotesTip"[^>]*hidden/);
-  assert.match(script, /clearPeerNotes/);
-  assert.match(script, /toggleNotesMode/);
-  assert.match(script, /isValidNotes/);
-  assert.match(script, /event\.key === 'n'/);
+  // Ghi, hiển thị, tự xoá ở ô liên quan, phím n, giữ sau reload: e2e/game12-sudoku.spec.js.
   assert.match(style, /\.sudoku-notes\s*\{/);
   assert.match(style, /\.sudoku-tool\[hidden\]\s*\{\s*display:\s*none;/);
 });
@@ -90,7 +85,7 @@ autoTest('PWA precache, route và thẻ trang chủ có Game 12', () => {
   }
   assert.match(redirects, /\/game12 \/game12\.html 301/);
   assert.match(redirects, /\/game12\/ \/game12\.html 301/);
-  assert.match(sharedUi, /game12-home-card\.js/);
+  // Thẻ trang chủ được nạp: e2e/page-modules.spec.js.
 });
 
 function autoTest(name, fn) {
