@@ -62,8 +62,9 @@ test.describe('Module được nạp đúng theo trang', () => {
       const errors = [];
       page.on('pageerror', (error) => errors.push(error.message));
       await page.goto(`/${path}`, { waitUntil: 'load' });
-      // Lớp nạp chạy nối tiếp (routes → modules → nội dung/phần thưởng → autosave): chờ tới khi đủ bộ.
-      await expect.poll(() => loadedModules(page), { timeout: 10_000 }).toEqual([...new Set([...COMMON, ...own])].sort());
+      // Lớp nạp chạy nối tiếp (routes → modules → nội dung/phần thưởng → autosave): chờ tới khi đủ bộ. Khi cả bộ E2E
+      // chạy song song, chuỗi này có lúc chậm hơn 10 giây nên chờ tới 20 giây.
+      await expect.poll(() => loadedModules(page), { timeout: 20_000 }).toEqual([...new Set([...COMMON, ...own])].sort());
       if (LOAD_ORDER[path]) {
         const order = await loadOrder(page, LOAD_ORDER[path]);
         expect(order, LOAD_ORDER[path].join(' → ')).toEqual([...order].sort((a, b) => a - b));
