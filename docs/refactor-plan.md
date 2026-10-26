@@ -118,6 +118,8 @@ Ghi chú khi làm Game 1:
     - `e2e/shared-startup.spec.js`: chuẩn hoá hồ sơ, chuyển đổi và áp chủ đề, sự kiện âm thanh.
     - `e2e/parent-dashboard.spec.js`, `e2e/profile-theme-ui.spec.js`: số liệu phụ huynh, nội dung người dùng hiển thị nguyên văn, bộ chọn chủ đề.
     - Ràng buộc "bảng phụ huynh không tự gọi `localStorage`/`fetch`" kiểm bằng cách bọc hai API đó trên trang thật và xét khung gọi trực tiếp.
+  - Đợt 4 (game 11–13): **0** phép so chuỗi trên mã JS. E2E bổ sung phím ←/↓ và kiểm "Game 11 không tự ghi `localStorage`" (xét khung gọi trực tiếp), số ô và điểm sau khi dọn hàng; ghi chú, phần thưởng Game 12 và chế độ chơi với bạn của Game 13 đã có E2E sẵn.
+  - Những gì còn đọc mã nguồn trong `tests/` là hợp đồng cấu hình (HTML, CSS, precache, `_redirects`) hoặc quy tắc dạng lint áp cho cả tệp: không gán `innerHTML` bằng chuỗi có `${…}` (`user-content-escaping`), danh sách khoá `localStorage` (`storage-keys`). Script đếm không tính các quy tắc này.
 
 ## Đã làm trong PR rà soát (#4–#15)
 

@@ -11,8 +11,6 @@ const html = read('game13.html');
 const style = read('css/game13-tictactoe.css');
 const sw = read('sw.js');
 const redirects = read('_redirects');
-const sharedUi = read('shared-ui.js');
-const homeCard = read('js/game13-home-card.js');
 
 const { EMPTY, PLAYER, BOT } = engine;
 
@@ -157,9 +155,7 @@ autoTest('PWA precache, route và thẻ trang chủ có Game 13', () => {
   }
   assert.match(redirects, /\/game13 \/game13\.html 301/);
   assert.match(redirects, /\/game13\/ \/game13\.html 301/);
-  assert.match(sharedUi, /game13-home-card\.js/);
-  assert.match(homeCard, /data-game12-card/, 'thẻ Game 13 đứng sau thẻ Game 12');
-  assert.match(homeCard, /13 lớp học/);
+  // Thẻ trang chủ nằm sau Game 12 và ghi 13 lớp học: e2e/game13-tictactoe.spec.js.
 });
 
 function autoTest(name, fn) {

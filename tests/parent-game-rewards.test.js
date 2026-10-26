@@ -5,7 +5,6 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const createRewards = require('../js/rewards.js');
-const dashboard = read('js/parent-dashboard.js');
 const css = read('css/parent-dashboard.css');
 const serviceWorker = read('sw.js');
 
