@@ -8,7 +8,6 @@ const createStorage = require('../js/storage.js');
 const createProfile = require('../js/profile.js');
 const createProfileUI = require('../js/profile-ui.js');
 const catalog = JSON.parse(read('content/profile/avatars.json'));
-const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
 const css = read('css/profile.css');
 
@@ -48,10 +47,7 @@ assert.equal(profileUi.isHomePage('/bonghome/'), true);
 assert.equal(profileUi.isHomePage('/bonghome/index.html'), true);
 assert.equal(profileUi.isHomePage('/bonghome/game1.html'), false);
 
-assert.ok(sharedUi.includes('./js/profile.js'));
-assert.ok(sharedUi.includes('./js/profile-ui.js'));
-assert.ok(sharedUi.includes('./css/profile.css'));
-assert.ok(sharedUi.includes('window.BongProfile?.migrate()'));
+// shared-ui.js nạp hồ sơ (e2e/page-modules.spec.js) và chuẩn hoá hồ sơ đã lưu khi mở trang (e2e/shared-startup.spec.js).
 assert.ok(serviceWorker.includes('./content/profile/avatars.json'));
 assert.ok(serviceWorker.includes('./js/profile.js'));
 assert.ok(serviceWorker.includes('./js/profile-ui.js'));

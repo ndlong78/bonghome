@@ -16,7 +16,6 @@ assert.doesNotMatch(
 );
 
 const createThemes = require(themesPath);
-const sharedUi = fs.readFileSync(path.join(rootPath, 'shared-ui.js'), 'utf8');
 const serviceWorker = fs.readFileSync(path.join(rootPath, 'sw.js'), 'utf8');
 const css = fs.readFileSync(path.join(rootPath, 'css/themes.css'), 'utf8');
 
@@ -59,9 +58,7 @@ assert.deepEqual(themes.migratePreferences({ schemaVersion: 99 }), { schemaVersi
   assert.throws(() => themes.setActiveTheme('missing'), RangeError);
   assert.equal(memory.get('themes').schemaVersion, 1);
 
-  assert.match(sharedUi, /\.\/js\/themes\.js/);
-  assert.match(sharedUi, /BongThemes\.init\(\)/);
-  assert.match(sharedUi, /themes: window\.BongThemes/);
+  // shared-ui.js nạp và khởi động chủ đề, chuyển cho Game 1: e2e/shared-startup.spec.js.
   assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
   assert.ok(serviceWorker.includes('./content/themes/index.json'));
   assert.ok(serviceWorker.includes('./css/themes.css'));

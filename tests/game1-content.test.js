@@ -8,7 +8,6 @@ const content = JSON.parse(read('content/games/game1.json'));
 const animalContent = JSON.parse(read('content/themes/animals/game1.json'));
 const loader = require('../js/game1-content.js');
 const serviceWorker = read('sw.js');
-const difficulty = read('game1-difficulty.js');
 
 const valid = loader.validateContent(content);
 const validAnimals = loader.validateContent(animalContent);
@@ -53,7 +52,5 @@ assert.ok(serviceWorker.includes('./content/themes/animals/game1.json'));
 assert.ok(!serviceWorker.includes('./content/games/game1-animals.json'));
 assert.ok(serviceWorker.includes('./js/game1-content.js'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
-assert.ok(!difficulty.includes('HINH_BO_SUNG'));
-assert.ok(difficulty.includes('window.BongGame1Content'));
 
 console.log('Game 1 content checks passed.');
