@@ -62,6 +62,9 @@ module.exports = defineConfig({
     command: 'python3 -m http.server 4173 --bind 127.0.0.1',
     url: 'http://127.0.0.1:4173/index.html',
     reuseExistingServer: !process.env.CI,
-    timeout: 15_000
+    timeout: 15_000,
+    // http.server ghi mỗi request ra stderr: hàng nghìn dòng che mất lỗi thật trong log CI. Máy chủ không khởi động
+    // được thì Playwright vẫn báo lỗi vì không mở được url ở trên.
+    stderr: 'ignore'
   }
 });

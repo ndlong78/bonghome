@@ -8,7 +8,6 @@ const content = JSON.parse(read('content/daily/index.json'));
 const daily = require('../js/daily-journey.js');
 const themePicker = require('../js/theme-picker.js');
 const serviceWorker = read('sw.js');
-const css = read('css/daily-journey.css');
 
 const valid = daily.validateContent(content);
 assert.ok(valid, 'Daily journey content must be valid');
@@ -34,7 +33,6 @@ assert.ok(serviceWorker.includes('./js/daily-journey.js'));
 assert.ok(serviceWorker.includes('./content/daily/index.json'));
 assert.ok(serviceWorker.includes('./css/daily-journey.css'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
-assert.match(css, /min-height:\s*72px/);
-assert.match(css, /prefers-reduced-motion/);
+// Thẻ hành trình trên màn hẹp cao 72px: e2e/page-structure.spec.js.
 
 console.log('Daily journey checks passed.');

@@ -7,8 +7,6 @@ const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8');
 
 const engine = require('../js/game12-sudoku.js');
 const content = JSON.parse(read('content/games/game12.json'));
-const html = read('game12.html');
-const style = read('css/game12-sudoku.css');
 const sw = read('sw.js');
 const redirects = read('_redirects');
 
@@ -47,32 +45,15 @@ autoTest('engine tất định theo seed và phát hiện ô trùng', () => {
   assert.throws(() => engine.createLayout(6, 2, 2), /không hợp lệ/);
 });
 
-autoTest('Game 12 có bàn grid, bảng chọn hình, công cụ và không gây áp lực thời gian', () => {
-  assert.match(html, /css\/design-tokens\.css/);
-  assert.match(html, /css\/game12-sudoku\.css/);
-  assert.match(html, /js\/game12-sudoku\.js/);
-  assert.match(html, /role="grid"/);
-  assert.match(html, /tabindex="0"/);
-  for (const id of ['sudokuBoard', 'sudokuPad', 'sudokuLevels', 'sudokuErase', 'sudokuHint', 'sudokuCheck', 'sudokuRestart', 'sudokuNew', 'sudokuStatus']) {
-    assert.match(html, new RegExp(`id="${id}"`), `thiếu #${id}`);
-  }
-  assert.match(html, /aria-live="polite"/);
-  assert.match(html, /Không có đồng hồ đếm ngược/);
-  assert.match(style, /--bh-touch-target/);
-  assert.match(style, /prefers-reduced-motion:\s*reduce/);
-  assert.match(style, /\.sudoku-row\s*\{\s*display:\s*contents;/);
-});
-
 autoTest('Game 12 có ghi chú bút chì cho bàn 9×9, cấu hình qua content', () => {
   const notesLevels = content.levels.filter((level) => level.notes === true).map((level) => level.id);
   assert.deepEqual(notesLevels, ['cay'], 'chỉ bàn 9×9 bật ghi chú');
-  assert.match(html, /id="sudokuNotes"[^>]*aria-pressed="false"[^>]*hidden/);
-  assert.match(html, /id="sudokuNotesTip"[^>]*hidden/);
-  // Ghi, hiển thị, tự xoá ở ô liên quan, phím n, giữ sau reload: e2e/game12-sudoku.spec.js.
-  assert.match(style, /\.sudoku-notes\s*\{/);
-  assert.match(style, /\.sudoku-tool\[hidden\]\s*\{\s*display:\s*none;/);
+  // Nút ghi chú ẩn ở bàn 4×4; ghi, hiển thị, tự xoá ở ô liên quan, phím n, giữ sau reload: e2e/game12-sudoku.spec.js.
 });
 
+// Bàn là grid nhận focus, công cụ có tên, mỗi cỡ bàn xếp đúng N×N ô, không đếm ngược: e2e/page-structure.spec.js.
+// Giảm chuyển động, focus ring, vùng chạm: e2e/reduced-motion-all-pages.spec.js, e2e/focus-visible.spec.js,
+// e2e/touch-targets.spec.js.
 autoTest('PWA precache, route và thẻ trang chủ có Game 12', () => {
   for (const asset of [
     './game12.html',

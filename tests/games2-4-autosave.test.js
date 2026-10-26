@@ -25,8 +25,8 @@ for (const game of ['game2', 'game3', 'game4']) {
 
 
 const css = read('css/games-autosave.css');
-assert.match(css, /bh-game-autosave-status/);
-assert.match(css, /prefers-reduced-motion/);
+// Trạng thái lưu hiển thị và đọc qua live region: e2e/games2-4-autosave-live-region.spec.js; giảm chuyển động:
+// e2e/reduced-motion-all-pages.spec.js. Vùng an toàn (tai thỏ) không giả lập được trong Chromium: giữ hợp đồng CSS.
 assert.match(css, /safe-area-inset/);
 
 ['./js/routes.js', './js/games2-4-autosave.js', './css/games-autosave.css'].forEach((asset) => {

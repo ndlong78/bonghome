@@ -53,8 +53,8 @@ assert.ok(serviceWorker.includes('./js/profile.js'));
 assert.ok(serviceWorker.includes('./js/profile-ui.js'));
 assert.ok(serviceWorker.includes('./css/profile.css'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
-assert.match(css, /min-height:var\(--bh-touch-target,44px\)/);
-assert.match(css, /prefers-reduced-motion/);
+// Nút hồ sơ và lối vào đủ 44px: e2e/page-structure.spec.js; giảm chuyển động: e2e/shared-styles.spec.js.
+// Vùng an toàn (tai thỏ) không giả lập được trong Chromium: giữ hợp đồng CSS.
 assert.match(css, /safe-area-inset/);
 
 console.log('Local profile checks passed.');

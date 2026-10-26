@@ -8,7 +8,6 @@ const registry = JSON.parse(read('content/themes/index.json'));
 const animals = JSON.parse(read('content/themes/animals/game1.json'));
 const createAdapter = require('../js/game1-theme-progress.js');
 const themePicker = require('../js/theme-picker.js');
-const pickerCss = read('css/theme-picker.css');
 const serviceWorker = read('sw.js');
 
 assert.ok(registry.themes.some((theme) => theme.id === 'animals' && theme.available));
@@ -67,8 +66,7 @@ currentTheme = 'bong-home';
 assert.deepEqual(progress.loadGame('game1').state, homeState, 'Hoàn thành theme động vật không được xóa ván theme mặc định');
 
 // Đổi chủ đề ở Game 1 thì lưu ván rồi tải lại với bộ hình mới: e2e/profile-theme-ui.spec.js.
-assert.match(pickerCss, /min-height:44px/);
-assert.match(pickerCss, /prefers-reduced-motion/);
+// Nút chọn chủ đề đủ 44px: e2e/page-structure.spec.js.
 assert.ok(serviceWorker.includes('./content/themes/animals/game1.json'));
 assert.ok(!serviceWorker.includes('./content/games/game1-animals.json'));
 assert.ok(serviceWorker.includes('./js/game1-theme-progress.js'));

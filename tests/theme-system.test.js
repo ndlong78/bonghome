@@ -17,7 +17,6 @@ assert.doesNotMatch(
 
 const createThemes = require(themesPath);
 const serviceWorker = fs.readFileSync(path.join(rootPath, 'sw.js'), 'utf8');
-const css = fs.readFileSync(path.join(rootPath, 'css/themes.css'), 'utf8');
 
 const memory = new Map();
 const storage = {
@@ -62,8 +61,7 @@ assert.deepEqual(themes.migratePreferences({ schemaVersion: 99 }), { schemaVersi
   assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
   assert.ok(serviceWorker.includes('./content/themes/index.json'));
   assert.ok(serviceWorker.includes('./css/themes.css'));
-  assert.match(css, /--bh-theme-primary/);
-  assert.match(css, /:root\[data-theme\]/);
+  // Tên màu cũ của game (--kem, --chu, --tim) đi theo chủ đề đang chọn: e2e/shared-styles.spec.js.
 
   console.log('Theme system checks passed.');
 })().catch((error) => {

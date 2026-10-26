@@ -4,36 +4,13 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
-const html = read('parents.html');
-const profileCss = read('css/profile.css');
-const parentCss = read('css/parent-dashboard.css');
 const serviceWorker = read('sw.js');
 
-assert.match(html, /<main class="bh-parent"/);
-assert.match(html, /id="completedCount"/);
-assert.match(html, /id="starCount"/);
-assert.match(html, /Dữ liệu hồ sơ, tiến độ và phần thưởng chỉ được lưu/);
-assert.doesNotMatch(html, /<form|<textarea|<select/, 'Trang phụ huynh nền tảng phải chỉ đọc');
-// Ô nhập duy nhất là cổng phụ huynh trong hộp thoại xóa: chỉ để xác nhận, không lưu, không gửi đi.
-{
-  const inputs = html.match(/<input\b[^>]*>/g) || [];
-  assert.equal(inputs.length, 1, 'Chỉ cho phép ô trả lời của cổng phụ huynh');
-  assert.match(inputs[0], /id="parentGateAnswer"/);
-  assert.doesNotMatch(inputs[0], /\sname=/, 'Ô cổng phụ huynh không được có name (không phải dữ liệu thu thập)');
-  const dialogStart = html.indexOf('<dialog id="parentDataDialog"');
-  const dialogEnd = html.indexOf('</dialog>', dialogStart);
-  const inputAt = html.indexOf(inputs[0]);
-  assert.ok(dialogStart >= 0 && inputAt > dialogStart && inputAt < dialogEnd, 'Ô cổng phụ huynh phải nằm trong hộp thoại xóa');
-}
-assert.match(html, /\.\/shared-ui\.js/);
-assert.match(html, /\.\/js\/parent-dashboard\.js/);
-
-// Bảng số liệu hiển thị đúng dữ liệu, chỉ đọc qua module dùng chung (không tự gọi localStorage/fetch), và trang chủ
-// có lối vào trang phụ huynh: e2e/parent-dashboard.spec.js.
-assert.match(profileCss, /\.bh-parent-link/);
-assert.match(profileCss, /min-height:var\(--bh-touch-target,44px\)/);
-assert.match(parentCss, /prefers-reduced-motion/);
-assert.match(parentCss, /focus-visible/);
+// Vùng nội dung chính có tên, chỉ đọc (ô nhập duy nhất là cổng phụ huynh trong hộp thoại xoá, không có name), ghi
+// chú quyền riêng tư: e2e/page-structure.spec.js. Bảng số liệu hiển thị đúng dữ liệu, chỉ đọc qua module dùng chung
+// (không tự gọi localStorage/fetch), trang chủ có lối vào: e2e/parent-dashboard.spec.js. Module nạp đúng:
+// e2e/page-modules.spec.js. Vùng chạm, focus ring, giảm chuyển động: e2e/touch-targets.spec.js,
+// e2e/focus-visible.spec.js, e2e/reduced-motion-all-pages.spec.js.
 
 ['./parents.html', './js/parent-dashboard.js', './css/parent-dashboard.css'].forEach((asset) => {
   assert.ok(serviceWorker.includes(asset), `${asset} must be cached offline`);

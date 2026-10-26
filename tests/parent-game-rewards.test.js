@@ -5,7 +5,6 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const createRewards = require('../js/rewards.js');
-const css = read('css/parent-dashboard.css');
 const serviceWorker = read('sw.js');
 
 let state = {};
@@ -34,9 +33,6 @@ assert.ok(!Object.values(byGame).some((item) => item.badgeIds.includes('curious-
 
 // Trang phụ huynh hiện phần thưởng của từng trò: e2e/parent-dashboard.spec.js.
 
-assert.ok(css.includes('.bh-parent-game-main'));
-assert.ok(css.includes('.bh-parent-game-progress'));
-assert.ok(css.includes('.bh-parent-game-rewards'));
 assert.ok(serviceWorker.includes('./js/rewards.js'));
 assert.ok(serviceWorker.includes('./js/parent-dashboard.js'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);

@@ -2,11 +2,9 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const source = fs.readFileSync(path.join(root, 'game2.html'), 'utf8');
 
 // Vùng chạm của các vật nằm trong engine (js/game2-engine.js), đọc thẳng dữ liệu thay vì so chuỗi mã nguồn.
 const engine = require(path.join(root, 'js', 'game2-engine.js'));
@@ -20,8 +18,5 @@ test('Game 2 keeps every configured difference hit area at least 44 viewBox unit
   });
 });
 
-test('Game 2 picture SVGs keep a stable 300 by 300 coordinate system', () => {
-  assert.match(source, /id="tranhA"[^>]+viewBox="0 0 300 300"/);
-  assert.match(source, /id="tranhB"[^>]+viewBox="0 0 300 300"/);
-  assert.match(source, /\.tranh svg\{[^}]*width:100%/s);
-});
+// Hai tranh dùng hệ toạ độ 300×300 và lấp đầy khung: e2e/gameplay-layout.spec.js; vùng chạm thật ≥44px:
+// e2e/game2-gameplay-touch-targets.spec.js.

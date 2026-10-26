@@ -5,7 +5,6 @@ const path = require('node:path');
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const catalog = JSON.parse(read('content/games/index.json'));
-const parents = read('parents.html');
 const serviceWorker = read('sw.js');
 
 const expectedTitles = [
@@ -31,7 +30,6 @@ assert.deepEqual(
   expectedIds
 );
 // Trang phụ huynh lấy tên trò, sticker và huy hiệu từ catalog này: e2e/parent-dashboard.spec.js.
-assert.ok(parents.includes('./js/game-catalog.js'));
 assert.ok(serviceWorker.includes('./js/game-catalog.js'));
 assert.ok(serviceWorker.includes('./content/games/index.json'));
 assert.ok(serviceWorker.includes('./content/rewards/catalog.json'));

@@ -96,12 +96,5 @@ test('collection uses local profile name and avatar', () => {
 
 // Trang chủ có lối vào bộ sưu tập: e2e/parent-dashboard.spec.js.
 
-test('collection page uses shared modules and reduced-motion support', () => {
-  const html = fs.readFileSync(path.join(__dirname, '..', 'collection.html'), 'utf8');
-  assert.match(html, /shared-ui\.js/);
-  assert.match(html, /reward-collection\.js/);
-  assert.match(html, /collectionAvatar/);
-  assert.match(html, /collectionTitle/);
-  assert.match(html, /prefers-reduced-motion/);
-  assert.match(html, /aria-live="polite"/);
-});
+// Trang bộ sưu tập: vùng nội dung chính có tên, avatar, số sao đọc qua live region (e2e/page-structure.spec.js);
+// module nạp đúng (e2e/page-modules.spec.js); giảm chuyển động (e2e/reduced-motion-all-pages.spec.js).

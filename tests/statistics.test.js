@@ -45,15 +45,9 @@ assert.equal(summary.averageMoves, 20);
 assert.throws(() => statistics.summarize(new Date('invalid')), TypeError);
 assert.throws(() => createStatistics(storage), /requires BongProgress/);
 
-const html = read('parents.html');
-const css = read('css/parent-dashboard.css');
 const serviceWorker = read('sw.js');
 // Trang phụ huynh lấy thống kê từ lượt hoàn thành thật (trung bình thời gian, số lượt, 7 ngày): e2e/parent-dashboard.spec.js.
-assert.match(html, /\.\/js\/statistics\.js/);
-assert.match(html, /id="recentCount"/);
-assert.match(html, /không tạo mục tiêu ngày hay áp lực/);
-assert.match(css, /\.bh-parent-insights/);
-assert.match(css, /prefers-reduced-motion/);
+// Ghi chú "không tạo mục tiêu ngày hay áp lực" hiển thị trên trang: e2e/page-structure.spec.js.
 assert.ok(serviceWorker.includes('./js/statistics.js'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 
