@@ -1,5 +1,5 @@
 /* BÔNG HOME'S - Service Worker */
-const PHIEN_BAN = "bonghome-v93-csp-no-inline-style";
+const PHIEN_BAN = "bonghome-v94-win-dialog-unified";
 const TEN_CACHE = Object.freeze({
   shell: `${PHIEN_BAN}-shell`,
   games: `${PHIEN_BAN}-games`,
