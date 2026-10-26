@@ -5,17 +5,8 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const sharedUi = fs.readFileSync(path.join(__dirname, '..', 'shared-ui.js'), 'utf8');
-
-for (const group of ['games2-4', 'games5-7', 'games8-10']) {
-  test(`${group} autosave receives reward-aware BongProgress`, () => {
-    const escaped = group.replace('-', '\\-');
-    const pattern = new RegExp(
-      `loadSharedScript\\('\\.\\/js\\/${escaped}-rewards\\.js'[\\s\\S]*?modules\\.progress = window\\.BongProgress[\\s\\S]*?loadSharedScript\\('\\.\\/js\\/${escaped}-autosave\\.js'`
-    );
-    assert.match(sharedUi, pattern);
-  });
-}
+// Autosave nhận BongProgress đã bọc phần thưởng: e2e/page-modules.spec.js (thứ tự nạp) và các E2E gameplay
+// (thắng thật thì hộp thắng có tóm tắt phần thưởng).
 
 test('all completion dialogs expose the shared win-dialog structure', () => {
   for (let game = 1; game <= 10; game += 1) {

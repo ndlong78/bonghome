@@ -4,27 +4,10 @@ const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
-const adapter = read('js/games2-4-rewards.js');
 const css = read('css/games-autosave.css');
 const serviceWorker = read('sw.js');
 
-[
-  'function rewardLines(detail)',
-  'function renderInWinDialog(detail)',
-  "querySelector('.man-thang .hop-thang')",
-  "querySelector('.nhom-nut')",
-  "summary.className = 'bh-reward-summary'",
-  "summary.setAttribute('role', 'status')",
-  "summary.setAttribute('aria-live', 'polite')",
-  'dialog.insertBefore(summary, actions || null)',
-  "⭐ Bé nhận ${detail.stars} sao",
-  "🎁 Sticker mới: ${detail.stickerName}",
-  '🔎 Huy hiệu mới: Bé ham khám phá'
-].forEach((snippet) => {
-  assert.ok(adapter.includes(snippet), `reward dialog adapter must include: ${snippet}`);
-});
-
-assert.ok(adapter.includes('if (renderInWinDialog(detail)) return;'));
+// Hành vi hiển thị phần thưởng: tests/reward-announcements.test.js. Ở đây chỉ còn hợp đồng CSS.
 assert.ok(css.includes('.bh-reward-summary'));
 assert.ok(css.includes('.bh-reward-stars'));
 assert.ok(css.includes('.bh-reward-unlock'));

@@ -5,7 +5,6 @@ const path = require('node:path');
 const rootPath = path.resolve(__dirname, '..');
 const read = (file) => fs.readFileSync(path.join(rootPath, file), 'utf8');
 const createRewardsAdapter = require('../js/games8-10-rewards.js');
-const sharedUi = read('shared-ui.js');
 const serviceWorker = read('sw.js');
 const catalog = JSON.parse(read('content/rewards/catalog.json'));
 
@@ -74,10 +73,6 @@ assert.ok(catalog.stickers.some((item) => item.id === 'story-book'));
 assert.ok(catalog.stickers.some((item) => item.id === 'happy-note'));
 assert.ok(catalog.badges.some((item) => item.id === 'conqueror-kid'));
 
-const rewardIndex = sharedUi.indexOf("loadSharedScript('./js/games8-10-rewards.js'");
-const autosaveIndex = sharedUi.indexOf("loadSharedScript('./js/games8-10-autosave.js'");
-assert.ok(rewardIndex >= 0 && autosaveIndex > rewardIndex, 'Reward adapter must load before autosave');
-assert.ok(sharedUi.includes('if (!modules.progress || !modules.rewards) return null;'));
 assert.ok(serviceWorker.includes('./js/games8-10-rewards.js'));
 assert.match(serviceWorker, /const PHIEN_BAN = "bonghome-v\d+-[a-z0-9-]+";/);
 
