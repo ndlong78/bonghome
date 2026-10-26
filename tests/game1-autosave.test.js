@@ -68,10 +68,10 @@ assert.equal(migratedLegacy.snapshots['3'].startedAt, '2026-07-22T00:00:00.000Z'
 assert.equal(autosave.validateSnapshot({ ...validSnapshot, matchedIndices: [0, 1] }), null, 'cặp đã ghép phải cùng hình');
 assert.deepEqual(autosave.validateSnapshot({ ...validSnapshot, difficulty: '3' }), validSnapshot);
 
-// Hợp đồng sau khi tách engine/UI: trang không còn script inline, nạp engine → UI theo thứ tự,
-// adapter chạy thật (lưu, khôi phục qua hộp "Tiếp tục", ghi hoàn thành) trong e2e/game1-gameplay.spec.js.
+// Hợp đồng sau khi tách engine/UI: nạp engine → UI theo thứ tự (không trang nào có script inline:
+// tests/no-inline-script.test.js), adapter chạy thật (lưu, khôi phục qua hộp "Tiếp tục", ghi hoàn thành) trong
+// e2e/game1-gameplay.spec.js.
 const game1Html = fs.readFileSync(path.join(root, 'game1.html'), 'utf8');
-assert.doesNotMatch(game1Html, /<script>(?!\s*<\/script>)/, 'game1.html không còn script inline');
 const scriptOrder = ['./shared-ui.js', './js/game1-engine.js', './js/game1-ui.js'].map((src) => game1Html.indexOf(`<script src="${src}" defer></script>`));
 assert.ok(scriptOrder.every((index, i) => index > 0 && (i === 0 || index > scriptOrder[i - 1])), 'thứ tự script Game 1');
 for (const file of ['./js/game1-engine.js', './js/game1-ui.js']) assert.ok(serviceWorker.includes(file), `precache ${file}`);

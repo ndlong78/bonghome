@@ -103,9 +103,10 @@ Không đổi số này thì máy của bé vẫn chạy bản cũ đã lưu. Th
 
 - **Không phụ thuộc bên ngoài:** không framework, không CDN, không ảnh tải từ mạng. Đồ họa vẽ bằng SVG/Canvas/CSS, âm thanh tạo bằng Web Audio API.
 - **Cấu trúc:**
-  - Game 1–10: mỗi game một tệp HTML có script inline; lưu ván, phần thưởng và trợ năng được gắn thêm từ `js/` và `game1-*.js`.
-  - Game 11–13: tách engine và giao diện trong `js/`, nội dung trong `content/games/`.
-  - `docs/refactor-plan.md`: lộ trình đưa game 1–10 về cùng mô hình với game 11–13.
+  - Game 1–10: engine thuần (`js/gameN-engine.js`, test được trong Node) tách khỏi giao diện (`js/gameN-ui.js`), dùng chung khung CSS `css/game-shell.css`; lưu ván, phần thưởng và trợ năng gắn thêm từ `js/`.
+  - Game 11–13: engine và giao diện trong `js/`, nội dung trong `content/games/`.
+  - Không trang nào có script inline: CSP trong `_headers` chỉ cho chạy script từ tệp cùng origin (`script-src 'self'`). Thêm script mới thì đặt vào tệp riêng; `tests/no-inline-script.test.js` báo lỗi nếu lỡ viết inline.
+  - `docs/refactor-plan.md`: quá trình đưa game 1–10 về cùng mô hình với game 11–13 (đã hoàn thành).
 - **Offline:**
   - Mở trang: thử mạng tối đa 3 giây, quá thời gian thì mở bản trong máy.
   - Tệp đã tải sẵn: phục vụ thẳng từ cache.
