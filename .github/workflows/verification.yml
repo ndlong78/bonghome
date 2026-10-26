@@ -123,13 +123,18 @@ jobs:
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       # Giới hạn riêng cho bước cài: apt chậm bất thường thì báo lỗi rõ ở bước này thay vì làm job hết giờ giữa test.
+      # `install-deps --dry-run` mô phỏng bằng `apt-get install -s` và thoát mã khác 0 nếu thiếu gói (hoặc không mô
+      # phỏng được): runner đã đủ thư viện thì bỏ qua apt-get update/install (có lúc mất ~12 phút), thiếu thì cài như cũ.
       - name: Install Playwright browser and system dependencies
         timeout-minutes: 15
         run: |
-          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" = "true" ]; then
-            npx playwright install-deps chromium
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" != "true" ]; then
+            npx playwright install chromium
+          fi
+          if npx playwright install-deps --dry-run chromium; then
+            echo "Runner đã có đủ thư viện hệ thống cho Chromium: bỏ qua apt."
           else
-            npx playwright install --with-deps chromium
+            npx playwright install-deps chromium
           fi
 
       - name: Run mobile E2E tests
