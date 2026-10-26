@@ -33,16 +33,7 @@ assert.deepEqual(byGame.game3.stickerIds, ['rainbow-friend']);
 assert.deepEqual(byGame.game1.badgeIds, ['first-finish']);
 assert.ok(!Object.values(byGame).some((item) => item.badgeIds.includes('curious-learner')), 'group badge must not be assigned to one game');
 
-[
-  'function formatProgress(count, isInProgress)',
-  'function formatRewardSummary(gameId, reward, catalog)',
-  'getByGameSummary',
-  'lượt hoàn thành · đang chơi dở',
-  '⭐ ${reward.stars} sao',
-  '🎁 Phần thưởng chưa áp dụng',
-  '🎁 Chưa ghi nhận phần thưởng',
-  'bh-parent-game-rewards'
-].forEach((snippet) => assert.ok(dashboard.includes(snippet), `dashboard must include: ${snippet}`));
+// Trang phụ huynh hiện phần thưởng của từng trò: e2e/parent-dashboard.spec.js.
 
 assert.ok(css.includes('.bh-parent-game-main'));
 assert.ok(css.includes('.bh-parent-game-progress'));

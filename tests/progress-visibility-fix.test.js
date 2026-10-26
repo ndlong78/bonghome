@@ -18,19 +18,10 @@ const serviceWorker = read('sw.js');
   state = game7.nextQuestion(game7.choose(state, state.choices.findIndex((c) => game7.sameCombo(c, state.answer))).state, next);
   const saved = JSON.parse(JSON.stringify(game7.serialize(state, 'game7-visibility')));
   assert.deepEqual(game7.serialize(game7.restore(saved), 'game7-visibility'), saved, 'Game 7 save/restore must keep every shape');
-  assert.ok(adapter.includes('window.BongGame7.serialize(sessionId)'), 'Game 7 adapter must delegate saving to the engine');
 }
-assert.ok(!adapter.includes('function comboFromHtml'), 'Game 7 must not compare rendered HTML strings');
 
-[
-  'function renderGameSummary(container, byGame, games, catalog, rewardsByGame)',
-  'Object.keys(inProgress)',
-  'Đang chơi dở',
-  'progress.byGame, progress.games, catalog, rewardsByGame',
-  'Chưa có hoạt động nào được lưu'
-].forEach((snippet) => {
-  assert.ok(dashboard.includes(snippet), `Parent dashboard must include: ${snippet}`);
-});
+// Adapter Game 5–7 lưu qua engine: tests/games-autosave-behavior.test.js. Trang phụ huynh hiện trò "Đang chơi dở" và
+// trạng thái trống: e2e/parent-dashboard.spec.js.
 
 assert.match(
   serviceWorker,

@@ -45,21 +45,14 @@ assert.equal(summary.averageMoves, 20);
 assert.throws(() => statistics.summarize(new Date('invalid')), TypeError);
 assert.throws(() => createStatistics(storage), /requires BongProgress/);
 
-const progressSource = read('js/progress.js');
-const statisticsSource = read('js/statistics.js');
 const html = read('parents.html');
 const dashboard = read('js/parent-dashboard.js');
 const css = read('css/parent-dashboard.css');
 const serviceWorker = read('sw.js');
-assert.match(progressSource, /listCompletions/);
-assert.match(statisticsSource, /progress\.listCompletions\(\)/);
-assert.doesNotMatch(statisticsSource, /storage\.get\(['"]progress['"]/);
+// Trang phụ huynh lấy thống kê từ lượt hoàn thành thật (trung bình thời gian, số lượt, 7 ngày): e2e/parent-dashboard.spec.js.
 assert.match(html, /\.\/js\/statistics\.js/);
 assert.match(html, /id="recentCount"/);
 assert.match(html, /không tạo mục tiêu ngày hay áp lực/);
-assert.match(dashboard, /BongStatisticsFactory\(modules\.progress\)/);
-assert.match(dashboard, /averageDurationSeconds/);
-assert.doesNotMatch(dashboard, /localStorage/);
 assert.match(css, /\.bh-parent-insights/);
 assert.match(css, /prefers-reduced-motion/);
 assert.ok(serviceWorker.includes('./js/statistics.js'));
