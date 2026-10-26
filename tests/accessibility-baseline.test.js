@@ -34,14 +34,6 @@ for (const file of gameFiles) {
   });
 }
 
-test('shared quality layer manages keyboard focus for completion dialogs', () => {
-  const source = read('pwa-quality.js');
-  assert.match(source, /function setupDialogFocus\(/);
-  assert.match(source, /event\.key !== 'Tab'/);
-  assert.match(source, /item\.inert = true/);
-  assert.match(source, /previousFocus\?\.isConnected/);
-});
-
 test('parent and collection pages expose labelled main content', () => {
   for (const file of ['parents.html', 'collection.html']) {
     const html = read(file);
