@@ -147,6 +147,8 @@
       element.className = `do-vat${item.done ? ' xong' : ''}`;
       element.dataset.mau = item.color;
       element.dataset.kieu = String(item.shape);
+      // Vai trò đi cùng tên ngay từ đầu (aria-label trên div không vai trò bị cấm); lớp bàn phím bổ sung tabindex.
+      element.setAttribute('role', 'button');
       element.setAttribute('aria-label', `Đồ vật màu ${engine.colorById(item.color).name}`);
       element.append(tuMau(engine.shapeSvg(item.shape, item.color)));
       ganKeoTha(element, index);
