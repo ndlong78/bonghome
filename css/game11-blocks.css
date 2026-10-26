@@ -118,6 +118,10 @@
   margin: 0 auto;
 }
 
+.block-row {
+  display: contents;
+}
+
 .block-board {
   --board-gap: 2px;
   box-sizing: border-box;

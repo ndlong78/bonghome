@@ -26,9 +26,8 @@
     card.dataset.game11Card = 'true';
     card.style.setProperty('--vien', '#6FA8FF');
     card.style.setProperty('--nen', '#EDF5FF');
-    card.setAttribute('aria-label', 'Lớp 11: Xếp Khối Thông Minh');
     card.innerHTML = `
-      <div class="so">11</div>
+      <div class="so"><span class="bh-visually-hidden">Lớp </span>11</div>
       <div class="the">
         <div class="hinh" aria-hidden="true">
           <svg viewBox="0 0 64 64">

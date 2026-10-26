@@ -22,9 +22,8 @@
     card.dataset.game12Card = 'true';
     card.style.setProperty('--vien', '#67CFA6');
     card.style.setProperty('--nen', '#EAFBF3');
-    card.setAttribute('aria-label', 'Lớp 12: Sudoku Vui Vẻ');
     card.innerHTML = `
-      <div class="so">12</div>
+      <div class="so"><span class="bh-visually-hidden">Lớp </span>12</div>
       <div class="the">
         <div class="hinh" aria-hidden="true">
           <svg viewBox="0 0 64 64">

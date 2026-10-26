@@ -21,6 +21,19 @@
     return catalog;
   }
 
+  /**
+   * Nhãn "emoji + chữ": emoji ẩn với trình đọc màn hình nên tên của nút là phần chữ. Cả cụm nằm trong một span để
+   * nút inline-flex (có gap) vẫn coi nhãn là một mục, bố cục giữ như chuỗi chữ thường.
+   */
+  function emojiLabel(emoji, text) {
+    const label = root.document.createElement('span');
+    const icon = root.document.createElement('span');
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = emoji;
+    label.append(icon, ` ${text}`);
+    return label;
+  }
+
   function init() {
     if (!root?.document || !profile || !isHomePage(root.location.pathname)) return Promise.resolve(null);
     if (root.document.getElementById('bhProfileButton')) return Promise.resolve(null);
@@ -41,14 +54,13 @@
       const collectionLink = root.document.createElement('a');
       collectionLink.className = 'bh-parent-link';
       collectionLink.href = './collection.html';
-      collectionLink.textContent = '🎁 Bộ sưu tập của Bông';
-      collectionLink.setAttribute('aria-label', 'Mở bộ sưu tập sao, sticker và huy hiệu');
+      // Tên đọc lên là chính chữ trên nút (emoji chỉ để trang trí).
+      collectionLink.append(emojiLabel('🎁', 'Bộ sưu tập của Bông'));
 
       const parentLink = root.document.createElement('a');
       parentLink.className = 'bh-parent-link';
       parentLink.href = './parents.html';
-      parentLink.textContent = '👨‍👩‍👧 Dành cho phụ huynh';
-      parentLink.setAttribute('aria-label', 'Mở Góc phụ huynh');
+      parentLink.append(emojiLabel('👨‍👩‍👧', 'Dành cho phụ huynh'));
 
       const dialog = root.document.createElement('div');
       dialog.className = 'bh-profile-dialog';
