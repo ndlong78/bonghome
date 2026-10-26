@@ -86,8 +86,15 @@ async function checkHtml(fetchImpl, baseUrl, pathname, timeoutMs) {
   if ((response.headers.get('x-content-type-options') || '').toLowerCase() !== 'nosniff') {
     throw new Error(`${pathname}: X-Content-Type-Options: nosniff is missing (_headers not applied?)`);
   }
-  if (!/default-src 'self'/.test(response.headers.get('content-security-policy') || '')) {
+  const csp = response.headers.get('content-security-policy') || '';
+  if (!/default-src 'self'/.test(csp)) {
     throw new Error(`${pathname}: Content-Security-Policy with default-src 'self' is missing (_headers not applied?)`);
+  }
+  // Không trang nào còn script inline: CSP phải chặn chúng (script-src, hoặc default-src khi không khai báo).
+  const directives = csp.split(';').map((part) => part.trim());
+  const scriptSrc = directives.find((part) => part.startsWith('script-src ')) || directives.find((part) => part.startsWith('default-src '));
+  if (/'unsafe-inline'|'unsafe-eval'/.test(scriptSrc)) {
+    throw new Error(`${pathname}: Content-Security-Policy still allows inline scripts (${scriptSrc})`);
   }
   return { pathname, status: response.status, type: 'html' };
 }
