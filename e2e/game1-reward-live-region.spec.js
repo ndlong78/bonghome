@@ -4,7 +4,9 @@ test('phần thưởng Game 1 có live region đầy đủ và không cướp fo
   await page.addInitScript(() => localStorage.clear());
   await page.goto('/game1.html', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('script[data-bh-game1-rewards]')).toBeAttached();
-  await page.waitForFunction(() => typeof window.BongProgress?.completeGame === 'function');
+  // Chờ lớp phần thưởng bọc xong BongProgress: completeGame của module progress gốc có sẵn từ trước,
+  // gọi nó lúc lớp bọc chưa chạy thì không có tóm tắt phần thưởng (race trên máy chậm).
+  await page.waitForFunction(() => typeof window.BongProgress?.makeRewardTransactionId === 'function');
 
   const soundButton = page.locator('#nutAmThanh');
   await expect(soundButton).toBeVisible();
