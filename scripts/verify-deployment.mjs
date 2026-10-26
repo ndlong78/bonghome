@@ -90,11 +90,14 @@ async function checkHtml(fetchImpl, baseUrl, pathname, timeoutMs) {
   if (!/default-src 'self'/.test(csp)) {
     throw new Error(`${pathname}: Content-Security-Policy with default-src 'self' is missing (_headers not applied?)`);
   }
-  // Không trang nào còn script inline: CSP phải chặn chúng (script-src, hoặc default-src khi không khai báo).
+  // Không trang nào còn script/style inline: CSP phải chặn chúng (script-src/style-src, hoặc default-src khi không
+  // khai báo).
   const directives = csp.split(';').map((part) => part.trim());
-  const scriptSrc = directives.find((part) => part.startsWith('script-src ')) || directives.find((part) => part.startsWith('default-src '));
-  if (/'unsafe-inline'|'unsafe-eval'/.test(scriptSrc)) {
-    throw new Error(`${pathname}: Content-Security-Policy still allows inline scripts (${scriptSrc})`);
+  for (const [name, label] of [['script-src', 'scripts'], ['style-src', 'styles']]) {
+    const directive = directives.find((part) => part.startsWith(`${name} `)) || directives.find((part) => part.startsWith('default-src '));
+    if (/'unsafe-inline'|'unsafe-eval'/.test(directive)) {
+      throw new Error(`${pathname}: Content-Security-Policy still allows inline ${label} (${directive})`);
+    }
   }
   return { pathname, status: response.status, type: 'html' };
 }

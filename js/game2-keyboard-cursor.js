@@ -24,30 +24,14 @@
     status.setAttribute('aria-atomic', 'true');
     document.body.appendChild(status);
 
-    const style = document.createElement('style');
-    style.textContent = `
-      .bh-visually-hidden {
-        position: absolute !important;
-        width: 1px !important;
-        height: 1px !important;
-        padding: 0 !important;
-        margin: -1px !important;
-        overflow: hidden !important;
-        clip: rect(0, 0, 0, 0) !important;
-        white-space: nowrap !important;
-        border: 0 !important;
-      }
-      .${CURSOR_CLASS} {
-        fill: rgba(255, 255, 255, 0.32);
-        stroke: #5B3C62;
-        stroke-width: 4;
-        pointer-events: none;
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .${CURSOR_CLASS} { transition: none !important; }
-      }
-    `;
-    document.head.appendChild(style);
+    // CSS nằm ở tệp riêng (CSP không cho <style> inline); .bh-visually-hidden dùng chung trong css/common.css.
+    if (!document.getElementById('bhGame2KeyboardStyles')) {
+      const link = document.createElement('link');
+      link.id = 'bhGame2KeyboardStyles';
+      link.rel = 'stylesheet';
+      link.href = './css/game2-keyboard-cursor.css';
+      document.head.appendChild(link);
+    }
 
     pictures.forEach((svg, pictureIndex) => {
       const state = { x: 150, y: 150, visible: false };

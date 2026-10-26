@@ -105,7 +105,7 @@ Không đổi số này thì máy của bé vẫn chạy bản cũ đã lưu. Th
 - **Cấu trúc:**
   - Game 1–10: engine thuần (`js/gameN-engine.js`, test được trong Node) tách khỏi giao diện (`js/gameN-ui.js`), dùng chung khung CSS `css/game-shell.css`; lưu ván, phần thưởng và trợ năng gắn thêm từ `js/`.
   - Game 11–13: engine và giao diện trong `js/`, nội dung trong `content/games/`.
-  - Không trang nào có script inline: CSP trong `_headers` chỉ cho chạy script từ tệp cùng origin (`script-src 'self'`). Thêm script mới thì đặt vào tệp riêng; `tests/no-inline-script.test.js` báo lỗi nếu lỡ viết inline.
+  - Không trang nào có script hay CSS inline: CSP trong `_headers` chỉ cho script và CSS từ tệp cùng origin (`script-src 'self'; style-src 'self'`). CSS riêng của từng trang nằm ở `css/pages/`. Thêm script/CSS mới thì đặt vào tệp riêng; JS đặt kiểu bằng CSSOM (`element.style.x`, `setProperty`), không tạo `<style>` hay gán thuộc tính `style`. `tests/no-inline-script.test.js` báo lỗi nếu lỡ viết inline.
   - `docs/refactor-plan.md`: quá trình đưa game 1–10 về cùng mô hình với game 11–13 (đã hoàn thành).
 - **Offline:**
   - Mở trang: thử mạng tối đa 3 giây, quá thời gian thì mở bản trong máy.

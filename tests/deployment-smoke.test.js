@@ -188,6 +188,17 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
     smoke.runDeploymentSmoke('https://example.test', { fetchImpl: inlineScriptFetch, logger: { log() {} }, timeoutMs: 100 }),
     /still allows inline scripts/
   );
+  const inlineStyleFetch = async (input, options = {}) => {
+    const response = await fetchImpl(input, options);
+    if (new URL(input).pathname !== '/game3.html') return response;
+    const headers = new Headers(response.headers);
+    headers.set('content-security-policy', "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'");
+    return new Response(await response.text(), { status: response.status, headers });
+  };
+  await assert.rejects(
+    smoke.runDeploymentSmoke('https://example.test', { fetchImpl: inlineStyleFetch, logger: { log() {} }, timeoutMs: 100 }),
+    /still allows inline styles/
+  );
 
   console.log('Production deployment smoke checks passed.');
 })().catch((error) => {

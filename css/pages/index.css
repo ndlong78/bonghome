@@ -1,0 +1,225 @@
+/* CSS riêng của index.html (tách khỏi <style> inline để CSP không cần 'unsafe-inline' cho style). */
+/* ===== BẢNG MÀU PASTEL CHỦ ĐẠO ===== */
+:root{
+  --kem:      #FFF7F0;  /* nền kem nhạt */
+  --hong:     #FFB7C5;  /* hồng phấn */
+  --tim:      #C9B6F5;  /* tím nhạt */
+  --vang:     #FFE0A3;  /* vàng mơ */
+  --mint:     #A8E6CF;  /* xanh mint */
+  --troi:     #BFE3FF;  /* xanh da trời */
+  --cam:      #FFCBA4;  /* cam đào */
+  --chu:      #6B4E71;  /* màu chữ tím than dịu */
+  --day:      #C9A27E;  /* màu dây treo bảng */
+}
+
+*{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Segoe UI", "Nunito", Arial, sans-serif;
+  color:var(--chu);
+  background: var(--kem);
+  /* Bầu trời chuyển sắc nhẹ nhàng phía trên, sân cỏ phía dưới */
+  background-image:
+    radial-gradient(circle at 15% 8%,  rgba(255,224,163,.55), transparent 28%),
+    radial-gradient(circle at 85% 12%, rgba(191,227,255,.55), transparent 32%),
+    linear-gradient(180deg, #E8F4FF 0%, var(--kem) 45%);
+  background-attachment: fixed;
+  overflow-x:hidden;
+}
+
+/* ===== MÂY BAY TRANG TRÍ ===== */
+.may{ position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; overflow:hidden; }
+.may span{
+  position:absolute; display:block;
+  width:120px; height:44px;
+  background:#fff; border-radius:50px;
+  opacity:.75;
+  box-shadow: 34px -14px 0 6px #fff, -34px -8px 0 2px #fff;
+  /* Dùng transform (chạy trên GPU) thay cho 'left' để trình duyệt
+     không phải tính lại bố cục mỗi khung hình → mượt & đỡ hao pin */
+  will-change: transform;
+  left:0;
+  animation: troi-bay linear infinite;
+}
+.may span:nth-child(1){ top:8%;  --s:.9;  animation-duration:55s; }
+.may span:nth-child(2){ top:20%; --s:.6;  animation-duration:80s; animation-delay:-20s; }
+.may span:nth-child(3){ top:4%;  --s:1.2; animation-duration:70s; animation-delay:-45s; }
+@keyframes troi-bay{
+  from{ transform: translateX(-40vw) scale(var(--s)); }
+  to  { transform: translateX(115vw) scale(var(--s)); }
+}
+
+/* ===== KHUNG CHÍNH ===== */
+.khung{
+  position:relative; z-index:1;
+  max-width:1120px;
+  margin:0 auto;
+  padding: 20px 18px 60px;
+}
+
+/* ===== CỔNG TRƯỜNG (SVG NGÔI NHÀ KẸO + CẦU VỒNG) ===== */
+header{ text-align:center; padding-top:8px; }
+.cong{ width:min(340px, 82vw); height:auto; display:block; margin:0 auto -6px; }
+
+h1{
+  font-size: clamp(30px, 7vw, 52px);
+  margin:6px 0 4px;
+  letter-spacing:.5px;
+  color:#7A4E86;
+  text-shadow: 0 3px 0 #fff, 0 6px 14px rgba(180,140,200,.25);
+}
+.phu-de{
+  font-size: clamp(15px, 3.4vw, 20px);
+  margin:0 auto 6px;
+  max-width:520px;
+  font-weight:600;
+  color:#8D7595;
+}
+.loi-nhac{
+  display:inline-block;
+  margin:10px 0 26px;
+  padding:10px 20px;
+  border-radius:999px;
+  background:#fff;
+  border:3px dashed var(--hong);
+  font-size: clamp(14px, 3.2vw, 17px);
+  font-weight:700;
+  color:#B4628A;
+}
+
+/* ===== LƯỚI 10 BẢNG HIỆU ===== */
+.san-truong{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 34px 22px;
+}
+@media (max-width:520px){
+  .san-truong{ grid-template-columns: repeat(2, 1fr); gap:30px 14px; }
+}
+
+/* Mỗi bảng hiệu treo trên 2 sợi dây */
+.bang-hieu{
+  position:relative;
+  display:block;
+  text-decoration:none;
+  color:inherit;
+  padding-top:24px;           /* chừa chỗ cho dây treo */
+  transform-origin: 50% 6px;  /* điểm xoay ở nút dây phía trên */
+  animation: dung-yen 0s;
+  transition: transform .25s ease;
+}
+.bang-hieu::before,
+.bang-hieu::after{            /* hai sợi dây treo */
+  content:"";
+  position:absolute; top:4px;
+  width:4px; height:24px;
+  background:var(--day);
+  border-radius:3px;
+}
+.bang-hieu::before{ left:26%; transform:rotate(9deg); }
+.bang-hieu::after { right:26%; transform:rotate(-9deg); }
+
+.the{
+  background:#fff;
+  border:4px solid var(--vien, var(--hong));
+  border-radius:26px;
+  padding:16px 12px 14px;
+  text-align:center;
+  box-shadow: 0 8px 0 rgba(0,0,0,.06), 0 14px 26px rgba(150,120,170,.16);
+  transition: box-shadow .2s ease, background .2s ease;
+}
+.the .hinh{
+  width:96px; height:96px;
+  margin:0 auto 8px;
+  background: var(--nen, #FFF0F4);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+}
+.the .hinh svg{ width:66px; height:66px; display:block; }
+
+.so{
+  position:absolute; top:16px; left:12px;
+  width:38px; height:38px;
+  background: var(--vien, var(--hong));
+  color:#fff;
+  border:3px solid #fff;
+  border-radius:50%;
+  font-size:18px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 3px 8px rgba(0,0,0,.12);
+}
+
+.ten{
+  font-size:19px; font-weight:800;
+  line-height:1.25;
+  margin:2px 0 6px;
+  min-height:48px;
+  display:flex; align-items:center; justify-content:center;
+}
+.ky-nang{
+  display:inline-block;
+  font-size:13px; font-weight:700;
+  padding:5px 12px;
+  border-radius:999px;
+  background: var(--nen, #FFF0F4);
+  color:#7A6180;
+}
+
+/* Bảng hiệu đung đưa khi chạm/rê chuột vào */
+@media (hover:hover){
+  .bang-hieu:hover{ animation: dung-dua .7s ease-in-out; }
+  .bang-hieu:hover .the{ box-shadow: 0 10px 0 rgba(0,0,0,.07), 0 20px 34px rgba(150,120,170,.28); }
+}
+.bang-hieu:focus-visible{
+  outline:5px solid #7A4E86;
+  outline-offset:6px;
+  border-radius:30px;
+}
+.bang-hieu:active{ transform: scale(.95); }
+
+@keyframes dung-dua{
+  0%,100%{ transform: rotate(0deg); }
+  25%    { transform: rotate(3.5deg); }
+  75%    { transform: rotate(-3.5deg); }
+}
+
+/* ===== NGÔI SAO LUNG LINH KHI CHẠM VÀO BẢNG ===== */
+.sao-bay{
+  position:fixed; z-index:99;
+  font-size:26px;
+  pointer-events:none;
+  animation: sao-len .9s ease-out forwards;
+}
+@keyframes sao-len{
+  0%  { transform: translate(-50%,-50%) scale(.4) rotate(0deg);   opacity:1; }
+  100%{ transform: translate(-50%,-160%) scale(1.3) rotate(220deg); opacity:0; }
+}
+
+footer{
+  text-align:center;
+  margin-top:44px;
+  font-size:15px; font-weight:700;
+  color:#A08FA8;
+}
+
+/* ===== HUY HIỆU BÁO TRẠNG THÁI CHƠI NGOẠI TUYẾN ===== */
+.huy-hieu{
+  display:none;
+  margin:14px auto 0;
+  width:fit-content;
+  padding:8px 18px;
+  border-radius:999px;
+  background:#EAFBF3;
+  border:3px solid var(--mint);
+  color:#3F8A6C;
+  font-size:14px; font-weight:800;
+}
+.huy-hieu.hien{ display:block; }
+.huy-hieu.dang-tai{ background:#FFF8E7; border-color:var(--vang); color:#9A7B4F; }
+
+/* Tôn trọng thiết lập giảm chuyển động của thiết bị */
+@media (prefers-reduced-motion: reduce){
+  *{ animation:none !important; transition:none !important; }
+}

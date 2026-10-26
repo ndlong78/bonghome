@@ -2,8 +2,8 @@
 'use strict';
 
 /*
- * Chụp kiểu đã tính (getComputedStyle + kích thước) của mọi phần tử trên game 1–10 ở 3 viewport (iPhone, iPad,
- * desktop), hộp thắng đóng và mở; random, đồng hồ và animation được cố định nên hai lần chụp cùng mã cho kết quả
+ * Chụp kiểu đã tính (getComputedStyle + kích thước) của mọi phần tử trên cả 16 trang ở 3 viewport (iPhone, iPad,
+ * desktop), game 1–10 thêm trạng thái hộp thắng mở; random, đồng hồ và animation được cố định nên hai lần chụp cùng mã cho kết quả
  * giống hệt. Dùng khi dọn CSS: chụp trước, sửa, chụp sau, so sánh phải ra 0 khác biệt.
  *
  *   python3 -m http.server 4181 --bind 127.0.0.1 &
@@ -15,6 +15,8 @@
  * Chưa cài trình duyệt của Playwright thì trỏ tới Chromium có sẵn: CHROMIUM_PATH=/đường/dẫn/chromium.
  */
 const fs = require('node:fs');
+
+const PAGES = ['index', 'parents', 'collection', ...Array.from({ length: 13 }, (_, index) => `game${index + 1}`)];
 
 const VIEWPORTS = [
   { name: 'iphone', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3 },
@@ -28,8 +30,9 @@ async function capture(base, out) {
   const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {});
   const result = {};
   for (const { name, ...options } of VIEWPORTS) {
-    for (let game = 1; game <= 10; game += 1) {
-      for (const win of [false, true]) {
+    for (const pageName of PAGES) {
+      const hasWinDialog = /^game([1-9]|10)$/.test(pageName);
+      for (const win of hasWinDialog ? [false, true] : [false]) {
         const context = await browser.newContext({ ...options, serviceWorkers: 'block', locale: 'vi-VN' });
         await context.addInitScript(() => {
           let seed = 12345;
@@ -38,7 +41,7 @@ async function capture(base, out) {
           Date.now = () => fixed;
         });
         const page = await context.newPage();
-        await page.goto(`${base}/game${game}.html`, { waitUntil: 'load' });
+        await page.goto(`${base}/${pageName}.html`, { waitUntil: 'load' });
         await page.waitForFunction(() => window.BongModulesReady && typeof window.BongModulesReady.then === 'function');
         await page.evaluate(() => window.BongModulesReady);
         await page.waitForLoadState('networkidle');
@@ -51,7 +54,7 @@ async function capture(base, out) {
         }
         await page.evaluate(() => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))));
         await page.evaluate(() => document.getAnimations().forEach((animation) => { animation.pause(); animation.currentTime = 0; }));
-        result[`${name}/game${game}${win ? '/win' : ''}`] = await page.evaluate(() => {
+        result[`${name}/${pageName}${win ? '/win' : ''}`] = await page.evaluate(() => {
           const path = (element) => {
             const parts = [];
             for (let node = element; node && node.nodeType === 1; node = node.parentElement) {

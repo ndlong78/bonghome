@@ -1,0 +1,35 @@
+/* CSS riêng của game6.html (tách khỏi <style> inline để CSP không cần 'unsafe-inline' cho style). */
+body{
+  margin:0; min-height:100vh; padding:14px 12px 40px;
+  font-family:"Segoe UI","Nunito",Arial,sans-serif; color:var(--chu);
+  background:var(--kem);
+  background-image:radial-gradient(circle at 10% 6%,rgba(255,224,163,.4),transparent 30%),
+                   radial-gradient(circle at 90% 8%,rgba(201,182,245,.35),transparent 32%),
+                   linear-gradient(180deg,#FFF6E4 0%,var(--kem) 40%);
+  background-attachment:fixed; overflow-x:hidden; user-select:none;
+}
+.khung{ max-width:760px; margin:0 auto; }
+
+.luoi{ display:grid; gap:9px; justify-content:center; }
+.o-hinh{
+  background:#fff; border:4px solid #F0E6F5; border-radius:18px;
+  padding:6px; cursor:pointer;
+  box-shadow:0 4px 0 rgba(0,0,0,.05);
+  transition:transform .13s ease, border-color .13s ease, background .13s ease;
+}
+.o-hinh svg{ width:100%; height:100%; display:block; pointer-events:none; }
+.o-hinh:active{ transform:scale(.94); }
+.o-hinh:focus-visible{ outline:5px solid #7A4E86; outline-offset:4px; }
+.o-hinh.chon{ border-color:var(--vang); background:#FFF8E7; transform:scale(1.07); }
+.o-hinh.dung{ border-color:var(--mint); background:#EAFBF3; animation:reo-vui .5s ease; cursor:default; }
+@keyframes reo-vui{ 0%,100%{transform:scale(1);} 45%{transform:scale(1.16);} }
+.o-hinh.sai{ border-color:#F5A9A9; background:#FFF0F0; animation:lac-nhe .4s ease; }
+@keyframes lac-nhe{ 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
+
+.thong-bao{
+  text-align:center; margin-top:16px;
+  font-size:19px; font-weight:900; color:#4E9A78;
+  min-height:26px;
+}
+.nhom-nut-duoi{ display:flex; justify-content:center; margin-top:14px; }
+.nhom-nut-duoi button{ font-family:inherit; font-size:17px; font-weight:800; padding:13px 26px; border:none; border-radius:999px; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.12); background:var(--troi); color:#3E6E96; }

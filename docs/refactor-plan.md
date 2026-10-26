@@ -27,7 +27,7 @@ Vì sao test kiểm chuỗi là vấn đề:
 4. **`gameN.html`:** chỉ còn markup và các thẻ `<script src>`, không còn script inline.
 5. **Autosave:** gọi `engine.serialize()` và `engine.restore()`, không đọc biến toàn cục nữa. Định dạng bản lưu có `schemaVersion`; bản lưu cũ được chuyển đổi trong `restore()`, như cách Game 4 đã chuyển từ `html` sang `shape`.
 
-Khi cả 10 game không còn script inline, có thể bỏ `'unsafe-inline'` khỏi `script-src` trong `_headers`. `e2e/security-headers.spec.js` sẽ xác nhận việc này. **Đã làm ở v92:** trang chủ và trang phụ huynh cũng chuyển script inline ra `js/home.js`, `js/parents-page.js`; `script-src 'self'`.
+Khi cả 10 game không còn script inline, có thể bỏ `'unsafe-inline'` khỏi `script-src` trong `_headers`. `e2e/security-headers.spec.js` sẽ xác nhận việc này. **Đã làm ở v92:** trang chủ và trang phụ huynh cũng chuyển script inline ra `js/home.js`, `js/parents-page.js`; `script-src 'self'`. **v93:** `<style>` của 12 trang chuyển ra `css/pages/`, CSS do `pwa-quality.js`, `pwa-ios.js`, `game2-keyboard-cursor.js` tự chèn chuyển ra tệp riêng; `style-src 'self'`.
 
 ## Thứ tự và tiêu chí xong cho mỗi bước
 
@@ -131,7 +131,7 @@ Ghi chú khi làm Game 1:
     - Bỏ các test unit chỉ còn so CSS/HTML đã có E2E tương đương: độ tương phản tính từ mã CSS (E2E đo màu đã render), `accessibility-baseline`, `disabled-controls`, `accessibility-shared-controls`, `design-system-smoke`, `reward-win-dialog`, `game1-reward-win-dialog`, `reward-runtime-wiring`, `games3-4`/`games8-10-gameplay-touch-targets`.
   - Những gì còn đọc mã nguồn trong `tests/` là hợp đồng cấu hình và quy tắc dạng lint, không đo được bằng hành vi:
     - precache trong `sw.js`, định dạng `PHIEN_BAN`, `_headers`, `_redirects`, `.assetsignore`, thứ tự `<script>` tĩnh trong HTML;
-    - không trang nào có script inline, thuộc tính sự kiện hay URL `javascript:`, CSP không cho script inline (`no-inline-script`);
+    - không trang nào có script/style inline, thuộc tính sự kiện, `style="…"` hay URL `javascript:`, JS không tạo `<style>`, CSP không cho script/style inline (`no-inline-script`);
     - `env(safe-area-inset-*)` cho hộp hồ sơ và trạng thái lưu (`profile`, `games2-4-autosave`): Chromium không giả lập tai thỏ nên giữ dạng so chuỗi;
     - không gán `innerHTML` bằng chuỗi có `${…}` (`user-content-escaping`), danh sách khoá `localStorage` (`storage-keys`).
 

@@ -35,6 +35,7 @@
   padding:16px;
 }
 .man-thang.hien{ display:flex; }
+.bieu-tuong-thang{ font-size:52px; }
 .hop-thang{
   background:#fff;
   border:6px solid var(--vang);
