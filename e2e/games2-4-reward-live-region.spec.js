@@ -6,7 +6,9 @@ for (const gameId of ['game2', 'game3', 'game4']) {
     await page.goto(`/${gameId}.html`, { waitUntil: 'domcontentloaded' });
 
     await expect(page.locator('script[data-bh-games2-4-rewards]')).toBeAttached();
-    await page.waitForFunction(() => typeof window.BongProgress?.completeGame === 'function');
+    // Chờ lớp phần thưởng bọc xong BongProgress: completeGame của module progress gốc có sẵn từ trước,
+    // gọi nó lúc lớp bọc chưa chạy thì không có tóm tắt phần thưởng (race trên máy chậm).
+    await page.waitForFunction(() => typeof window.BongProgress?.makeRewardTransactionId === 'function');
 
     const soundButton = page.locator('#nutAmThanh');
     await expect(soundButton).toBeVisible();
