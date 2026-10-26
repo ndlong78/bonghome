@@ -18,7 +18,11 @@ async function center(locator) {
   return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
 }
 
-/** Kéo hình bằng con trỏ thật: nhấn, di qua vài bước, thả tại `to`. */
+/**
+ * Kéo hình bằng con trỏ thật: nhấn, di qua vài bước, thả tại `to`. Lúc kéo, game3-drag-stability.js giữ chiều cao
+ * khay; thả ra thì khung hình sau mới nhả, khay co lại và hàng bóng dịch lên. Chờ khay nhả xong để toạ độ của lần
+ * kéo sau đo trên bố cục mới (máy CI chậm hơn thì khung hình sau đến muộn).
+ */
 async function drag(page, from, to) {
   await from.scrollIntoViewIfNeeded();
   const start = await center(from);
@@ -26,6 +30,7 @@ async function drag(page, from, to) {
   await page.mouse.down();
   await page.mouse.move(to.x, to.y, { steps: 6 });
   await page.mouse.up();
+  await expect(page.locator('#khay')).not.toHaveAttribute('data-bh-drag-layout-locked', 'true');
 }
 
 const colorOrder = (page) => page.evaluate(() => window.BongGame3.getState().colorOrder);
