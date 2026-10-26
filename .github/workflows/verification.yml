@@ -88,9 +88,10 @@ jobs:
   mobile-e2e:
     name: iPhone and iPad E2E shard ${{ matrix.shard }}/2
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # Test chạy khoảng 6–8 phút mỗi phần; phần còn lại dành cho cài đặt, có lúc apt của runner chậm tới ~12 phút.
+    timeout-minutes: 25
     # Chia bộ E2E làm hai máy chạy song song: mỗi máy vẫn 1 worker (các trang không tranh tài nguyên của nhau),
-    # nhưng tổng thời gian còn khoảng một nửa thay vì sát giới hạn 15 phút.
+    # nhưng tổng thời gian còn khoảng một nửa.
     strategy:
       fail-fast: false
       matrix:
@@ -108,11 +109,28 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 22
+          cache: npm
 
-      - name: Install Playwright
+      - name: Install npm packages
+        run: npm ci
+
+      # Trình duyệt Playwright gắn với phiên bản @playwright/test trong package-lock.json: cache theo tệp đó.
+      - name: Cache Playwright browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # Giới hạn riêng cho bước cài: apt chậm bất thường thì báo lỗi rõ ở bước này thay vì làm job hết giờ giữa test.
+      - name: Install Playwright browser and system dependencies
+        timeout-minutes: 15
         run: |
-          npm ci
-          npx playwright install --with-deps chromium
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" = "true" ]; then
+            npx playwright install-deps chromium
+          else
+            npx playwright install --with-deps chromium
+          fi
 
       - name: Run mobile E2E tests
         run: npm run test:e2e -- --shard=${{ matrix.shard }}/2
