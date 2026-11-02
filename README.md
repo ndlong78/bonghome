@@ -1,6 +1,6 @@
 # 🌈 Bông Home's
 
-Nền tảng web giáo dục gồm **13 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy** cho bé gái 6 tuổi.
+Nền tảng web giáo dục gồm **14 trò chơi vui giúp bé luyện trí nhớ, quan sát và tư duy** cho bé gái 6 tuổi.
 Toàn bộ chạy **offline 100%**, không cần mạng, không tải thư viện hay hình ảnh từ bên ngoài.
 
 ---
@@ -23,6 +23,7 @@ Toàn bộ chạy **offline 100%**, không cần mạng, không tải thư việ
 | `game11.html` | Xếp Khối Thông Minh — *Tư duy không gian* (hết bàn có dọn hàng thì tính hoàn thành: 1–3 hàng 1★, 4–9 hàng 2★, từ 10 hàng 3★ và huy hiệu) |
 | `game12.html` | Sudoku Vui Vẻ — *Suy luận logic* (bàn 4×4 hình trái cây, 6×6, 9×9) |
 | `game13.html` | Cờ Ca-rô Tí Hon — *Tư duy chiến thuật* (tic-tac-toe 3×3: chơi với Gấu Bông Dễ/Vừa/Khó hoặc chơi cùng bạn) |
+| `game14.html` | Cờ Caro Nối Năm — *Tư duy chiến lược* (bàn 10×10, xếp 5 hình thẳng hàng: chơi với Gấu Bông Dễ/Vừa/Khó hoặc chơi cùng bạn, có nút Gợi ý) |
 | `parents.html` | Góc phụ huynh — tiến độ, phần thưởng, thống kê; xóa dữ liệu (có cổng phụ huynh) |
 | `collection.html` | Bộ sưu tập sticker và huy hiệu của bé |
 | `sw.js` | Service Worker — tải sẵn game vào máy để chơi khi mất mạng |

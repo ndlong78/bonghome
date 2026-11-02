@@ -156,7 +156,7 @@ test.describe('Game 13 - Cờ Ca-rô Tí Hon', () => {
     expect(restored.turn).toBe(1);
   });
 
-  test('trang chủ có bảng Game 13 nằm sau Game 12 và ghi 13 lớp học', async ({ page }) => {
+  test('trang chủ có bảng Game 13 nằm sau Game 12 và trang chủ ghi số lớp học', async ({ page }) => {
     const errors = collectRuntimeErrors(page);
     await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
 
@@ -165,7 +165,7 @@ test.describe('Game 13 - Cờ Ca-rô Tí Hon', () => {
     await expect(card).toHaveAttribute('href', 'game13.html');
     await expect(card).toContainText('Cờ Ca-rô Tí Hon');
     await expect(page.locator('[data-game12-card] + [data-game13-card]')).toHaveCount(1);
-    await expect(page.locator('.phu-de')).toContainText('13 lớp học');
+    await expect(page.locator('.phu-de')).toContainText('14 lớp học');
     expect(errors).toEqual([]);
   });
 

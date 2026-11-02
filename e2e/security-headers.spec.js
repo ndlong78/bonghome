@@ -26,7 +26,7 @@ function readSecurityHeaders() {
 }
 
 const SECURITY_HEADERS = readSecurityHeaders();
-const PAGES = ['/index.html', '/parents.html', '/collection.html', ...Array.from({ length: 13 }, (_, index) => `/game${index + 1}.html`)];
+const PAGES = ['/index.html', '/parents.html', '/collection.html', ...Array.from({ length: 14 }, (_, index) => `/game${index + 1}.html`)];
 
 async function withSecurityHeaders(page) {
   const violations = [];

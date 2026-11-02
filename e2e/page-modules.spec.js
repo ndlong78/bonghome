@@ -16,7 +16,7 @@ const GAMES_5_TO_7 = ['data-bh-games-autosave-style', 'data-bh-games5-7-autosave
 const GAMES_8_TO_10 = ['data-bh-games-autosave-style', 'data-bh-games8-10-autosave', 'data-bh-games8-10-rewards'];
 
 const PAGE_MODULES = {
-  'index.html': ['data-bh-daily-journey', 'data-bh-game11-home-card', 'data-bh-game12-home-card', 'data-bh-game13-home-card', 'data-bh-profile-style', 'data-bh-profile-ui'],
+  'index.html': ['data-bh-daily-journey', 'data-bh-game11-home-card', 'data-bh-game12-home-card', 'data-bh-game13-home-card', 'data-bh-game14-home-card', 'data-bh-profile-style', 'data-bh-profile-ui'],
   'game1.html': [
     'data-bh-game1-autosave', 'data-bh-game1-autosave-style', 'data-bh-game1-content', 'data-bh-game1-keyboard-accessibility',
     'data-bh-game1-rewards', 'data-bh-game1-theme-progress', 'data-game1-difficulty'
@@ -33,6 +33,7 @@ const PAGE_MODULES = {
   'game11.html': [],
   'game12.html': [],
   'game13.html': [],
+  'game14.html': [],
   'collection.html': [],
   'parents.html': []
 };

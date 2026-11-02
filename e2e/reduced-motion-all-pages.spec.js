@@ -4,7 +4,7 @@ const pages = [
   '/index.html',
   '/parents.html',
   '/collection.html',
-  ...Array.from({ length: 13 }, (_, index) => `/game${index + 1}.html`)
+  ...Array.from({ length: 14 }, (_, index) => `/game${index + 1}.html`)
 ];
 
 test.describe('Giảm chuyển động trên toàn bộ Bông Home', () => {

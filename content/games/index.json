@@ -13,6 +13,7 @@
     { "id": "game10", "title": "Gõ Phím Theo Nhịp", "rewardsEnabled": true },
     { "id": "game11", "title": "Xếp Khối Thông Minh", "rewardsEnabled": true },
     { "id": "game12", "title": "Sudoku Vui Vẻ", "rewardsEnabled": true },
-    { "id": "game13", "title": "Cờ Ca-rô Tí Hon", "rewardsEnabled": true }
+    { "id": "game13", "title": "Cờ Ca-rô Tí Hon", "rewardsEnabled": true },
+    { "id": "game14", "title": "Cờ Caro Nối Năm", "rewardsEnabled": true }
   ]
 }

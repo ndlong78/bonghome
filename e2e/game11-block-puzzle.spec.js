@@ -294,7 +294,7 @@ test.describe('Game 11 - Xếp Khối Thông Minh', () => {
     await expect(card).toBeVisible();
     await expect(card).toHaveAttribute('href', 'game11.html');
     await expect(card).toContainText('Xếp Khối Thông Minh');
-    await expect(page.locator('.phu-de')).toContainText('13 lớp học');
+    await expect(page.locator('.phu-de')).toContainText('14 lớp học');
     expect(errors).toEqual([]);
   });
 

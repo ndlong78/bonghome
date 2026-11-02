@@ -8,7 +8,7 @@ const { test, expect } = require('@playwright/test');
  */
 
 const AXE_SOURCE = require.resolve('axe-core/axe.min.js');
-const PAGES = ['/index.html', '/parents.html', '/collection.html', ...Array.from({ length: 13 }, (_, index) => `/game${index + 1}.html`)];
+const PAGES = ['/index.html', '/parents.html', '/collection.html', ...Array.from({ length: 14 }, (_, index) => `/game${index + 1}.html`)];
 const WITH_WIN_DIALOG = /\/game([1-9]|10)\.html$/;
 
 /** Vi phạm axe gọn để đọc trong log: luật, mức độ và bộ chọn của từng phần tử. */
