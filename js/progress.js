@@ -94,8 +94,8 @@
   }
 
   function validateGameId(gameId) {
-    if (!/^game(?:1[0-4]|[1-9])$/.test(gameId)) {
-      throw new TypeError('gameId must be game1 through game14');
+    if (!/^game(?:1[0-5]|[1-9])$/.test(gameId)) {
+      throw new TypeError('gameId must be game1 through game15');
     }
   }
 

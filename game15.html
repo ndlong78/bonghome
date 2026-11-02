@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Bông Phiêu Lưu – Bông Home's</title>
+  <meta name="description" content="Bông Phiêu Lưu – giúp Bông chạy, nhảy qua vườn hoa, rừng xanh và trời mây, nhặt ngôi sao và về tới nhà.">
+  <link rel="canonical" href="https://bong.no.id.vn/game15.html">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#FFF7F0">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Bông Home's">
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/game15-adventure.css">
+  <script src="./shared-ui.js" defer></script>
+  <script src="./js/game15-rewards.js" defer></script>
+  <script src="./js/game15-adventure.js" defer></script>
+</head>
+<body class="game15-page">
+  <main class="game15-shell">
+    <div class="game15-topbar">
+      <a class="game15-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
+      <h1 class="game15-heading">🎒 Bông Phiêu Lưu</h1>
+      <button class="game15-restart" id="advRestart" type="button" aria-label="Chơi lại màn này từ đầu">🔁 Chơi lại</button>
+    </div>
+
+    <p class="game15-intro">Giúp Bông chạy và nhảy về tới <b>ngôi nhà</b> ở cuối đường. Nhặt ngôi sao, nhảy lên lưng bạn Sâu, bạn Ong để ru các bạn ngủ. Rơi xuống thì Bông quay lại <b>cờ lưu</b> gần nhất!</p>
+
+    <div class="adv-levels" id="advLevels" role="group" aria-label="Chọn màn chơi"></div>
+
+    <div class="adv-hud">
+      <div class="adv-chip" id="advHearts" aria-label="Trái tim còn lại">❤️❤️❤️</div>
+      <div class="adv-chip" aria-label="Ngôi sao đã nhặt">⭐ <span id="advStars">0/0</span></div>
+      <button class="adv-pause" id="advPause" type="button" aria-pressed="false">⏸️ Tạm dừng</button>
+    </div>
+
+    <section class="adv-stage" id="advStage" aria-label="Màn chơi">
+      <canvas class="adv-canvas" id="advCanvas" role="img" aria-label="Bông chạy nhảy trên đường về nhà. Dùng phím mũi tên trái phải để đi, mũi tên lên hoặc phím cách để nhảy."></canvas>
+    </section>
+
+    <div class="adv-pad" id="advPad" role="group" aria-label="Nút điều khiển">
+      <div class="adv-pad-move">
+        <button class="adv-btn" type="button" data-control="left" aria-label="Đi sang trái">◀</button>
+        <button class="adv-btn" type="button" data-control="right" aria-label="Đi sang phải">▶</button>
+      </div>
+      <button class="adv-btn adv-btn-jump" type="button" data-control="jump" aria-label="Nhảy">⤒ Nhảy</button>
+    </div>
+
+    <div class="game15-status" id="advStatus" role="status" aria-live="polite"></div>
+    <p class="game15-tip">Mẹo nhỏ: giữ nút <b>Nhảy</b> lâu thì nhảy cao, chạm nhẹ thì nhảy thấp. Bông hoa lò xo hồng sẽ bật Bông lên thật cao! Bàn phím: ← → để đi, ↑ hoặc phím cách để nhảy, P để tạm dừng. Không có đồng hồ đếm ngược — bé cứ thong thả.</p>
+  </main>
+
+  <div class="adv-win" id="advWin" hidden>
+    <div class="adv-win-card" role="dialog" aria-modal="true" aria-labelledby="advWinTitle">
+      <div class="adv-win-stars" id="advWinStars" aria-hidden="true">⭐⭐⭐</div>
+      <h2 id="advWinTitle">Bông về tới nhà rồi!</h2>
+      <p id="advWinText">Bông đã về tới nhà.</p>
+      <div class="adv-win-rewards" id="advWinRewards" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+      <div class="adv-win-actions">
+        <button class="adv-win-next" id="advWinNext" type="button">➡️ Màn tiếp</button>
+        <button class="adv-win-again" id="advWinAgain" type="button">🔁 Chơi lại màn này</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

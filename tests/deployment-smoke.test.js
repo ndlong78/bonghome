@@ -62,7 +62,7 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
     timeoutMs: 100
   });
 
-  assert.equal(smoke.REDIRECT_PATHS.length, 34, '17 trang phải kiểm tra cả URL không đuôi và dấu / cuối');
+  assert.equal(smoke.REDIRECT_PATHS.length, 36, '18 trang phải kiểm tra cả URL không đuôi và dấu / cuối');
   assert.equal(results.length, smoke.HTML_PATHS.length + smoke.REDIRECT_PATHS.length + 2);
   assert.deepEqual(
     calls.filter((call) => call.redirect === 'manual').map((call) => call.pathname),
@@ -79,6 +79,8 @@ const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
   assert.ok(calls.some((call) => call.pathname === '/game13/'));
   assert.ok(calls.some((call) => call.pathname === '/game14.html'));
   assert.ok(calls.some((call) => call.pathname === '/game14/'));
+  assert.ok(calls.some((call) => call.pathname === '/game15.html'));
+  assert.ok(calls.some((call) => call.pathname === '/game15/'));
   assert.ok(logs.at(-1).includes('Deployment smoke passed'));
 
   await assert.rejects(

@@ -9,7 +9,7 @@ const { test, expect } = require('@playwright/test');
 // Banner cài app chỉ hiện với UA Safari iOS; các project E2E mặc định dùng UA Chromium.
 const IOS_SAFARI_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1';
 
-const PAGES = ['index.html', ...Array.from({ length: 14 }, (_, index) => `game${index + 1}.html`), 'collection.html', 'parents.html'];
+const PAGES = ['index.html', ...Array.from({ length: 15 }, (_, index) => `game${index + 1}.html`), 'collection.html', 'parents.html'];
 
 async function coveredControls(page) {
   return page.evaluate(async () => {
