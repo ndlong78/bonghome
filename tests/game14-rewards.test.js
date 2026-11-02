@@ -47,7 +47,7 @@ autoTest('catalog có Game 14, sticker Sư tử dũng cảm và huy hiệu Cao t
 autoTest('progress và rewards nhận game14 nhưng vẫn từ chối id ngoài phạm vi', () => {
   const { progress, rewards } = setup();
   assert.doesNotThrow(() => progress.saveGame('game14', { state: {} }));
-  assert.throws(() => progress.saveGame('game15', { state: {} }), /gameId/);
+  assert.throws(() => progress.saveGame('game16', { state: {} }), /gameId/);
   rewards.unlockSticker('brave-lion', { source: 'game14-completion' });
   assert.deepEqual(rewards.getByGameSummary().game14.stickerIds, ['brave-lion']);
 });

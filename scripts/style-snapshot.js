@@ -16,7 +16,7 @@
  */
 const fs = require('node:fs');
 
-const PAGES = ['index', 'parents', 'collection', ...Array.from({ length: 14 }, (_, index) => `game${index + 1}`)];
+const PAGES = ['index', 'parents', 'collection', ...Array.from({ length: 15 }, (_, index) => `game${index + 1}`)];
 
 const VIEWPORTS = [
   { name: 'iphone', viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 3 },

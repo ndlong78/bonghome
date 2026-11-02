@@ -41,6 +41,7 @@ test('recognizes every existing game page and nothing else', () => {
   assert.equal(routes.isGameInRange(5, 7, '/game8.html'), false);
   assert.equal(routes.isGameInRange(11, 13, '/game13.html'), true);
   assert.equal(routes.isGame(14, '/game14.html'), true);
+  assert.equal(routes.isGame(15, '/game15'), true);
   for (const pathname of ['/game0.html', `/game${gameIds.length + 1}`, '/game1-extra.html', '/games1.html']) {
     assert.equal(routes.getGameId(pathname), null, pathname);
   }
