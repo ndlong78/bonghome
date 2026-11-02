@@ -47,7 +47,7 @@ autoTest('catalog có Game 13, sticker Cáo tinh nhanh và huy hiệu Kỳ thủ
 autoTest('progress và rewards nhận game13 nhưng vẫn từ chối id ngoài phạm vi', () => {
   const { progress, rewards } = setup();
   assert.doesNotThrow(() => progress.saveGame('game13', { state: {} }));
-  assert.throws(() => progress.saveGame('game14', { state: {} }), /gameId/);
+  assert.throws(() => progress.saveGame('game15', { state: {} }), /gameId/);
   rewards.unlockSticker('clever-fox', { source: 'game13-completion' });
   assert.deepEqual(rewards.getByGameSummary().game13.stickerIds, ['clever-fox']);
 });

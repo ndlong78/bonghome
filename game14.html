@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Cờ Caro Nối Năm – Bông Home's</title>
+  <meta name="description" content="Cờ Caro Nối Năm – xếp năm hình thẳng hàng trên bàn 10×10. Chơi với Gấu Bông (Dễ, Vừa, Khó) hoặc chơi cùng bạn.">
+  <link rel="canonical" href="https://bong.no.id.vn/game14.html">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#FFF7F0">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Bông Home's">
+  <link rel="stylesheet" href="./css/design-tokens.css">
+  <link rel="stylesheet" href="./css/game14-caro.css">
+  <script src="./shared-ui.js" defer></script>
+  <script src="./js/game14-rewards.js" defer></script>
+  <script src="./js/game14-caro.js" defer></script>
+</head>
+<body class="game14-page">
+  <main class="game14-shell">
+    <div class="game14-topbar">
+      <a class="game14-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
+      <h1 class="game14-heading">❌ Cờ Caro Nối Năm</h1>
+      <button class="game14-new" id="caroNew" type="button" aria-label="Bắt đầu ván mới">✨ Ván mới</button>
+    </div>
+
+    <p class="game14-intro">Bé và bạn thay phiên đặt hình lên bàn cờ. Ai xếp được <b><span id="caroGoal">5</span> hình liền nhau</b> — hàng ngang, hàng dọc hoặc đường chéo — là thắng!</p>
+
+    <div class="caro-modes" id="caroModes" role="group" aria-label="Chọn người chơi cùng"></div>
+    <div class="caro-levels" id="caroLevels" role="group" aria-label="Chọn độ khó của Gấu Bông"></div>
+
+    <div class="game14-info-row">
+      <div class="game14-chip game14-turn" aria-label="Lượt hiện tại">👉 Lượt: <span id="caroTurn">❌ Bé</span></div>
+      <button class="caro-hint" id="caroHint" type="button" aria-label="Gợi ý một ô nên đi">💡 Gợi ý</button>
+    </div>
+    <div class="caro-score" aria-label="Tỉ số">
+      <div class="caro-score-item caro-score-player"><span id="caroScorePlayerLabel">❌ Bé</span><b id="caroScorePlayer">0</b></div>
+      <div class="caro-score-item caro-score-draw"><span>🤝 Hòa</span><b id="caroScoreDraw">0</b></div>
+      <div class="caro-score-item caro-score-bot"><span id="caroScoreBotLabel">⭕ Gấu</span><b id="caroScoreBot">0</b></div>
+    </div>
+
+    <section class="caro-board-wrap" aria-label="Bàn cờ">
+      <div class="caro-board" id="caroBoard" role="group" aria-label="Bàn cờ 10×10, xếp 5 hình thẳng hàng để thắng. Dùng phím mũi tên để chọn ô, Enter để đặt hình."></div>
+    </section>
+
+    <div class="game14-status" id="caroStatus" role="status" aria-live="polite"></div>
+    <p class="game14-tip">Mẹo nhỏ: khi bạn có <b>3 hình liền nhau</b> mà hai đầu còn trống thì phải chặn ngay! Ô có viền vàng là nước vừa đi. Không có đồng hồ đếm ngược — bé cứ thong thả.</p>
+  </main>
+
+  <div class="caro-win" id="caroWin" hidden>
+    <div class="caro-win-card" role="dialog" aria-modal="true" aria-labelledby="caroWinTitle">
+      <div class="caro-win-stars" id="caroWinStars" aria-hidden="true">⭐⭐⭐</div>
+      <h2 id="caroWinTitle">Bé thắng rồi!</h2>
+      <p id="caroWinText">Bé xếp được năm hình thẳng hàng.</p>
+      <div class="caro-win-rewards" id="caroWinRewards" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+      <button class="caro-win-next" id="caroWinNext" type="button">✨ Chơi ván mới</button>
+    </div>
+  </div>
+</body>
+</html>

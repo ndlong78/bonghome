@@ -3,7 +3,7 @@
 
   const MIN_GAME_ID = 1;
   // Phải bằng số trang gameN.html; tests/routes.test.js đối chiếu với các tệp thật.
-  const MAX_GAME_ID = 13;
+  const MAX_GAME_ID = 14;
 
   function normalizePathname(value) {
     let pathname = typeof value === 'string'

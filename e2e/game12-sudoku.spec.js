@@ -204,7 +204,7 @@ test.describe('Game 12 - Sudoku Vui Vẻ', () => {
     await expect(card).toHaveAttribute('href', 'game12.html');
     await expect(card).toContainText('Sudoku Vui Vẻ');
     await expect(page.locator('[data-game11-card] + [data-game12-card]')).toHaveCount(1);
-    await expect(page.locator('.phu-de')).toContainText('13 lớp học');
+    await expect(page.locator('.phu-de')).toContainText('14 lớp học');
     expect(errors).toEqual([]);
   });
 

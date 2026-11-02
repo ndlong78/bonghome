@@ -9,7 +9,7 @@ const { test, expect } = require('@playwright/test');
  */
 
 const GAMES_1_TO_10 = Array.from({ length: 10 }, (_, index) => `/game${index + 1}.html`);
-const ALL_PAGES = ['/index.html', '/parents.html', '/collection.html', ...Array.from({ length: 13 }, (_, index) => `/game${index + 1}.html`)];
+const ALL_PAGES = ['/index.html', '/parents.html', '/collection.html', ...Array.from({ length: 14 }, (_, index) => `/game${index + 1}.html`)];
 
 /** Chữ của các phần tử mà aria-labelledby/aria-describedby trỏ tới (phải có thật và có chữ). */
 const referencedText = (locator, attribute) => locator.evaluate((element, name) => (element.getAttribute(name) || '')
@@ -187,6 +187,25 @@ test.describe('Cấu trúc trang', () => {
     await expect(dialog).toBeHidden();
     await expect(dialog.locator('#tttWinNext')).toHaveCount(1);
     await expect(dialog.locator('#tttWinRewards')).toHaveAttribute('role', 'status');
+  });
+
+  test('Game 14: bàn 10×10 bấm được, đủ điều khiển có tên, hộp thoại thắng là modal có tên và không đếm ngược', async ({ page }) => {
+    await page.goto('/game14.html', { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(window.BongGame14));
+    await expect(page.getByRole('group', { name: /Bàn cờ 10×10/ }).getByRole('button')).toHaveCount(100);
+    await expect(page.getByRole('group', { name: 'Chọn người chơi cùng' }).getByRole('button')).toHaveCount(2);
+    await expect(page.getByRole('button', { name: 'Bắt đầu ván mới' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Gợi ý một ô nên đi' })).toBeVisible();
+    for (const id of ['caroTurn', 'caroScorePlayer', 'caroScoreDraw', 'caroScoreBot']) await expect(page.locator(`#${id}`), id).toBeVisible();
+    await expect(page.locator('#caroStatus')).toHaveAttribute('aria-live', 'polite');
+    await expect(page.getByText(/Không có đồng hồ đếm ngược/)).toBeVisible();
+
+    const dialog = page.locator('#caroWin [role="dialog"]');
+    await expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(await labelledByText(dialog)).not.toBe('');
+    await expect(dialog).toBeHidden();
+    await expect(dialog.locator('#caroWinNext')).toHaveCount(1);
+    await expect(dialog.locator('#caroWinRewards')).toHaveAttribute('role', 'status');
   });
 
   test('trang phụ huynh chỉ đọc: ô nhập duy nhất là câu hỏi cổng phụ huynh trong hộp thoại xóa, không gửi đi đâu', async ({ page }) => {
