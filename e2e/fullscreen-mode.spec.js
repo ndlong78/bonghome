@@ -70,14 +70,16 @@ test.describe('Bàn chơi vừa khung màn hình khi toàn màn hình', () => {
           await open(page, id);
           await page.evaluate(() => window.BongFullscreen.enter());
           await expect(page.locator('html')).toHaveClass(/bh-fullscreen/);
-          // Chờ phép đo cỡ bàn (chạy ở khung hình kế tiếp) ổn định.
-          await page.waitForTimeout(300);
+          // Phép đo cỡ bàn chạy ở khung hình kế tiếp (và đo lại khi nội dung đổi): chờ tới khi bàn đã vừa khung.
           for (const selector of selectors) {
-            const box = await page.locator(selector).first().boundingBox();
-            expect(box, selector).not.toBeNull();
-            expect(box.y, `${selector} bắt đầu trong màn hình`).toBeGreaterThanOrEqual(0);
-            expect(box.y + box.height, `${selector} không tràn đáy`).toBeLessThanOrEqual(viewport.height + 1);
-            expect(box.x + box.width, `${selector} không tràn phải`).toBeLessThanOrEqual(viewport.width + 1);
+            await expect.poll(async () => {
+              const box = await page.locator(selector).first().boundingBox();
+              if (!box) return 'không thấy';
+              if (box.y < 0) return 'tràn trên';
+              if (box.y + box.height > viewport.height + 1) return 'tràn đáy';
+              if (box.x + box.width > viewport.width + 1) return 'tràn phải';
+              return 'vừa';
+            }, { message: selector }).toBe('vừa');
           }
         });
       }
