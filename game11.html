@@ -20,9 +20,11 @@
   <link rel="stylesheet" href="./css/common.css" data-bh-common>
   <link rel="stylesheet" href="./css/components.css" data-bh-components>
   <link rel="stylesheet" href="./css/game11-blocks.css">
+  <link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
   <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
   <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
   <script src="./shared-ui.js" defer></script>
+  <script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
   <script src="./js/game11-rewards.js" defer></script>
   <script src="./js/game11-blocks.js" defer></script>
 </head>
@@ -31,7 +33,10 @@
     <div class="game11-topbar">
       <a class="game11-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
       <h1 class="game11-heading">🧩 Xếp Khối Thông Minh</h1>
-      <button class="game11-reset" id="blockReset" type="button" aria-label="Chơi lại từ đầu">↻ Chơi lại</button>
+      <div class="bh-topbar-actions">
+        <button class="game11-reset" id="blockReset" type="button" aria-label="Chơi lại từ đầu">↻ Chơi lại</button>
+        <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
+      </div>
     </div>
 
     <p class="game11-intro">Khối sẽ rơi thật chậm từ trên xuống. Trên máy tính, bé rê chuột sang trái hoặc phải để khối chạy theo con trỏ và click để quay. Trên màn hình chạm, bé vẫn có thể dùng các nút điều khiển bên dưới.</p>
@@ -46,7 +51,7 @@
       </div>
     </div>
 
-    <section class="block-board-wrap" aria-label="Bàn xếp khối">
+    <section class="block-board-wrap" data-bh-fs-board data-bh-fs-side="wide" aria-label="Bàn xếp khối">
       <div
         class="block-board"
         id="blockBoard"

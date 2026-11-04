@@ -20,9 +20,11 @@
   <link rel="stylesheet" href="./css/common.css" data-bh-common>
   <link rel="stylesheet" href="./css/components.css" data-bh-components>
   <link rel="stylesheet" href="./css/game12-sudoku.css">
+  <link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
   <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
   <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
   <script src="./shared-ui.js" defer></script>
+  <script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
   <script src="./js/game12-rewards.js" defer></script>
   <script src="./js/game12-sudoku.js" defer></script>
 </head>
@@ -31,7 +33,10 @@
     <div class="game12-topbar">
       <a class="game12-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
       <h1 class="game12-heading">🔢 Sudoku Vui Vẻ</h1>
-      <button class="game12-new" id="sudokuNew" type="button" aria-label="Tạo đề mới">✨ Đề mới</button>
+      <div class="bh-topbar-actions">
+        <button class="game12-new" id="sudokuNew" type="button" aria-label="Tạo đề mới">✨ Đề mới</button>
+        <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
+      </div>
     </div>
 
     <p class="game12-intro">Điền vào ô trống sao cho mỗi <b>hàng</b>, mỗi <b>cột</b> và mỗi <b>ô vuông đậm</b> đều có đủ các hình, không hình nào lặp lại. Chạm một ô rồi chọn hình ở bên dưới nhé!</p>
@@ -43,7 +48,7 @@
       <div class="game12-chip" aria-label="Số lần dùng gợi ý">💡 Gợi ý: <span id="sudokuHints">0</span></div>
     </div>
 
-    <section class="sudoku-board-wrap" aria-label="Bàn Sudoku">
+    <section class="sudoku-board-wrap" data-bh-fs-board data-bh-fs-side="wide" aria-label="Bàn Sudoku">
       <div class="sudoku-board" id="sudokuBoard" role="grid" tabindex="0" aria-label="Bàn Sudoku. Dùng phím mũi tên để chọn ô, gõ số để điền, phím Xóa để xóa."></div>
     </section>
 

@@ -17,7 +17,7 @@ for (const game of ['game8', 'game9', 'game10']) {
   assert.equal(/<script>(?!\s*<\/script>)/.test(html), false, `${game}.html không còn script inline`);
   assert.deepEqual(
     [...html.matchAll(/<script src="([^"]+)"/g)].map((match) => match[1]),
-    ['./shared-ui.js', `./js/${game}-engine.js`, `./js/${game}-ui.js`],
+    ['./shared-ui.js', './js/fullscreen.js', `./js/${game}-engine.js`, `./js/${game}-ui.js`],
     `${game}.html nạp engine trước UI`
   );
   [`./js/${game}-engine.js`, `./js/${game}-ui.js`].forEach((file) => assert.ok(serviceWorker.includes(`"${file}"`), `${file} phải có offline`));

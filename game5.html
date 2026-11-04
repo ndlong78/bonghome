@@ -24,9 +24,11 @@
 <link rel="stylesheet" href="./css/components.css" data-bh-components>
 <link rel="stylesheet" href="./css/game-shell.css">
 <link rel="stylesheet" href="./css/pages/game5.css">
+<link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
 <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
 <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
 <script src="./shared-ui.js" defer></script>
+<script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
 <script src="./js/game5-engine.js" defer></script>
 <script src="./js/game5-ui.js" defer></script>
 </head>
@@ -36,7 +38,7 @@
   <div class="thanh-tren">
     <a class="nut-ve" href="index.html">🏠 Về nhà</a>
     <h1>Nối Điểm Theo Số</h1>
-    <div class="cham"></div>
+    <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
   </div>
 
   <p class="huong-dan">Bé chạm các chấm theo thứ tự <b>1 → 2 → 3...</b> để hiện ra bức hình bí mật!</p>
@@ -47,7 +49,7 @@
     <div class="o-so"><span class="nhan">Kỷ lục</span><span class="gia-tri" id="kyLuc">--</span></div>
   </div>
 
-  <div class="bang-ve">
+  <div class="bang-ve" data-bh-fs-board data-bh-fs-side="wide">
     <svg id="tranh" viewBox="0 0 400 400" role="group" aria-label="Bảng nối điểm theo số">
       <path id="hinhTo"></path>
       <polyline id="duongNoi" points=""></polyline>

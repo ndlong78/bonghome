@@ -24,9 +24,11 @@
 <link rel="stylesheet" href="./css/components.css" data-bh-components>
 <link rel="stylesheet" href="./css/game-shell.css">
 <link rel="stylesheet" href="./css/pages/game9.css">
+<link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
 <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
 <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
 <script src="./shared-ui.js" defer></script>
+<script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
 <script src="./js/game9-engine.js" defer></script>
 <script src="./js/game9-ui.js" defer></script>
 </head>
@@ -36,7 +38,7 @@
   <div class="thanh-tren">
     <a class="nut-ve" href="index.html">🏠 Về nhà</a>
     <h1>Nghe Truyện Tìm Từ</h1>
-    <div class="cham"></div>
+    <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
   </div>
 
   <div class="the-nhiem-vu">

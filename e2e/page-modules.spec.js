@@ -11,13 +11,15 @@ const COMMON = [
   'data-bh-pwa-ios', 'data-bh-pwa-quality', 'data-bh-rewards', 'data-bh-routes', 'data-bh-storage',
   'data-bh-theme-picker', 'data-bh-theme-picker-script', 'data-bh-themes', 'data-bh-themes-script'
 ];
-const GAMES_2_TO_4 = ['data-bh-games-autosave-style', 'data-bh-games2-4-autosave', 'data-bh-games2-4-rewards'];
-const GAMES_5_TO_7 = ['data-bh-games-autosave-style', 'data-bh-games5-7-autosave', 'data-bh-games5-7-rewards'];
-const GAMES_8_TO_10 = ['data-bh-games-autosave-style', 'data-bh-games8-10-autosave', 'data-bh-games8-10-rewards'];
+const FULLSCREEN = ['data-bh-fullscreen-script', 'data-bh-fullscreen-style'];
+const GAMES_2_TO_4 = [...FULLSCREEN, 'data-bh-games-autosave-style', 'data-bh-games2-4-autosave', 'data-bh-games2-4-rewards'];
+const GAMES_5_TO_7 = [...FULLSCREEN, 'data-bh-games-autosave-style', 'data-bh-games5-7-autosave', 'data-bh-games5-7-rewards'];
+const GAMES_8_TO_10 = [...FULLSCREEN, 'data-bh-games-autosave-style', 'data-bh-games8-10-autosave', 'data-bh-games8-10-rewards'];
 
 const PAGE_MODULES = {
   'index.html': ['data-bh-daily-journey', 'data-bh-game11-home-card', 'data-bh-game12-home-card', 'data-bh-game13-home-card', 'data-bh-game14-home-card', 'data-bh-game15-home-card', 'data-bh-profile-style', 'data-bh-profile-ui'],
   'game1.html': [
+    ...FULLSCREEN,
     'data-bh-game1-autosave', 'data-bh-game1-autosave-style', 'data-bh-game1-content', 'data-bh-game1-keyboard-accessibility',
     'data-bh-game1-rewards', 'data-bh-game1-theme-progress', 'data-game1-difficulty'
   ],
@@ -30,11 +32,11 @@ const PAGE_MODULES = {
   'game8.html': GAMES_8_TO_10,
   'game9.html': GAMES_8_TO_10,
   'game10.html': GAMES_8_TO_10,
-  'game11.html': [],
-  'game12.html': [],
-  'game13.html': [],
-  'game14.html': [],
-  'game15.html': [],
+  'game11.html': FULLSCREEN,
+  'game12.html': FULLSCREEN,
+  'game13.html': FULLSCREEN,
+  'game14.html': FULLSCREEN,
+  'game15.html': FULLSCREEN,
   'collection.html': [],
   'parents.html': []
 };

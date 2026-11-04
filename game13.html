@@ -20,9 +20,11 @@
   <link rel="stylesheet" href="./css/common.css" data-bh-common>
   <link rel="stylesheet" href="./css/components.css" data-bh-components>
   <link rel="stylesheet" href="./css/game13-tictactoe.css">
+  <link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
   <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
   <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
   <script src="./shared-ui.js" defer></script>
+  <script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
   <script src="./js/game13-rewards.js" defer></script>
   <script src="./js/game13-tictactoe.js" defer></script>
 </head>
@@ -31,7 +33,10 @@
     <div class="game13-topbar">
       <a class="game13-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
       <h1 class="game13-heading">⭕ Cờ Ca-rô Tí Hon</h1>
-      <button class="game13-new" id="tttNew" type="button" aria-label="Bắt đầu ván mới">✨ Ván mới</button>
+      <div class="bh-topbar-actions">
+        <button class="game13-new" id="tttNew" type="button" aria-label="Bắt đầu ván mới">✨ Ván mới</button>
+        <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
+      </div>
     </div>
 
     <p class="game13-intro">Bé và bạn thay phiên đặt hình vào bàn 3×3. Ai xếp được <b>ba hình thẳng hàng</b> — hàng ngang, hàng dọc hoặc đường chéo — là thắng!</p>
@@ -48,7 +53,7 @@
       <div class="ttt-score-item ttt-score-bot"><span id="tttScoreBotLabel">🐻 Gấu</span><b id="tttScoreBot">0</b></div>
     </div>
 
-    <section class="ttt-board-wrap" aria-label="Bàn cờ">
+    <section class="ttt-board-wrap" data-bh-fs-board data-bh-fs-side="wide" aria-label="Bàn cờ">
       <div class="ttt-board" id="tttBoard" role="group" aria-label="Bàn cờ 3×3. Dùng phím mũi tên để chọn ô, Enter để đặt hình, hoặc gõ số 1 đến 9."></div>
     </section>
 
