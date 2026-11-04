@@ -24,9 +24,11 @@
 <link rel="stylesheet" href="./css/components.css" data-bh-components>
 <link rel="stylesheet" href="./css/game-shell.css">
 <link rel="stylesheet" href="./css/pages/game8.css">
+<link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
 <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
 <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
 <script src="./shared-ui.js" defer></script>
+<script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
 <script src="./js/game8-engine.js" defer></script>
 <script src="./js/game8-ui.js" defer></script>
 </head>
@@ -36,7 +38,7 @@
   <div class="thanh-tren">
     <a class="nut-ve" href="index.html">🏠 Về nhà</a>
     <h1>Mê Cung Về Nhà</h1>
-    <div class="cham"></div>
+    <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
   </div>
 
   <p class="huong-dan">Bé hãy dắt bạn kỳ lân đi hết mê cung để về tới ngôi nhà kẹo nhé!<br>Dùng nút mũi tên, vuốt tay trên mê cung hoặc phím mũi tên.</p>
@@ -53,7 +55,7 @@
     <div class="o-so"><span class="nhan">Kỷ lục</span><span class="gia-tri" id="kyLuc">--</span></div>
   </div>
 
-  <div class="bang-me-cung">
+  <div class="bang-me-cung" data-bh-fs-board data-bh-fs-side="wide">
     <canvas id="meCung" width="600" height="600"></canvas>
   </div>
 

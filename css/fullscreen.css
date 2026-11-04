@@ -1,0 +1,243 @@
+/*
+ * Chế độ toàn màn hình của trang game (js/fullscreen.js bật class `bh-fullscreen` trên <html>).
+ * Mục tiêu: game lấp đầy đúng khung màn hình đang có (máy tính, iPad, điện thoại dọc/ngang), không còn phụ thuộc
+ * vào bố cục trang web — ẩn lời giới thiệu, mẹo, bộ chọn chủ đề; bàn chơi co giãn theo chiều cao màn hình.
+ * Đơn vị dvh có bản dự phòng vh cho trình duyệt cũ.
+ */
+
+/* ---------- Nút bật/tắt (đặt sẵn trong HTML trên thanh tiêu đề) ---------- */
+
+.bh-fs-toggle {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  width: var(--bh-touch-target, 44px);
+  min-width: var(--bh-touch-target, 44px);
+  height: var(--bh-touch-target, 44px);
+  min-height: var(--bh-touch-target, 44px);
+  padding: 0;
+  border: 0;
+  border-radius: var(--bh-radius-pill, 999px);
+  background: #fff;
+  color: var(--bh-color-heading, #7a4e86);
+  box-shadow: var(--bh-shadow-button, 0 5px 0 rgba(0, 0, 0, 0.12));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.bh-fs-toggle:active { transform: translateY(2px); box-shadow: none; }
+.bh-fs-toggle:focus-visible {
+  outline: var(--bh-focus-ring, 5px solid #7a4e86);
+  outline-offset: 4px;
+}
+.bh-fs-toggle[aria-pressed="true"] {
+  background: #fff0f4;
+  color: #a3285a;
+}
+
+/* Game 11–15: nút chơi lại/ván mới và nút toàn màn hình nằm chung ô phải của thanh tiêu đề. */
+.bh-topbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@media (max-width: 420px) {
+  .bh-topbar-actions { gap: 6px; }
+  .game11-topbar,
+  .game12-topbar,
+  .game13-topbar,
+  .game14-topbar,
+  .game15-topbar { grid-template-columns: 48px 1fr auto !important; }
+}
+
+/* Gợi ý một lần trên iPhone (Safari không cho trang tự mở toàn màn hình). */
+.bh-fs-hint {
+  position: fixed;
+  z-index: 600;
+  left: max(12px, env(safe-area-inset-left));
+  right: max(12px, env(safe-area-inset-right));
+  top: max(12px, env(safe-area-inset-top));
+  max-width: 560px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 3px solid #c9b6f5;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.97);
+  color: #6b4e71;
+  box-shadow: 0 12px 32px rgba(80, 50, 95, 0.22);
+  font: 700 14px/1.4 system-ui, sans-serif;
+}
+
+.bh-fs-hint button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff0f4;
+  color: #7a4e86;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* ---------- Khung chung khi đang toàn màn hình ---------- */
+
+html.bh-fullscreen,
+html.bh-fullscreen body {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+html.bh-fullscreen body {
+  margin: 0;
+  padding: max(6px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  overflow-x: hidden;
+}
+
+/* Bỏ phần chữ phụ của trang web; lời nhắc trạng thái (role=status) vẫn giữ. */
+html.bh-fullscreen :is(
+  .huong-dan,
+  .game11-intro, .game11-tip,
+  .game12-intro, .game12-tip,
+  .game13-intro, .game13-tip,
+  .game14-intro, .game14-tip,
+  .game15-intro, .game15-tip,
+  .bh-theme-picker,
+  .bh-install-tip
+) {
+  display: none !important;
+}
+
+/* Khung trang không còn bó chiều rộng theo cột web: dùng hết bề ngang màn hình. */
+html.bh-fullscreen :is(main.khung, .game11-shell, .game12-shell, .game13-shell, .game14-shell, .game15-shell) {
+  max-width: none;
+  width: 100%;
+  margin: 0 auto;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Chừa đáy cho nút âm thanh nổi như ngoài chế độ toàn màn hình (pwa-ios.js đặt các biến này). */
+html.bh-fullscreen body {
+  padding-bottom: max(6px, env(safe-area-inset-bottom), calc(var(--bh-floating-base, 0px) + var(--bh-floating-space, 0px)));
+}
+
+/* Thanh tiêu đề gọn hơn: chữ nhỏ lại, bớt khoảng cách. */
+html.bh-fullscreen :is(.thanh-tren, .game11-topbar, .game12-topbar, .game13-topbar, .game14-topbar, .game15-topbar) {
+  margin-bottom: 6px;
+}
+html.bh-fullscreen :is(main.khung h1, .game11-heading, .game12-heading, .game13-heading, .game14-heading, .game15-heading) {
+  font-size: clamp(18px, 3.2vw, 26px);
+}
+
+/* ---------- Bàn chơi co giãn theo khung màn hình ---------- */
+/* js/fullscreen.js đo khoảng trống thật rồi đặt --bh-fs-board-w; chưa đo xong thì giữ cỡ cũ. */
+
+html.bh-fullscreen.bh-fs-fitted [data-bh-fs-board]:not([data-bh-fs-fit="height"]) {
+  box-sizing: border-box;
+  width: var(--bh-fs-board-w, auto) !important;
+  max-width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* Game 1: lưới lá bài (pwa-quality.css đặt số cột). */
+html.bh-fullscreen.bh-fs-fitted #sanBai[data-bh-fs-board] { width: var(--bh-fs-board-w, min(100%, 720px)) !important; }
+
+/* Game 13, 14: cỡ hình trong ô tính theo biến bề rộng bàn. */
+html.bh-fullscreen .ttt-board-wrap { --ttt-board-width: var(--bh-fs-board-w, min(88vw, 420px)); }
+html.bh-fullscreen .caro-board-wrap { --caro-board-width: var(--bh-fs-board-w, min(94vw, 540px)); }
+
+/* Game 15: khung chơi lấp đầy chiều cao còn lại; nút điều khiển nổi trên khung như trò chơi trên máy. */
+html.bh-fullscreen #advStage { margin-bottom: 0; }
+/* Không cao quá 3/4 bề ngang: khung dọc quá hẹp thì bé chỉ thấy vài ô phía trước. */
+html.bh-fullscreen .adv-canvas { height: min(var(--bh-fs-board-h, clamp(220px, 60vh, 640px)), 75vw); }
+html.bh-fullscreen .game15-page { padding-bottom: max(6px, env(safe-area-inset-bottom)) !important; }
+html.bh-fullscreen .adv-pad {
+  position: fixed;
+  z-index: 40;
+  left: max(12px, env(safe-area-inset-left));
+  /* Chừa góc phải dưới cho nút âm thanh. */
+  right: calc(max(12px, env(safe-area-inset-right)) + 56px);
+  bottom: max(12px, env(safe-area-inset-bottom));
+  max-width: none;
+  margin: 0;
+  pointer-events: none;
+}
+html.bh-fullscreen .adv-pad .adv-btn {
+  pointer-events: auto;
+  opacity: 0.88;
+}
+/* Câu trạng thái vẫn đọc được bằng trình đọc màn hình nhưng không chiếm chỗ dưới khung chơi. */
+html.bh-fullscreen .game15-status {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+/* Màn dọc: còn chỗ dưới khung chơi nên nút điều khiển nằm ngay dưới khung, không đè lên. */
+@media (orientation: portrait) {
+  html.bh-fullscreen .adv-pad {
+    position: static;
+    margin: 12px auto 0;
+    max-width: 680px;
+    pointer-events: auto;
+  }
+  html.bh-fullscreen .adv-pad .adv-btn { opacity: 1; }
+}
+@media (max-height: 520px) {
+  html.bh-fullscreen .adv-levels { display: none; }
+  html.bh-fullscreen .adv-hud { margin-bottom: 6px; }
+  html.bh-fullscreen .adv-btn { min-height: 56px; }
+}
+
+/* ---------- Màn hình thấp nằm ngang: bàn chơi cột phải, thông tin và nút cột trái ---------- */
+
+html.bh-fullscreen.bh-fs-side body {
+  padding-right: calc(var(--bh-fs-board-w, 50vw) + 24px);
+}
+html.bh-fullscreen.bh-fs-side [data-bh-fs-board] {
+  position: fixed !important;
+  z-index: 30;
+  top: max(8px, env(safe-area-inset-top));
+  right: max(8px, env(safe-area-inset-right));
+  margin: 0 !important;
+}
+/* Nút âm thanh sang góc trái dưới để không đè lên bàn chơi bên phải. */
+html.bh-fullscreen.bh-fs-side .nut-am-thanh {
+  right: auto !important;
+  left: max(8px, env(safe-area-inset-left));
+}
+html.bh-fullscreen.bh-fs-side :is(.thanh-tren, .bang-so, .muc-do) { flex-wrap: wrap; }
+html.bh-fullscreen.bh-fs-side :is(main.khung h1, .game11-heading, .game12-heading, .game13-heading, .game14-heading) {
+  font-size: 18px;
+}
+/* Hàng nút đặt cỡ theo bề ngang màn hình (vw) thì co lại vừa cột trái, không chui xuống dưới bàn chơi. */
+html.bh-fullscreen.bh-fs-side :is(.sudoku-tools, .ttt-score, .caro-score, .block-controls) {
+  width: auto !important;
+  max-width: 100%;
+}
+/* Game 8: phím mũi tên ngay dưới thông tin ở cột trái. */
+html.bh-fullscreen.bh-fs-side .khung { display: block !important; }
+html.bh-fullscreen.bh-fs-side .phim-huong { margin: 10px auto 0 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bh-fs-toggle:active { transform: none; }
+}

@@ -20,9 +20,11 @@
   <link rel="stylesheet" href="./css/common.css" data-bh-common>
   <link rel="stylesheet" href="./css/components.css" data-bh-components>
   <link rel="stylesheet" href="./css/game14-caro.css">
+  <link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
   <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
   <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
   <script src="./shared-ui.js" defer></script>
+  <script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
   <script src="./js/game14-rewards.js" defer></script>
   <script src="./js/game14-caro.js" defer></script>
 </head>
@@ -31,7 +33,10 @@
     <div class="game14-topbar">
       <a class="game14-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
       <h1 class="game14-heading">❌ Cờ Caro Nối Năm</h1>
-      <button class="game14-new" id="caroNew" type="button" aria-label="Bắt đầu ván mới">✨ Ván mới</button>
+      <div class="bh-topbar-actions">
+        <button class="game14-new" id="caroNew" type="button" aria-label="Bắt đầu ván mới">✨ Ván mới</button>
+        <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
+      </div>
     </div>
 
     <p class="game14-intro">Bé và bạn thay phiên đặt hình lên bàn cờ. Ai xếp được <b><span id="caroGoal">5</span> hình liền nhau</b> — hàng ngang, hàng dọc hoặc đường chéo — là thắng!</p>
@@ -49,7 +54,7 @@
       <div class="caro-score-item caro-score-bot"><span id="caroScoreBotLabel">⭕ Gấu</span><b id="caroScoreBot">0</b></div>
     </div>
 
-    <section class="caro-board-wrap" aria-label="Bàn cờ">
+    <section class="caro-board-wrap" data-bh-fs-board data-bh-fs-side="wide" aria-label="Bàn cờ">
       <div class="caro-board" id="caroBoard" role="group" aria-label="Bàn cờ 10×10, xếp 5 hình thẳng hàng để thắng. Dùng phím mũi tên để chọn ô, Enter để đặt hình."></div>
     </section>
 

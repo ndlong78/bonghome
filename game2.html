@@ -24,9 +24,11 @@
 <link rel="stylesheet" href="./css/components.css" data-bh-components>
 <link rel="stylesheet" href="./css/game-shell.css">
 <link rel="stylesheet" href="./css/pages/game2.css">
+<link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
 <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
 <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
 <script src="./shared-ui.js" defer></script>
+<script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
 <script src="./js/game2-engine.js" defer></script>
 <script src="./js/game2-ui.js" defer></script>
 </head>
@@ -37,7 +39,7 @@
   <div class="thanh-tren">
     <a class="nut-ve" href="index.html">🏠 Về nhà</a>
     <h1>Tìm Điểm Khác Biệt</h1>
-    <div class="cham"></div>
+    <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
   </div>
 
   <p class="huong-dan">Hai bức tranh có <b>5 chỗ khác nhau</b>. Bé chạm vào chỗ khác nhé!</p>
@@ -48,7 +50,7 @@
     <div class="o-so"><span class="nhan">Kỷ lục</span><span class="gia-tri" id="kyLuc">--</span></div>
   </div>
 
-  <div class="hai-tranh">
+  <div class="hai-tranh" data-bh-fs-board>
     <div class="tranh">
       <span class="nhan-tranh">Tranh 1</span>
       <svg id="tranhA" viewBox="0 0 300 300" role="img" aria-label="Bức tranh thứ nhất"></svg>

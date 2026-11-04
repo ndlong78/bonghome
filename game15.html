@@ -20,9 +20,11 @@
   <link rel="stylesheet" href="./css/common.css" data-bh-common>
   <link rel="stylesheet" href="./css/components.css" data-bh-components>
   <link rel="stylesheet" href="./css/game15-adventure.css">
+  <link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
   <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
   <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
   <script src="./shared-ui.js" defer></script>
+  <script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
   <script src="./js/game15-rewards.js" defer></script>
   <script src="./js/game15-adventure.js" defer></script>
 </head>
@@ -31,7 +33,10 @@
     <div class="game15-topbar">
       <a class="game15-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
       <h1 class="game15-heading">🎒 Bông Phiêu Lưu</h1>
-      <button class="game15-restart" id="advRestart" type="button" aria-label="Chơi lại màn này từ đầu">🔁 Chơi lại</button>
+      <div class="bh-topbar-actions">
+        <button class="game15-restart" id="advRestart" type="button" aria-label="Chơi lại màn này từ đầu">🔁 Chơi lại</button>
+        <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
+      </div>
     </div>
 
     <p class="game15-intro">Giúp Bông chạy và nhảy về tới <b>ngôi nhà</b> ở cuối đường. Nhặt ngôi sao, nhảy lên lưng bạn Sâu, bạn Ong để ru các bạn ngủ. Rơi xuống thì Bông quay lại <b>cờ lưu</b> gần nhất!</p>
@@ -44,7 +49,7 @@
       <button class="adv-pause" id="advPause" type="button" aria-pressed="false">⏸️ Tạm dừng</button>
     </div>
 
-    <section class="adv-stage" id="advStage" aria-label="Màn chơi">
+    <section class="adv-stage" id="advStage" data-bh-fs-board data-bh-fs-fit="height" data-bh-fs-side="off" aria-label="Màn chơi">
       <canvas class="adv-canvas" id="advCanvas" role="img" aria-label="Bông chạy nhảy trên đường về nhà. Dùng phím mũi tên trái phải để đi, mũi tên lên hoặc phím cách để nhảy."></canvas>
     </section>
 
