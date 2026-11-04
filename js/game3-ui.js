@@ -151,6 +151,7 @@
   /* ===== KÉO THẢ (Pointer Events: chạy tốt cả chuột lẫn ngón tay) ===== */
   function ganKeoTha(hinh) {
     let dangKeo = false;
+    let giuCho = null;
     let lechX = 0;
     let lechY = 0;
     let oCu = null;
@@ -168,6 +169,13 @@
       const o = hinh.getBoundingClientRect();
       lechX = event.clientX - o.left;
       lechY = event.clientY - o.top;
+      // Giữ chỗ trống đúng cỡ trong khay: hình đang kéo ra khỏi luồng trang mà các hình khác không bị dồn lại.
+      giuCho = document.createElement('span');
+      giuCho.className = 'giu-cho';
+      giuCho.setAttribute('aria-hidden', 'true');
+      giuCho.style.width = `${o.width}px`;
+      giuCho.style.height = `${o.height}px`;
+      hinh.after(giuCho);
       hinh.classList.add('dang-keo');
       hinh.style.width = `${o.width}px`;
       hinh.style.height = `${o.height}px`;
@@ -202,6 +210,8 @@
       hinh.removeEventListener('pointercancel', tha);
       hinh.classList.remove('dang-keo');
       hinh.style.cssText = '';
+      giuCho?.remove();
+      giuCho = null;
       if (oCu) oCu.classList.remove('gan-toi');
       oCu = null;
 

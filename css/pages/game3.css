@@ -27,10 +27,13 @@ body{
 }
 .mieng-hinh svg{ width:100%; height:100%; pointer-events:none; }
 .mieng-hinh.dang-keo{ position:fixed; z-index:90; cursor:grabbing; transform:scale(1.15) rotate(-4deg); filter:drop-shadow(0 10px 14px rgba(120,80,140,.35)); }
-.mieng-hinh.xong{ display:none; }
+/* Ghép xong vẫn giữ chỗ trong khay: các hình còn lại đứng yên, không nhảy chỗ dưới tay bé. */
+.mieng-hinh.xong{ visibility:hidden; pointer-events:none; }
+.giu-cho{ display:inline-block; flex:0 0 auto; visibility:hidden; }
 
 /* Hàng bóng đen ở dưới */
-.hang-bong{ display:flex; flex-wrap:wrap; gap:14px; justify-content:center; }
+/* Giữ sẵn chỗ cho một hàng bóng: hàng được dựng bằng JS sau lần vẽ đầu, nút "Ván mới" không bị đẩy xuống. */
+.hang-bong{ min-height:110px; display:flex; flex-wrap:wrap; gap:14px; justify-content:center; }
 .o-bong{
   width:110px; height:110px;
   background:#F3EFFA; border:4px solid var(--tim); border-radius:22px;

@@ -98,8 +98,12 @@
       options.appendChild(button);
     });
 
+    // Game 1: đặt bộ chọn ở cuối vùng chơi. Bộ chọn chỉ có sau khi module chủ đề nạp xong, chèn lên trên
+    // sẽ đẩy cả bàn bài xuống ngay lúc bé định chạm (bố cục nhảy).
+    const gameArea = getRoutes().isGame(1, root.location.pathname) ? root.document.querySelector('main.khung, main') : null;
     const anchor = root.document.querySelector('.huong-dan, main, .khung');
-    if (anchor?.parentNode && anchor.classList.contains('huong-dan')) anchor.insertAdjacentElement('afterend', picker);
+    if (gameArea) gameArea.append(picker);
+    else if (anchor?.parentNode && anchor.classList.contains('huong-dan')) anchor.insertAdjacentElement('afterend', picker);
     else if (anchor) anchor.prepend(picker);
     else root.document.body.prepend(picker);
 

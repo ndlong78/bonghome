@@ -71,8 +71,10 @@
   outline-offset: 4px;
 }
 
+/* Hàng nút được dựng sau khi nạp nội dung: giữ sẵn chỗ để bàn chơi không bị đẩy xuống. */
 .ttt-modes,
 .ttt-levels {
+  min-height: var(--bh-touch-target, 44px);
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -80,7 +82,8 @@
   margin: 0 auto 12px;
 }
 
-.ttt-levels[hidden] { display: none; }
+/* Chơi với bạn thì ẩn độ khó nhưng vẫn giữ chỗ, để bàn cờ không nhảy lên xuống khi đổi chế độ. */
+.ttt-levels.is-concealed { visibility: hidden; }
 
 .ttt-mode,
 .ttt-level {
@@ -117,6 +120,9 @@
 }
 
 .game13-chip {
+  /* Đủ rộng cho "🐻 Gấu Bông": đổi lượt không làm khung lượt co giãn. */
+  min-width: 13em;
+  justify-content: center;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -158,7 +164,9 @@
 .ttt-score-bot b { color: #7a4a1d; }
 
 .ttt-board-wrap {
-  width: min(88vw, 420px);
+  /* Laptop màn thấp: thu bàn theo chiều cao màn hình (cỡ hình trong ô cũng theo biến này). */
+  --ttt-board-width: min(88vw, 420px, max(260px, calc(100vh - 410px)));
+  width: var(--ttt-board-width);
   margin: 0 auto;
 }
 
@@ -191,7 +199,7 @@
   border-radius: 16px;
   background: #fff;
   font: inherit;
-  font-size: calc(min(88vw, 420px) / 3 * 0.55);
+  font-size: calc(var(--ttt-board-width, min(88vw, 420px)) / 3 * 0.55);
   line-height: 1;
   cursor: pointer;
   transition: background 120ms ease, transform 120ms ease;
@@ -219,7 +227,8 @@
 }
 
 .game13-status {
-  min-height: 46px;
+  /* Đủ chỗ cho câu thông báo hai dòng: đổi câu không làm các phần bên dưới nhảy. */
+  min-height: calc(2.7em + 20px);
   margin: 14px auto 0;
   max-width: 620px;
   padding: 10px 14px;

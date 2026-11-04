@@ -115,6 +115,8 @@
 .block-board-wrap {
   position: relative;
   width: min(88vw, 360px);
+  /* Laptop màn thấp: bàn cao gần gấp đôi bề ngang, thu theo chiều cao màn hình để thấy cả đáy bàn. */
+  width: min(88vw, 360px, max(240px, calc((100vh - 270px) * 0.57)));
   margin: 0 auto;
 }
 

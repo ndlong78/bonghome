@@ -149,3 +149,35 @@
   font-weight: var(--bh-font-weight-bold);
   box-shadow: 0 5px 0 rgba(0, 0, 0, 0.08), 0 10px 22px rgba(120, 80, 140, 0.18);
 }
+
+/*
+ * Game 1–10 trên điện thoại/máy cảm ứng: nút âm thanh thu thành nút tròn 44px (giống Game 11–15). Viên
+ * "🔊 Âm thanh" rộng nằm đè nút của trang ở góc dưới (▶ của Mê Cung, "Ván mới" của Gom Đồ). Tên nút cho
+ * trình đọc màn hình vẫn lấy từ aria-label.
+ */
+@media (max-width: 600px), (pointer: coarse) {
+  main.khung ~ .nut-am-thanh {
+    box-sizing: border-box;
+    right: max(8px, env(safe-area-inset-right));
+    bottom: calc(max(8px, env(safe-area-inset-bottom)) + var(--bh-install-tip-space, 0px));
+    width: var(--bh-touch-target, 44px);
+    min-width: var(--bh-touch-target, 44px);
+    height: var(--bh-touch-target, 44px);
+    min-height: var(--bh-touch-target, 44px);
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    line-height: 1;
+  }
+
+  main.khung ~ .nut-am-thanh::before {
+    content: "🔊";
+    font-size: 20px;
+  }
+
+  html[data-sound="off"] main.khung ~ .nut-am-thanh::before {
+    content: "🔇";
+  }
+}

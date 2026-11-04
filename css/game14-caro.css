@@ -79,8 +79,10 @@
   z-index: 1;
 }
 
+/* Hàng nút được dựng sau khi nạp nội dung: giữ sẵn chỗ để bàn chơi không bị đẩy xuống. */
 .caro-modes,
 .caro-levels {
+  min-height: var(--bh-touch-target, 44px);
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -88,7 +90,8 @@
   margin: 0 auto 12px;
 }
 
-.caro-levels[hidden] { display: none; }
+/* Chơi với bạn thì ẩn độ khó nhưng vẫn giữ chỗ, để bàn cờ không nhảy lên xuống khi đổi chế độ. */
+.caro-levels.is-concealed { visibility: hidden; }
 
 .caro-mode,
 .caro-level {
@@ -147,6 +150,9 @@
 }
 
 .game14-chip {
+  /* Đủ rộng cho "⭕ Gấu Bông": đổi lượt không đẩy nút Gợi ý sang ngang. */
+  min-width: 13em;
+  justify-content: center;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -188,7 +194,8 @@
 .caro-score-bot b { color: #7a4a1d; }
 
 .caro-board-wrap {
-  --caro-board-width: min(94vw, 540px);
+  /* Laptop màn thấp: thu bàn theo chiều cao màn hình để thấy trọn 10 hàng. */
+  --caro-board-width: min(94vw, 540px, max(300px, calc(100vh - 400px)));
   width: var(--caro-board-width);
   margin: 0 auto;
 }
@@ -258,7 +265,8 @@
 }
 
 .game14-status {
-  min-height: 46px;
+  /* Đủ chỗ cho câu thông báo hai dòng: đổi câu không làm các phần bên dưới nhảy. */
+  min-height: calc(2.7em + 20px);
   margin: 14px auto 0;
   max-width: 620px;
   padding: 10px 14px;

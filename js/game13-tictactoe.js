@@ -387,7 +387,8 @@
   }
 
   function buildLevels() {
-    els.levels.hidden = !vsBot();
+    // Ẩn bằng visibility (không dùng [hidden]): hàng độ khó vẫn giữ chỗ nên bàn cờ không nhảy khi đổi chế độ.
+    els.levels.classList.toggle('is-concealed', !vsBot());
     els.levels.replaceChildren(...state.levels.map((level) => {
       const button = document.createElement('button');
       button.type = 'button';

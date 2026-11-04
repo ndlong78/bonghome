@@ -16,17 +16,21 @@ body{
   background:#fff; border:5px dashed var(--vang); border-radius:26px;
   padding:16px 12px; margin-bottom:20px;
   display:flex; flex-wrap:wrap; gap:10px; justify-content:center; align-items:center;
-  min-height:150px;
+  /* Đủ chỗ cho 12 đồ vật (2 hàng) ngay lần vẽ đầu, trước khi JS điền đồ vật vào. */
+  min-height:200px; box-sizing:border-box;
 }
 .do-vat{ width:74px; height:74px; cursor:grab; touch-action:none; transition:transform .15s ease; }
 .do-vat svg{ width:100%; height:100%; pointer-events:none; }
 .do-vat:active{ transform:scale(1.08); }
 .do-vat.dang-keo{ position:fixed; z-index:90; transform:scale(1.2) rotate(-5deg); filter:drop-shadow(0 10px 14px rgba(120,80,140,.35)); }
-.do-vat.xong{ display:none; }
+/* Ghép xong vẫn giữ chỗ trong khay: các hình còn lại đứng yên, không nhảy chỗ dưới tay bé. */
+.do-vat.xong{ visibility:hidden; pointer-events:none; }
+.giu-cho{ display:inline-block; flex:0 0 auto; visibility:hidden; }
 .san-do .loi-het{ font-size:19px; font-weight:800; color:#B7A4C2; }
 
 /* Hàng 4 cái giỏ */
-.hang-gio{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+/* Giữ sẵn chỗ cho hàng giỏ (dựng bằng JS). */
+.hang-gio{ min-height:150px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
 @media (max-width:520px){ .hang-gio{ grid-template-columns:repeat(2,1fr); } }
 .gio{
   background:#fff; border:5px solid var(--mau,#ccc); border-radius:22px;
