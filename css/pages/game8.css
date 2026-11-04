@@ -21,7 +21,11 @@ body{
 .o-so{ background:#fff; border:3px solid var(--mint); border-radius:18px; padding:7px 14px; min-width:96px; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.05); }
 .o-so .gia-tri{ font-size:21px; font-weight:900; color:#4E9A78; }
 
+/* Laptop màn thấp (ví dụ 1366×768): thu bàn chơi theo chiều cao màn hình để thấy trọn bàn và nút mà không phải cuộn. */
 .bang-me-cung{
+  box-sizing:border-box; margin-inline:auto;
+  width:min(100%, max(300px, calc(100vh - 320px)));
+  width:min(100%, max(300px, calc(100svh - 320px)));
   background:#fff; border:5px solid var(--troi); border-radius:24px;
   padding:8px; box-shadow:0 6px 0 rgba(0,0,0,.06), 0 12px 24px rgba(150,120,170,.14);
 }
@@ -47,3 +51,11 @@ canvas#meCung{ width:100%; height:auto; display:block; border-radius:16px; touch
 
 .nhom-nut-duoi{ display:flex; justify-content:center; margin-top:16px; }
 .nhom-nut-duoi button{ font-family:inherit; font-size:17px; font-weight:800; padding:12px 24px; border:none; border-radius:999px; cursor:pointer; box-shadow:0 5px 0 rgba(0,0,0,.12); background:var(--troi); color:#3E6E96; }
+
+/* Màn rộng (laptop, iPad ngang): phím mũi tên nằm cạnh mê cung, bé không phải cuộn xuống dưới mới bấm được. */
+@media (min-width:760px){
+  .khung{ max-width:900px; display:grid; grid-template-columns:minmax(0,1fr) auto; column-gap:28px; align-items:center; }
+  .khung > *{ grid-column:1 / -1; }
+  .khung > .bang-me-cung{ grid-column:1; justify-self:end; margin:0; }
+  .khung > .phim-huong{ grid-column:2; margin:0; }
+}

@@ -72,7 +72,9 @@
   outline-offset: 4px;
 }
 
+/* Hàng nút được dựng sau khi nạp nội dung: giữ sẵn chỗ để bàn chơi không bị đẩy xuống. */
 .adv-levels {
+  min-height: var(--bh-touch-target, 44px);
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
@@ -201,7 +203,8 @@
 .adv-btn-jump.held { background: #ffc9da; }
 
 .game15-status {
-  min-height: 46px;
+  /* Đủ chỗ cho câu thông báo hai dòng: đổi câu không làm các phần bên dưới nhảy. */
+  min-height: calc(2.7em + 20px);
   margin: 14px auto 0;
   max-width: 680px;
   padding: 10px 14px;

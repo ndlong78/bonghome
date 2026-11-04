@@ -167,6 +167,7 @@
   /* ===== KÉO THẢ BẰNG POINTER EVENTS (chuột + ngón tay) ===== */
   function ganKeoTha(doVat, index) {
     let keo = false;
+    let giuCho = null;
     let lechX = 0;
     let lechY = 0;
     let gioCu = null;
@@ -183,6 +184,13 @@
       const o = doVat.getBoundingClientRect();
       lechX = event.clientX - o.left;
       lechY = event.clientY - o.top;
+      // Giữ chỗ trống đúng cỡ trong khay: hình đang kéo ra khỏi luồng trang mà các hình khác không bị dồn lại.
+      giuCho = document.createElement('span');
+      giuCho.className = 'giu-cho';
+      giuCho.setAttribute('aria-hidden', 'true');
+      giuCho.style.width = `${o.width}px`;
+      giuCho.style.height = `${o.height}px`;
+      doVat.after(giuCho);
       doVat.classList.add('dang-keo');
       doVat.style.width = `${o.width}px`;
       doVat.style.height = `${o.height}px`;
@@ -215,6 +223,8 @@
       doVat.removeEventListener('pointercancel', tha);
       doVat.classList.remove('dang-keo');
       doVat.style.cssText = '';
+      giuCho?.remove();
+      giuCho = null;
       if (gioCu) gioCu.classList.remove('gan-toi');
       gioCu = null;
 

@@ -18,7 +18,11 @@ h1{ flex:1; text-align:center; font-size:clamp(20px,4.8vw,32px); margin:0; color
 .o-so{ background:#fff; border:3px solid var(--mint); border-radius:18px; padding:7px 14px; min-width:88px; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.05); }
 .o-so .gia-tri{ font-size:21px; font-weight:900; color:#4E9A78; }
 
+/* Laptop màn thấp (ví dụ 1366×768): thu bàn chơi theo chiều cao màn hình để thấy trọn bàn và nút mà không phải cuộn. */
 .bang-nhac{
+  box-sizing:border-box; margin-inline:auto;
+  width:min(100%, max(280px, calc((100vh - 360px) * 0.85)));
+  width:min(100%, max(280px, calc((100svh - 360px) * 0.85)));
   background:#fff; border:5px solid var(--tim); border-radius:26px;
   padding:8px; box-shadow:0 6px 0 rgba(0,0,0,.06), 0 12px 24px rgba(150,120,170,.14);
   position:relative;

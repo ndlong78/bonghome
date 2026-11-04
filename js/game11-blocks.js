@@ -482,6 +482,17 @@
     els.board.addEventListener('pointermove', onBoardPointerMove);
     els.board.addEventListener('click', onBoardClick);
     els.board.addEventListener('keydown', onBoardKey);
+    // Bé bấm nút Trái/Phải trên màn hình rồi chuyển sang phím mũi tên: focus đang ở nút chứ không ở bàn, nên
+    // phím mũi tên cuộn cả trang (bàn chơi trượt khỏi tầm mắt). Nhận phím mũi tên ở mọi nơi trong trang;
+    // phím cách trên một nút vẫn để bấm nút đó như bình thường.
+    document.addEventListener('keydown', (event) => {
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+      const target = event.target;
+      if (target === els.board || els.board.contains(target)) return;
+      if (target instanceof HTMLElement && target.closest('input, textarea, select, [contenteditable="true"], [role="dialog"], dialog')) return;
+      if (event.key === ' ' && target instanceof HTMLElement && target.closest('button, a')) return;
+      onBoardKey(event);
+    });
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stopTimer();
       else startTimer();
