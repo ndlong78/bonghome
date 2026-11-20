@@ -5,7 +5,7 @@ const { test, expect } = require('@playwright/test');
  * game lấp đầy khung màn hình, bấm lại (hoặc thoát toàn màn hình của trình duyệt) thì trở về trang thường.
  */
 
-const GAMES = Array.from({ length: 15 }, (_, index) => index + 1);
+const GAMES = Array.from({ length: 16 }, (_, index) => index + 1);
 // Game có bàn chơi co giãn theo màn hình và phần tử phải nằm trọn trong khung khi toàn màn hình.
 const FITTED = {
   1: ['#sanBai'],
@@ -17,7 +17,8 @@ const FITTED = {
   12: ['#sudokuBoard'],
   13: ['#tttBoard'],
   14: ['#caroBoard'],
-  15: ['#advStage', '[data-control="jump"]']
+  15: ['#advStage', '[data-control="jump"]'],
+  16: ['#mineBoard']
 };
 
 async function open(page, id) {

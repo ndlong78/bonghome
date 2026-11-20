@@ -7,7 +7,7 @@ const { test, expect } = require('@playwright/test');
  *  - khi chơi: đổi chế độ, kéo hình vào đúng chỗ, gõ phím mũi tên không làm phần khác dịch chuyển.
  */
 
-const GAMES = Array.from({ length: 15 }, (_, index) => index + 1);
+const GAMES = Array.from({ length: 16 }, (_, index) => index + 1);
 
 /** Tổng điểm dịch chuyển bố cục (CLS) không do người dùng gây ra, đo từ lúc trang bắt đầu tải. */
 async function collectLayoutShift(page) {
@@ -46,7 +46,8 @@ test.describe('Laptop màn thấp 1366×768', () => {
     12: ['#sudokuBoard', '.sudoku-tools'],
     13: ['#tttBoard'],
     14: ['#caroBoard'],
-    15: ['#advStage', '#advPad']
+    15: ['#advStage', '#advPad'],
+    16: ['#mineBoard', '.mine-tools']
   };
 
   for (const [id, selectors] of Object.entries(MUST_FIT)) {

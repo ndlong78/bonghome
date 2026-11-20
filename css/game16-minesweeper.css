@@ -1,0 +1,394 @@
+.game16-page {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--bh-font-family, "Segoe UI", Arial, sans-serif);
+  color: var(--bh-color-text, #6b4e71);
+  background:
+    radial-gradient(circle at 12% 6%, rgba(191, 227, 255, 0.55), transparent 28%),
+    radial-gradient(circle at 88% 10%, rgba(255, 183, 197, 0.45), transparent 30%),
+    linear-gradient(180deg, #f1f7ff 0%, var(--bh-color-cream, #fff7f0) 50%, #fff7f0 100%);
+  overflow-x: hidden;
+}
+
+.game16-shell {
+  box-sizing: border-box;
+  width: min(760px, 100%);
+  margin: 0 auto;
+  padding: max(16px, env(safe-area-inset-top)) 14px max(72px, env(safe-area-inset-bottom));
+}
+
+.game16-topbar {
+  display: grid;
+  grid-template-columns: minmax(44px, auto) 1fr minmax(44px, auto);
+  align-items: center;
+  gap: 10px;
+}
+
+.game16-home,
+.game16-new {
+  min-width: var(--bh-touch-target, 44px);
+  min-height: var(--bh-touch-target, 44px);
+  border: 0;
+  border-radius: var(--bh-radius-pill, 999px);
+  background: #fff;
+  color: var(--bh-color-heading, #7a4e86);
+  box-shadow: var(--bh-shadow-button, 0 5px 0 rgba(0, 0, 0, 0.12));
+  font: inherit;
+  font-weight: 800;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  cursor: pointer;
+}
+
+.game16-heading {
+  text-align: center;
+  margin: 0;
+  color: var(--bh-color-heading, #7a4e86);
+  font-size: clamp(24px, 6vw, 36px);
+  line-height: 1.1;
+}
+
+.game16-intro {
+  margin: 14px auto 12px;
+  max-width: 620px;
+  text-align: center;
+  font-size: clamp(15px, 3.8vw, 18px);
+  font-weight: 700;
+  line-height: 1.45;
+  color: #715a78;
+}
+
+.game16-home:focus-visible,
+.game16-new:focus-visible,
+.mine-tool:focus-visible,
+.mine-level:focus-visible,
+.mine-cell:focus-visible,
+.mine-win-next:focus-visible {
+  outline: var(--bh-focus-ring, 5px solid #7a4e86);
+  outline-offset: 4px;
+}
+
+.mine-cell:focus-visible {
+  outline-width: 3px;
+  outline-offset: 1px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Hàng nút được dựng sau khi nạp nội dung: giữ sẵn chỗ để bàn chơi không bị đẩy xuống. */
+.mine-levels {
+  min-height: var(--bh-touch-target, 44px);
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 auto 12px;
+}
+
+/* Chơi với bạn thì ẩn độ khó nhưng vẫn giữ chỗ, để bàn cờ không nhảy lên xuống khi đổi chế độ. */
+
+.mine-level {
+  min-height: var(--bh-touch-target, 44px);
+  padding: 8px 16px;
+  border: 3px solid transparent;
+  border-radius: var(--bh-radius-pill, 999px);
+  background: #fff;
+  color: #715a78;
+  box-shadow: var(--bh-shadow-button, 0 5px 0 rgba(0, 0, 0, 0.12));
+  font: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.mine-level.active {
+  border-color: #67cfa6;
+  background: #eafbf3;
+  color: #2f6f55;
+}
+
+
+.mine-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 auto 10px;
+}
+
+.mine-stat {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 84px;
+  min-height: 44px;
+  justify-content: center;
+  padding: 6px 14px;
+  border-radius: var(--bh-radius-pill, 999px);
+  border: 3px solid var(--bh-color-yellow, #ffe0a3);
+  background: #fff;
+  font-weight: 900;
+  font-size: 16px;
+  box-shadow: var(--bh-shadow-card, 0 6px 0 rgba(0, 0, 0, 0.06));
+}
+
+.mine-stat b { font-size: 19px; color: #6b4e71; font-variant-numeric: tabular-nums; }
+.mine-stat[hidden] { display: none; }
+
+.mine-tools {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0 auto 12px;
+}
+
+.mine-tool {
+  min-height: var(--bh-touch-target, 44px);
+  min-width: 10.5em;
+  padding: 8px 16px;
+  border: 3px solid #c9b6f5;
+  border-radius: var(--bh-radius-pill, 999px);
+  background: #fff;
+  color: #5b3c62;
+  box-shadow: var(--bh-shadow-button, 0 5px 0 rgba(0, 0, 0, 0.12));
+  font: inherit;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.mine-mode[aria-pressed="true"] {
+  border-color: #e8728f;
+  background: #ffe3ec;
+  color: #8a2048;
+}
+
+.mine-hint { border-color: #ffd36b; background: #fffbea; color: #6e5011; }
+.mine-tool:disabled { opacity: 0.5; cursor: default; }
+.mine-tool:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
+
+/* Laptop màn thấp: thu bàn theo chiều cao màn hình (giống Game 13/14). */
+.mine-board-wrap {
+  --mine-board-width: min(94vw, 520px, max(280px, calc(100vh - 380px)));
+  width: var(--mine-board-width);
+  margin: 0 auto;
+}
+
+.mine-board {
+  --mine-cols: 8;
+  --mine-rows: 8;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(var(--mine-cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--mine-rows), minmax(0, 1fr));
+  gap: 3px;
+  width: 100%;
+  aspect-ratio: var(--mine-cols) / var(--mine-rows);
+  padding: 6px;
+  border-radius: 18px;
+  background: #8fc77a;
+  box-shadow: 0 8px 0 rgba(70, 120, 60, 0.18), 0 16px 30px rgba(122, 78, 134, 0.14);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Ô cỏ chưa mở: xanh, nổi lên; ô đã mở: nền đất nhạt, phẳng. */
+.mine-cell {
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #b8e6a0 0%, #93d17a 100%);
+  box-shadow: inset 0 -3px 0 rgba(50, 110, 40, 0.28);
+  font: inherit;
+  font-size: calc(var(--mine-board-width) / var(--mine-cols) * 0.5);
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 120ms ease, transform 120ms ease;
+}
+
+.mine-cell:hover:not(.open):not(.flagged) { background: linear-gradient(180deg, #c9eeb4 0%, #a6dc8e 100%); }
+.mine-cell:active:not(.open) { transform: translateY(1px); }
+.mine-cell.open {
+  background: #fdf3df;
+  box-shadow: inset 0 0 0 1px rgba(160, 120, 70, 0.18);
+  cursor: default;
+}
+.mine-cell.open:not(:empty) { cursor: pointer; }
+.mine-cell.flagged { background: linear-gradient(180deg, #ffe3ec 0%, #ffc9da 100%); }
+.mine-cell.bee { background: #fff0c2; }
+.mine-cell.exploded { background: #ffb3b3; box-shadow: inset 0 0 0 3px #d64545; }
+.mine-cell.wrong-flag { background: #e8e1ee; text-decoration: line-through; }
+.mine-cell.hint {
+  background: #fff4c2;
+  box-shadow: inset 0 0 0 3px #e0a100;
+  animation: mine-cheer 700ms ease-in-out 3;
+}
+.mine-board.flag-mode .mine-cell:not(.open) { cursor: crosshair; }
+.mine-board.finished .mine-cell { cursor: default; }
+
+.game16-status {
+  /* Đủ chỗ cho câu thông báo hai dòng: đổi câu không làm các phần bên dưới nhảy. */
+  min-height: calc(2.7em + 20px);
+  margin: 14px auto 0;
+  max-width: 620px;
+  padding: 10px 14px;
+  border-radius: var(--bh-radius-md, 18px);
+  background: rgba(255, 255, 255, 0.86);
+  text-align: center;
+  font-weight: 800;
+  line-height: 1.35;
+  box-sizing: border-box;
+}
+
+.game16-tip {
+  margin: 12px auto 0;
+  text-align: center;
+  max-width: 600px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #806987;
+}
+
+.mine-win {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(107, 78, 113, 0.35);
+}
+
+.mine-win[hidden] { display: none; }
+
+.mine-win-card {
+  width: min(92vw, 380px);
+  padding: 24px 20px;
+  border-radius: var(--bh-radius-xl, 34px);
+  background: #fff;
+  text-align: center;
+  box-shadow: var(--bh-shadow-dialog, 0 20px 50px rgba(120, 80, 140, 0.35));
+  animation: mine-pop 360ms ease-out;
+}
+
+.mine-win-card h2 { margin: 6px 0; color: var(--bh-color-heading, #7a4e86); font-size: 28px; }
+.mine-win-card p { margin: 0 0 16px; font-weight: 700; line-height: 1.4; }
+.mine-win-stars { font-size: 40px; letter-spacing: 4px; }
+
+.mine-win-rewards {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  border-radius: var(--bh-radius-md, 18px);
+  background: var(--bh-color-warning-bg, #fff8e7);
+}
+
+.mine-win-rewards[hidden] { display: none; }
+.mine-win-rewards p { margin: 4px 0; font-weight: 800; }
+
+.mine-win-next {
+  min-height: 52px;
+  padding: 10px 22px;
+  border: 0;
+  border-radius: var(--bh-radius-pill, 999px);
+  background: #67cfa6;
+  color: #1f4d3b;
+  box-shadow: var(--bh-shadow-button, 0 5px 0 rgba(0, 0, 0, 0.12));
+  font: inherit;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+@keyframes mine-pop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes mine-drop {
+  from { transform: scale(0.6); }
+  to { transform: scale(1); }
+}
+
+@keyframes mine-cheer {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@media (max-width: 420px) {
+  .game16-shell { padding-inline: 8px; }
+  .mine-board-wrap { --mine-board-width: calc(100vw - 16px); }
+  .mine-board { gap: 2px; padding: 3px; border-radius: 12px; }
+  .mine-cell { border-radius: 4px; }
+  .game16-topbar { grid-template-columns: 48px 1fr 48px; }
+  .game16-home,
+  .game16-new {
+    width: 48px;
+    padding: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 0;
+  }
+  .game16-home::before { content: "🏠"; font-size: 22px; }
+  .game16-new::before { content: "✨"; font-size: 22px; }
+  .game16-intro { font-size: 14px; margin-block: 8px; }
+  .mine-level { padding-inline: 12px; font-size: 15px; }
+  .mine-stat { min-width: 0; padding-inline: 10px; font-size: 14px; }
+  .mine-stat b { font-size: 17px; }
+  .mine-tool { min-width: 0; font-size: 14px; padding-inline: 12px; }
+}
+
+@media (max-width: 600px), (pointer: coarse) {
+  .game16-page .nut-am-thanh {
+    box-sizing: border-box;
+    right: max(8px, env(safe-area-inset-right));
+    bottom: calc(max(8px, env(safe-area-inset-bottom)) + var(--bh-install-tip-space, 0px));
+    width: var(--bh-touch-target, 44px);
+    min-width: var(--bh-touch-target, 44px);
+    height: var(--bh-touch-target, 44px);
+    min-height: var(--bh-touch-target, 44px);
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+    line-height: 1;
+  }
+
+  .game16-page .nut-am-thanh::before {
+    content: "🔊";
+    font-size: 20px;
+  }
+
+  html[data-sound="off"] .game16-page .nut-am-thanh::before {
+    content: "🔇";
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mine-cell,
+  .mine-cell.hint,
+  .mine-level,
+  .mine-win-card {
+    transition: none !important;
+    animation: none !important;
+  }
+  .mine-level:active,
+  .mine-tool:active,
+  .mine-cell:active { transform: none; }
+}
