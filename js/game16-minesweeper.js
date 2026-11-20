@@ -558,9 +558,10 @@
     els.hint.textContent = `💡 Gợi ý (${game.hintsLeft})`;
     els.mode.setAttribute('aria-pressed', state.flagMode ? 'true' : 'false');
     els.mode.textContent = state.flagMode ? '🚩 Đang cắm cờ' : '⛏️ Đang mở ô';
+    // Tên nút bắt đầu bằng đúng chữ hiển thị (trình đọc màn hình và điều khiển bằng giọng nói nhận ra được).
     els.mode.setAttribute('aria-label', state.flagMode
-      ? 'Đang ở chế độ cắm cờ: chạm ô để cắm hoặc gỡ cờ. Bấm để quay về mở ô'
-      : 'Đang ở chế độ mở ô. Bấm để chuyển sang cắm cờ');
+      ? 'Đang cắm cờ: chạm ô để cắm hoặc gỡ cờ, bấm nút này để quay về mở ô'
+      : 'Đang mở ô: bấm nút này để chuyển sang cắm cờ');
   }
 
   function onCellClick(event, index) {

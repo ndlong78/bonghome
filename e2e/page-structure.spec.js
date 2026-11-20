@@ -232,7 +232,7 @@ test.describe('Cấu trúc trang', () => {
     await expect(page.getByRole('group', { name: /Vườn 8×8 có 8 tổ ong/ }).getByRole('button')).toHaveCount(64);
     await expect(page.getByRole('group', { name: 'Chọn cấp độ' }).getByRole('button')).toHaveCount(3);
     await expect(page.getByRole('button', { name: 'Bắt đầu ván mới' })).toBeVisible();
-    await expect(page.getByRole('button', { name: /chế độ mở ô/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Đang mở ô/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /Gợi ý một ô/ })).toBeVisible();
     await expect(page.locator('#mineStatus')).toHaveAttribute('aria-live', 'polite');
     await expect(page.getByText(/Không có đồng hồ đếm ngược/)).toBeVisible();
