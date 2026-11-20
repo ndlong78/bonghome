@@ -9,7 +9,7 @@ const { test, expect } = require('@playwright/test');
  */
 
 const GAMES_1_TO_10 = Array.from({ length: 10 }, (_, index) => `/game${index + 1}.html`);
-const ALL_PAGES = ['/index.html', '/parents.html', '/collection.html', ...Array.from({ length: 15 }, (_, index) => `/game${index + 1}.html`)];
+const ALL_PAGES = ['/index.html', '/parents.html', '/collection.html', ...Array.from({ length: 16 }, (_, index) => `/game${index + 1}.html`)];
 
 /** Chữ của các phần tử mà aria-labelledby/aria-describedby trỏ tới (phải có thật và có chữ). */
 const referencedText = (locator, attribute) => locator.evaluate((element, name) => (element.getAttribute(name) || '')
@@ -224,6 +224,24 @@ test.describe('Cấu trúc trang', () => {
     expect(await labelledByText(dialog)).not.toBe('');
     await expect(dialog).toBeHidden();
     await expect(dialog.locator('#advWinRewards')).toHaveAttribute('role', 'status');
+  });
+
+  test('Game 16: vườn 8×8 bấm được, nút chế độ/gợi ý có tên, hộp thoại thắng là modal có tên và không đếm ngược', async ({ page }) => {
+    await page.goto('/game16.html', { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => Boolean(window.BongGame16));
+    await expect(page.getByRole('group', { name: /Vườn 8×8 có 8 tổ ong/ }).getByRole('button')).toHaveCount(64);
+    await expect(page.getByRole('group', { name: 'Chọn cấp độ' }).getByRole('button')).toHaveCount(3);
+    await expect(page.getByRole('button', { name: 'Bắt đầu ván mới' })).toBeVisible();
+    await expect(page.getByRole('button', { name: /chế độ mở ô/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Gợi ý một ô/ })).toBeVisible();
+    await expect(page.locator('#mineStatus')).toHaveAttribute('aria-live', 'polite');
+    await expect(page.getByText(/Không có đồng hồ đếm ngược/)).toBeVisible();
+
+    const dialog = page.locator('#mineWin [role="dialog"]');
+    await expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(await labelledByText(dialog)).not.toBe('');
+    await expect(dialog).toBeHidden();
+    await expect(dialog.locator('#mineWinRewards')).toHaveAttribute('role', 'status');
   });
 
   test('trang phụ huynh chỉ đọc: ô nhập duy nhất là câu hỏi cổng phụ huynh trong hộp thoại xóa, không gửi đi đâu', async ({ page }) => {

@@ -15,6 +15,7 @@
     { "id": "game12", "title": "Sudoku Vui Vẻ", "rewardsEnabled": true },
     { "id": "game13", "title": "Cờ Ca-rô Tí Hon", "rewardsEnabled": true },
     { "id": "game14", "title": "Cờ Caro Nối Năm", "rewardsEnabled": true },
-    { "id": "game15", "title": "Bông Phiêu Lưu", "rewardsEnabled": true }
+    { "id": "game15", "title": "Bông Phiêu Lưu", "rewardsEnabled": true },
+    { "id": "game16", "title": "Dò Ong Trong Vườn", "rewardsEnabled": true }
   ]
 }

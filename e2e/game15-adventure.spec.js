@@ -171,7 +171,7 @@ test.describe('Game 15 - Bông Phiêu Lưu', () => {
     expect(fresh.runId).not.toBe(state.runId);
   });
 
-  test('trang chủ có bảng Game 15 nằm sau Game 14 và ghi 15 lớp học', async ({ page }) => {
+  test('trang chủ có bảng Game 15 nằm sau Game 14 và trang chủ ghi số lớp học', async ({ page }) => {
     const errors = collectRuntimeErrors(page);
     await page.goto('/index.html', { waitUntil: 'domcontentloaded' });
     const card = page.locator('[data-game15-card]');
@@ -179,7 +179,7 @@ test.describe('Game 15 - Bông Phiêu Lưu', () => {
     await expect(card).toHaveAttribute('href', 'game15.html');
     await expect(card).toContainText('Bông Phiêu Lưu');
     await expect(page.locator('[data-game14-card] + [data-game15-card]')).toHaveCount(1);
-    await expect(page.locator('.phu-de')).toContainText('15 lớp học');
+    await expect(page.locator('.phu-de')).toContainText('16 lớp học');
     expect(errors).toEqual([]);
   });
 

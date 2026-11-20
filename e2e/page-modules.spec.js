@@ -17,7 +17,7 @@ const GAMES_5_TO_7 = [...FULLSCREEN, 'data-bh-games-autosave-style', 'data-bh-ga
 const GAMES_8_TO_10 = [...FULLSCREEN, 'data-bh-games-autosave-style', 'data-bh-games8-10-autosave', 'data-bh-games8-10-rewards'];
 
 const PAGE_MODULES = {
-  'index.html': ['data-bh-daily-journey', 'data-bh-game11-home-card', 'data-bh-game12-home-card', 'data-bh-game13-home-card', 'data-bh-game14-home-card', 'data-bh-game15-home-card', 'data-bh-profile-style', 'data-bh-profile-ui'],
+  'index.html': ['data-bh-daily-journey', 'data-bh-game11-home-card', 'data-bh-game12-home-card', 'data-bh-game13-home-card', 'data-bh-game14-home-card', 'data-bh-game15-home-card', 'data-bh-game16-home-card', 'data-bh-profile-style', 'data-bh-profile-ui'],
   'game1.html': [
     ...FULLSCREEN,
     'data-bh-game1-autosave', 'data-bh-game1-autosave-style', 'data-bh-game1-content', 'data-bh-game1-keyboard-accessibility',
@@ -37,6 +37,7 @@ const PAGE_MODULES = {
   'game13.html': FULLSCREEN,
   'game14.html': FULLSCREEN,
   'game15.html': FULLSCREEN,
+  'game16.html': FULLSCREEN,
   'collection.html': [],
   'parents.html': []
 };

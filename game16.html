@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Dò Ong Trong Vườn – Bông Home's</title>
+  <meta name="description" content="Dò Ong Trong Vườn (Minesweeper cho bé) – đọc con số để tìm tổ ong trốn dưới cỏ. Ba cấp Dễ, Vừa, Khó.">
+  <link rel="canonical" href="https://bong.no.id.vn/game16.html">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#FFF7F0">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Bông Home's">
+  <link rel="stylesheet" href="./css/design-tokens.css" data-bh-design-tokens>
+  <link rel="stylesheet" href="./css/theme-picker.css" data-bh-theme-picker>
+  <link rel="stylesheet" href="./css/themes.css" data-bh-themes>
+  <link rel="stylesheet" href="./css/common.css" data-bh-common>
+  <link rel="stylesheet" href="./css/components.css" data-bh-components>
+  <link rel="stylesheet" href="./css/game16-minesweeper.css">
+  <link rel="stylesheet" href="./css/fullscreen.css" data-bh-fullscreen-style>
+  <link rel="stylesheet" href="./css/pwa-ios.css" id="bhPwaIosStyles">
+  <link rel="stylesheet" href="./css/pwa-quality.css" id="bhQualityStyles">
+  <script src="./shared-ui.js" defer></script>
+  <script src="./js/fullscreen.js" defer data-bh-fullscreen-script></script>
+  <script src="./js/game16-rewards.js" defer></script>
+  <script src="./js/game16-minesweeper.js" defer></script>
+</head>
+<body class="game16-page">
+  <main class="game16-shell">
+    <div class="game16-topbar">
+      <a class="game16-home" href="./index.html" aria-label="Về trang chủ">🏠 Trang chủ</a>
+      <h1 class="game16-heading">🐝 Dò Ong Trong Vườn</h1>
+      <div class="bh-topbar-actions">
+        <button class="game16-new" id="mineNew" type="button" aria-label="Bắt đầu ván mới">✨ Ván mới</button>
+        <button type="button" class="bh-fs-toggle" data-bh-fullscreen aria-pressed="false" aria-label="Chơi toàn màn hình" title="Chơi toàn màn hình"><span class="bh-fs-icon" aria-hidden="true">⛶</span></button>
+      </div>
+    </div>
+
+    <p class="game16-intro">Dưới cỏ có các <b>tổ ong</b> đang trốn. Mở ô cỏ để tìm đường: <b>con số</b> cho biết quanh ô đó (cả đường chéo) có bao nhiêu tổ ong. Thấy chỗ có ong thì <b>cắm cờ 🚩</b>. Mở hết các ô không có ong là thắng!</p>
+
+    <div class="mine-levels" id="mineLevels" role="group" aria-label="Chọn cấp độ"></div>
+
+    <div class="mine-stats">
+      <div class="mine-stat" aria-label="Số tổ ong chưa cắm cờ">🐝 <b id="mineLeft">0</b></div>
+      <div class="mine-stat" aria-label="Thời gian">⏱️ <b id="mineTime">0:00</b></div>
+      <div class="mine-stat" aria-label="Kỷ lục">🏆 <b id="mineBest">--</b></div>
+      <div class="mine-stat" id="mineRescue" aria-label="Số lần Gấu Bông còn cứu">🐻 <b id="mineRescueCount">0</b></div>
+    </div>
+
+    <div class="mine-tools">
+      <button class="mine-tool mine-mode" id="mineMode" type="button" aria-pressed="false">⛏️ Đang mở ô</button>
+      <button class="mine-tool mine-hint" id="mineHint" type="button" aria-label="Gợi ý một ô chắc chắn không có tổ ong">💡 Gợi ý (3)</button>
+    </div>
+
+    <section class="mine-board-wrap" data-bh-fs-board data-bh-fs-side="wide" aria-label="Vườn cỏ">
+      <div class="mine-board" id="mineBoard" role="group" aria-label="Vườn cỏ. Phím mũi tên để chọn ô, Enter để mở, phím F để cắm cờ."></div>
+    </section>
+
+    <div class="game16-status" id="mineStatus" role="status" aria-live="polite"></div>
+    <p class="game16-tip">Mẹo nhỏ: ô đầu tiên luôn an toàn. Trên điện thoại, <b>nhấn giữ</b> một ô để cắm cờ; trên máy tính bấm <b>chuột phải</b> hoặc phím <b>F</b>. Chạm vào số khi quanh nó đã cắm đủ cờ thì các ô còn lại tự mở. Không có đồng hồ đếm ngược — bé cứ thong thả.</p>
+  </main>
+
+  <div class="mine-win" id="mineWin" hidden>
+    <div class="mine-win-card" role="dialog" aria-modal="true" aria-labelledby="mineWinTitle">
+      <div class="mine-win-stars" id="mineWinStars" aria-hidden="true">⭐⭐⭐</div>
+      <h2 id="mineWinTitle">Bé tìm ra hết tổ ong rồi!</h2>
+      <p id="mineWinText">Bé đã mở hết vườn.</p>
+      <div class="mine-win-rewards" id="mineWinRewards" role="status" aria-live="polite" aria-atomic="true" hidden></div>
+      <button class="mine-win-next" id="mineWinNext" type="button">✨ Chơi ván mới</button>
+    </div>
+  </div>
+</body>
+</html>

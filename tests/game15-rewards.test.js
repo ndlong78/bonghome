@@ -47,7 +47,7 @@ autoTest('catalog có Game 15, sticker Đám mây vui và huy hiệu Nhà phiêu
 autoTest('progress và rewards nhận game15 nhưng vẫn từ chối id ngoài phạm vi', () => {
   const { progress, rewards } = setup();
   assert.doesNotThrow(() => progress.saveGame('game15', { state: {} }));
-  assert.throws(() => progress.saveGame('game16', { state: {} }), /gameId/);
+  assert.throws(() => progress.saveGame('game17', { state: {} }), /gameId/);
   rewards.unlockSticker('happy-cloud', { source: 'game15-completion' });
   assert.deepEqual(rewards.getByGameSummary().game15.stickerIds, ['happy-cloud']);
 });

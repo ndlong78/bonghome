@@ -55,7 +55,8 @@
   .game12-topbar,
   .game13-topbar,
   .game14-topbar,
-  .game15-topbar { grid-template-columns: 48px 1fr auto !important; }
+  .game15-topbar,
+  .game16-topbar { grid-template-columns: 48px 1fr auto !important; }
 }
 
 /* Gợi ý một lần trên iPhone (Safari không cho trang tự mở toàn màn hình). */
@@ -113,6 +114,7 @@ html.bh-fullscreen :is(
   .game13-intro, .game13-tip,
   .game14-intro, .game14-tip,
   .game15-intro, .game15-tip,
+  .game16-intro, .game16-tip,
   .bh-theme-picker,
   .bh-install-tip
 ) {
@@ -120,7 +122,7 @@ html.bh-fullscreen :is(
 }
 
 /* Khung trang không còn bó chiều rộng theo cột web: dùng hết bề ngang màn hình. */
-html.bh-fullscreen :is(main.khung, .game11-shell, .game12-shell, .game13-shell, .game14-shell, .game15-shell) {
+html.bh-fullscreen :is(main.khung, .game11-shell, .game12-shell, .game13-shell, .game14-shell, .game15-shell, .game16-shell) {
   max-width: none;
   width: 100%;
   margin: 0 auto;
@@ -134,10 +136,10 @@ html.bh-fullscreen body {
 }
 
 /* Thanh tiêu đề gọn hơn: chữ nhỏ lại, bớt khoảng cách. */
-html.bh-fullscreen :is(.thanh-tren, .game11-topbar, .game12-topbar, .game13-topbar, .game14-topbar, .game15-topbar) {
+html.bh-fullscreen :is(.thanh-tren, .game11-topbar, .game12-topbar, .game13-topbar, .game14-topbar, .game15-topbar, .game16-topbar) {
   margin-bottom: 6px;
 }
-html.bh-fullscreen :is(main.khung h1, .game11-heading, .game12-heading, .game13-heading, .game14-heading, .game15-heading) {
+html.bh-fullscreen :is(main.khung h1, .game11-heading, .game12-heading, .game13-heading, .game14-heading, .game15-heading, .game16-heading) {
   font-size: clamp(18px, 3.2vw, 26px);
 }
 
@@ -158,6 +160,7 @@ html.bh-fullscreen.bh-fs-fitted #sanBai[data-bh-fs-board] { width: var(--bh-fs-b
 /* Game 13, 14: cỡ hình trong ô tính theo biến bề rộng bàn. */
 html.bh-fullscreen .ttt-board-wrap { --ttt-board-width: var(--bh-fs-board-w, min(88vw, 420px)); }
 html.bh-fullscreen .caro-board-wrap { --caro-board-width: var(--bh-fs-board-w, min(94vw, 540px)); }
+html.bh-fullscreen .mine-board-wrap { --mine-board-width: var(--bh-fs-board-w, min(94vw, 520px)); }
 
 /* Game 15: khung chơi lấp đầy chiều cao còn lại; nút điều khiển nổi trên khung như trò chơi trên máy. */
 html.bh-fullscreen #advStage { margin-bottom: 0; }
@@ -226,11 +229,11 @@ html.bh-fullscreen.bh-fs-side .nut-am-thanh {
   left: max(8px, env(safe-area-inset-left));
 }
 html.bh-fullscreen.bh-fs-side :is(.thanh-tren, .bang-so, .muc-do) { flex-wrap: wrap; }
-html.bh-fullscreen.bh-fs-side :is(main.khung h1, .game11-heading, .game12-heading, .game13-heading, .game14-heading) {
+html.bh-fullscreen.bh-fs-side :is(main.khung h1, .game11-heading, .game12-heading, .game13-heading, .game14-heading, .game16-heading) {
   font-size: 18px;
 }
 /* Hàng nút đặt cỡ theo bề ngang màn hình (vw) thì co lại vừa cột trái, không chui xuống dưới bàn chơi. */
-html.bh-fullscreen.bh-fs-side :is(.sudoku-tools, .ttt-score, .caro-score, .block-controls) {
+html.bh-fullscreen.bh-fs-side :is(.sudoku-tools, .ttt-score, .caro-score, .block-controls, .mine-tools, .mine-stats) {
   width: auto !important;
   max-width: 100%;
 }

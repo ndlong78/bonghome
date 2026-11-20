@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "defaultLevelId": "de",
+  "levels": [
+    {
+      "id": "de",
+      "label": "🌱 Dễ",
+      "description": "Vườn 8×8, 8 tổ ong, Gấu Bông cứu 1 lần",
+      "rows": 8,
+      "cols": 8,
+      "mines": 8,
+      "rescues": 1,
+      "hints": 3
+    },
+    {
+      "id": "vua",
+      "label": "🌿 Vừa",
+      "description": "Vườn 10×10, 15 tổ ong",
+      "rows": 10,
+      "cols": 10,
+      "mines": 15,
+      "rescues": 0,
+      "hints": 2
+    },
+    {
+      "id": "kho",
+      "label": "🌳 Khó",
+      "description": "Vườn 12×12, 26 tổ ong",
+      "rows": 12,
+      "cols": 12,
+      "mines": 26,
+      "rescues": 0,
+      "hints": 1
+    }
+  ]
+}

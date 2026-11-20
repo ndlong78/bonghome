@@ -197,7 +197,7 @@ test.describe('Game 14 - Cờ Caro Nối Năm', () => {
     await expect(card).toHaveAttribute('href', 'game14.html');
     await expect(card).toContainText('Cờ Caro Nối Năm');
     await expect(page.locator('[data-game13-card] + [data-game14-card]')).toHaveCount(1);
-    await expect(page.locator('.phu-de')).toContainText('15 lớp học');
+    await expect(page.locator('.phu-de')).toContainText('16 lớp học');
     expect(errors).toEqual([]);
   });
 
